@@ -1,22 +1,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { localize } from 'redux-i18n';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
-import { Route, Switch, Link, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { Notifs } from 'redux-notifications';
 import TopBarProgress from 'react-topbar-progress-indicator';
-import { loadConfig as actionLoadConfig } from 'Actions/config';
-import { loginUser as actionLoginUser, logoutUser as actionLogoutUser } from 'Actions/auth';
-import { currentBackend } from 'Backends/backend';
-import { showCollection, createNewEntry } from 'Actions/collections';
-import { openMediaLibrary as actionOpenMediaLibrary } from 'Actions/mediaLibrary';
-import MediaLibrary from 'MediaLibrary/MediaLibrary';
-import { Loader, Toast } from 'UI';
-import { getCollectionUrl, getNewEntryUrl } from 'Lib/urlHelper';
-import { SIMPLE, EDITORIAL_WORKFLOW } from 'Constants/publishModes';
-import Collection from 'Collection/Collection';
-import Workflow from 'Workflow/Workflow';
-import Editor from 'Editor/Editor';
+import { loadConfig as actionLoadConfig } from '../../actions/config';
+import { loginUser as actionLoginUser, logoutUser as actionLogoutUser } from '../../actions/auth';
+import { currentBackend } from '../../backends/backend';
+import { createNewEntry } from '../../actions/collections';
+import { openMediaLibrary as actionOpenMediaLibrary } from '../../actions/mediaLibrary';
+import MediaLibrary from '../../components/MediaLibrary/MediaLibrary';
+import { Loader, Toast } from '../../components/UI';
+import { SIMPLE, EDITORIAL_WORKFLOW } from '../../constants/publishModes';
+import Collection from '../../components/Collection/Collection';
+import Workflow from '../../components/Workflow/Workflow';
+import Editor from '../../components/Editor/Editor';
 import NotFoundPage from './NotFoundPage';
 import Header from './Header';
 
@@ -35,6 +35,8 @@ TopBarProgress.config({
 class App extends React.Component {
 
   static propTypes = {
+    t: PropTypes.func,
+    openMediaLibrary: PropTypes.func,
     auth: ImmutablePropTypes.map,
     config: ImmutablePropTypes.map,
     collections: ImmutablePropTypes.orderedMap,
@@ -43,17 +45,13 @@ class App extends React.Component {
     user: ImmutablePropTypes.map,
     isFetching: PropTypes.bool.isRequired,
     publishMode: PropTypes.oneOf([SIMPLE, EDITORIAL_WORKFLOW]),
-    siteId: PropTypes.string,
   };
 
-  static configError(config) {
+  static configError(config, t) {
     return (<div>
-      <h1>Error loading the CMS configuration</h1>
+      <h1>{t('error-page.title')}</h1>
 
-      <div>
-        <p>The <code>config.yml</code> file could not be loaded or failed to parse properly.</p>
-        <p><strong>Error message:</strong> {config.get('error')}</p>
-      </div>
+      <div dangerouslySetInnerHTML={{ __html: t('error-page.body', { error: config.get('error') }) }} />
     </div>);
   }
 
@@ -66,11 +64,11 @@ class App extends React.Component {
   }
 
   authenticating() {
-    const { auth } = this.props;
+    const { auth, t, config } = this.props;
     const backend = currentBackend(this.props.config);
 
     if (backend == null) {
-      return <div><h1>Waiting for backend...</h1></div>;
+      return <div><h1>{t('app.waiting')}</h1></div>;
     }
 
     return (
@@ -81,17 +79,12 @@ class App extends React.Component {
             onLogin: this.handleLogin.bind(this),
             error: auth && auth.get('error'),
             isFetching: auth && auth.get('isFetching'),
-            siteId: this.props.config.getIn(["backend", "site_domain"]),
-            base_url: this.props.config.getIn(["backend", "base_url"], null)
+            siteId: config.getIn(["backend", "site_domain"]),
+            base_url: config.getIn(["backend", "base_url"], null),
           })
         }
       </div>
     );
-  }
-
-  handleLinkClick(event, handler, ...args) {
-    event.preventDefault();
-    handler(...args);
   }
 
   render() {
@@ -103,6 +96,7 @@ class App extends React.Component {
       isFetching,
       publishMode,
       openMediaLibrary,
+      t,
     } = this.props;
 
 
@@ -111,7 +105,7 @@ class App extends React.Component {
     }
 
     if (config.get('error')) {
-      return App.configError(config);
+      return App.configError(config, t);
     }
 
     if (config.get('isFetching')) {
@@ -122,7 +116,7 @@ class App extends React.Component {
       return this.authenticating();
     }
 
-    const defaultPath = `/collections/${collections.first().get('name')}`;
+    const defaultPath = `/collections/${ collections.first().get('name') }`;
     const hasWorkflow = publishMode === EDITORIAL_WORKFLOW;
 
     return (
@@ -143,14 +137,14 @@ class App extends React.Component {
             <Switch>
               <Redirect exact from="/" to={defaultPath} />
               <Redirect exact from="/search/" to={defaultPath} />
-              { hasWorkflow ? <Route path="/workflow" component={Workflow}/> : null }
+              { hasWorkflow ? <Route path="/workflow" component={Workflow} /> : null }
               <Route exact path="/collections/:name" component={Collection} />
               <Route path="/collections/:name/new" render={props => <Editor {...props} newRecord />} />
               <Route path="/collections/:name/entries/:slug" component={Editor} />
               <Route path="/search/:searchTerm" render={props => <Collection {...props} isSearchResults />} />
               <Route component={NotFoundPage} />
             </Switch>
-            <MediaLibrary/>
+            <MediaLibrary />
           </div>
         </div>
       </div>
@@ -158,24 +152,19 @@ class App extends React.Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state) => {
   const { auth, config, collections, globalUI } = state;
   const user = auth && auth.get('user');
   const isFetching = globalUI.get('isFetching');
   const publishMode = config && config.get('publish_mode');
+
   return { auth, config, collections, user, isFetching, publishMode };
-}
+};
 
-function mapDispatchToProps(dispatch) {
-  return {
-    dispatch,
-    openMediaLibrary: () => {
-      dispatch(actionOpenMediaLibrary());
-    },
-    logoutUser: () => {
-      dispatch(actionLogoutUser());
-    },
-  };
-}
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+  openMediaLibrary: () => dispatch(actionOpenMediaLibrary()),
+  logoutUser: () => dispatch(actionLogoutUser()),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(localize()(App));

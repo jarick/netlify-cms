@@ -1,3 +1,4 @@
+import { i18nState } from 'redux-i18n';
 import auth from './auth';
 import config from './config';
 import integrations, * as fromIntegrations from './integrations';
@@ -11,6 +12,7 @@ import medias, * as fromMedias from './medias';
 import globalUI from './globalUI';
 
 const reducers = {
+  i18nState,
   auth,
   config,
   collections,

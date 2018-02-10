@@ -1,25 +1,26 @@
 backend:
   name: test-repo
 
-display_url: https://example.com
+lang: 'ru'
+display_url: https://example.ru
 media_folder: "assets/uploads"
 
 collections: # A list of collections the CMS should be able to edit
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
-    label: "Post" # Used in the UI, ie.: "New Post"
+    label: "Статья" # Used in the UI, ie.: "New Post"
     description: >
-      The description is a great place for tone setting, high level information, and editing
-      guidelines that are specific to a collection.
+      Описание - это великолепное место для тоны настроек, высокозначимой информации, и редактирования
+      правил специфичных разделов.
     folder: "_posts"
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     create: true # Allow users to create new documents in this collection
     fields: # The fields each document in this collection have
-      - {label: "Title", name: "title", widget: "string", tagname: "h1"}
-      - {label: "Publish Date", name: "date", widget: "datetime", format: "YYYY-MM-DD hh:mma"}
-      - {label: "Cover Image", name: "image", widget: "image", required: false, tagname: ""}
-      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Заголовок", name: "title", widget: "string", tagname: "h1"}
+      - {label: "Дата публикации", name: "date", widget: "datetime", format: "YYYY-MM-DD hh:mma"}
+      - {label: "Картинка", name: "image", widget: "image", required: false, tagname: ""}
+      - {label: "Текст", name: "body", widget: "markdown"}
     meta:
-      - {label: "SEO Description", name: "description", widget: "text"}
+      - {label: "SEO", name: "description", widget: "text"}
 
   - name: "faq" # Used in routes, ie.: /admin/collections/:slug/edit
     label: "FAQ" # Used in the UI, ie.: "New Post"
@@ -36,30 +37,30 @@ collections: # A list of collections the CMS should be able to edit
       preview: false
     files:
       - name: "general"
-        label: "Site Settings"
+        label: "Настройки"
         file: "_data/settings.json"
         description: "General Site Settings"
         fields:
-          - {label: "Global title", name: "site_title", widget: "string"}
-          - label: "Post Settings"
+          - {label: "Заголовок сайта", name: "site_title", widget: "string"}
+          - label: "Настройки блога"
             name: posts
             widget: "object"
             fields:
-              - {label: "Number of posts on frontpage", name: front_limit, widget: number}
-              - {label: "Default Author", name: author, widget: string}
-              - {label: "Default Thumbnail", name: thumb, widget: image, class: "thumb"}
+              - {label: "Количество постояв на странице", name: front_limit, widget: number}
+              - {label: "Автор по умолчанию", name: author, widget: string}
+              - {label: "Картинка по умолчанию", name: thumb, widget: image, class: "thumb"}
 
       - name: "authors"
-        label: "Authors"
+        label: "Авторы"
         file: "_data/authors.yml"
-        description: "Author descriptions"
+        description: "Описание автора"
         fields:
           - name: authors
-            label: Authors
+            label: Авторы
             widget: list
             fields:
-              - {label: "Name", name: "name", widget: "string"}
-              - {label: "Description", name: "description", widget: "markdown"}
+              - {label: "Имя", name: "name", widget: "string"}
+              - {label: "Описание", name: "description", widget: "markdown"}
 
   - name: "kitchenSink" # all the things in one entry, for documentation and quick testing
     label: "Kitchen Sink"

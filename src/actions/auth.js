@@ -1,5 +1,5 @@
 import { actions as notifActions } from 'redux-notifications';
-import { currentBackend } from 'Backends/backend';
+import { currentBackend } from '../backends/backend';
 
 const { notifSend } = notifActions;
 
@@ -39,6 +39,17 @@ export function doneAuthenticating() {
 export function logout() {
   return {
     type: LOGOUT,
+  };
+}
+
+
+export function logoutUser() {
+  return (dispatch, getState) => {
+    const state = getState();
+    const backend = currentBackend(state.config);
+    Promise.resolve(backend.logout()).then(() => {
+      dispatch(logout());
+    });
   };
 }
 
@@ -84,12 +95,3 @@ export function loginUser(credentials) {
   };
 }
 
-export function logoutUser() {
-  return (dispatch, getState) => {
-    const state = getState();
-    const backend = currentBackend(state.config);
-    Promise.resolve(backend.logout()).then(() => {
-      dispatch(logout());
-    });
-  };
-}

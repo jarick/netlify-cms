@@ -1,0 +1,22 @@
+export default {
+  'error-page.title': 'Ошибка загрузки конфигурации CMS',
+  'error-page.body': '<p>Файл <code>config.yml</code> не может быть загружен или его не удалось прочитать.</p>'
+    + '<p><strong>Текст ошибки:</strong> {error}</p>',
+  'side-bar.search-all': 'Поиск',
+  'side-bar.collections': 'Категории',
+  'app.waiting': 'Загрузка данных...',
+  'header.content': 'Разделы',
+  'header.workflow': 'Статус',
+  'header.media': 'Медиа',
+  'header.quick-add': 'Добавить',
+  'header.log-out': 'Выход',
+  'collection.new': 'Создать',
+  'collection.view-as': 'Вид',
+  'entry.delete': 'Удалить',
+  'entry.publish': 'Опубликовать',
+  'entry.published': 'Опубликовано',
+  'entry.publishing': 'Публикация...',
+  'entry.publish-now': 'Опубликовать',
+  'entry.publish-and-create-new': 'Опубликовать и создать новую запись',
+  'entry.save': 'Сохранить',
+};

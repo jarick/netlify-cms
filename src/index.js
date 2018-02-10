@@ -4,19 +4,23 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Route } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
-import history from 'Routing/history';
-import configureStore from 'Redux/configureStore';
-import { setStore } from 'ValueObjects/AssetProxy';
-import { ErrorBoundary } from 'UI'
-import registry from 'Lib/registry';
-import App from 'App/App';
-import 'EditorWidgets';
-import 'MarkdownPlugins';
+import I18n from 'redux-i18n';
+import translations from './translations';
+import history from './routing/history';
+import configureStore from './redux/configureStore';
+import { setStore } from './valueObjects/AssetProxy';
+import { ErrorBoundary } from './components/UI';
+import registry from './lib/registry';
+import App from './components/App/App';
+import './components/EditorWidgets';
+import './components/MarkdownPlugins';
 import './index.css';
 
+/* global NETLIFY_CMS_VERSION b:true */
 /**
  * Log the version number.
  */
+// eslint-disable-next-line
 console.log(`Netlify CMS version ${NETLIFY_CMS_VERSION}`);
 
 /**
@@ -38,9 +42,11 @@ setStore(store);
 const Root = () => (
   <ErrorBoundary>
     <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <Route component={App}/>
-      </ConnectedRouter>
+      <I18n translations={translations}>
+        <ConnectedRouter history={history}>
+          <Route component={App} />
+        </ConnectedRouter>
+      </I18n>
     </Provider>
   </ErrorBoundary>
 );

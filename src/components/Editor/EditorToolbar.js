@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import c from 'classnames';
 import { Link } from 'react-router-dom';
-import { status } from 'Constants/publishModes';
-import { Icon, Dropdown, DropdownItem } from 'UI';
-import { stripProtocol } from 'Lib/urlHelper';
+import { status } from '../../constants/publishModes';
+import { Icon, Dropdown, DropdownItem } from '../UI';
+import { stripProtocol } from '../../lib/urlHelper';
+
 
 export default class EditorToolbar extends React.Component {
+
   static propTypes = {
     isPersisting: PropTypes.bool,
     isPublishing: PropTypes.bool,
@@ -15,7 +16,6 @@ export default class EditorToolbar extends React.Component {
     isDeleting: PropTypes.bool,
     onPersist: PropTypes.func.isRequired,
     onPersistAndNew: PropTypes.func.isRequired,
-    enableSave: PropTypes.bool.isRequired,
     showDelete: PropTypes.bool.isRequired,
     onDelete: PropTypes.func.isRequired,
     onDeleteUnpublishedChanges: PropTypes.func.isRequired,
@@ -34,16 +34,21 @@ export default class EditorToolbar extends React.Component {
     onLogoutClick: PropTypes.func.isRequired,
   };
 
+  static contextTypes = {
+    t: PropTypes.func,
+  };
+
   renderSimpleSaveControls = () => {
     const { showDelete, onDelete } = this.props;
+    const { t } = this.context;
+
     return (
       <div>
-        {
-          showDelete
-            ? <button className="nc-entryEditor-toolbar-deleteButton" onClick={onDelete}>
-                Delete entry
-              </button>
-            : null
+        {showDelete
+          ? <button className="nc-entryEditor-toolbar-deleteButton" onClick={onDelete}>
+            {t('entry.delete')}
+          </button>
+          : null
         }
       </div>
     );
@@ -51,9 +56,12 @@ export default class EditorToolbar extends React.Component {
 
   renderSimplePublishControls = () => {
     const { onPersist, onPersistAndNew, isPersisting, hasChanged, isNewEntry } = this.props;
+    const { t } = this.context;
+
     if (!isNewEntry && !hasChanged) {
-      return <div className="nc-entryEditor-toolbar-statusPublished">Published</div>;
+      return <div className="nc-entryEditor-toolbar-statusPublished">{t('entry.published')}</div>;
     }
+
     return (
       <div>
         <Dropdown
@@ -61,10 +69,10 @@ export default class EditorToolbar extends React.Component {
           classNameButton="nc-entryEditor-toolbar-publishButton"
           dropdownTopOverlap="40px"
           dropdownWidth="150px"
-          label={isPersisting ? 'Publishing...' : 'Publish'}
+          label={isPersisting ? t('entry.publishing') : t('entry.publish')}
         >
-          <DropdownItem label="Publish now" icon="arrow" iconDirection="right" onClick={onPersist}/>
-          <DropdownItem label="Publish and create new" icon="add" onClick={onPersistAndNew}/>
+          <DropdownItem label={t('entry.publish-now')} icon="arrow" iconDirection="right" onClick={onPersist} />
+          <DropdownItem label={t('entry.publish-and-create-new')} icon="add" onClick={onPersistAndNew} />
         </Dropdown>
       </div>
     );
@@ -82,32 +90,32 @@ export default class EditorToolbar extends React.Component {
       isNewEntry,
       isModification,
     } = this.props;
+    const { t } = this.context;
 
     const deleteLabel = (hasUnpublishedChanges && isModification && 'Delete unpublished changes')
       || (hasUnpublishedChanges && (isNewEntry || !isModification) && 'Delete unpublished entry')
       || (!hasUnpublishedChanges && !isModification && 'Delete published entry');
 
     return [
-        <button
-          className="nc-entryEditor-toolbar-saveButton"
-          onClick={() => hasChanged && onPersist()}
+      <button
+        className="nc-entryEditor-toolbar-saveButton"
+        onClick={() => hasChanged && onPersist()}
+      >
+        {isPersisting ? 'Saving...' : t('entry.save')}
+      </button>,
+      (isNewEntry || !deleteLabel)
+        ? null
+        : <button
+          className="nc-entryEditor-toolbar-deleteButton"
+          onClick={hasUnpublishedChanges ? onDeleteUnpublishedChanges : onDelete}
         >
-          {isPersisting ? 'Saving...' : 'Save'}
+          {isDeleting ? 'Deleting...' : deleteLabel}
         </button>,
-        isNewEntry || !deleteLabel ? null
-            : <button
-                className="nc-entryEditor-toolbar-deleteButton"
-                onClick={hasUnpublishedChanges ? onDeleteUnpublishedChanges : onDelete}
-              >
-                {isDeleting ? 'Deleting...' : deleteLabel}
-              </button>,
     ];
   };
 
   renderWorkflowPublishControls = () => {
     const {
-      onPersist,
-      onPersistAndNew,
       isUpdatingStatus,
       isPublishing,
       onChangeStatus,
@@ -151,41 +159,33 @@ export default class EditorToolbar extends React.Component {
           dropdownWidth="150px"
           label={isPublishing ? 'Publishing...' : 'Publish'}
         >
-          <DropdownItem label="Publish now" icon="arrow" iconDirection="right" onClick={onPublish}/>
-          <DropdownItem label="Publish and create new" icon="add" onClick={onPublishAndNew}/>
-        </Dropdown>
+          <DropdownItem label="Publish now" icon="arrow" iconDirection="right" onClick={onPublish} />
+          <DropdownItem label="Publish and create new" icon="add" onClick={onPublishAndNew} />
+        </Dropdown>,
       ];
     }
 
     if (!isNewEntry) {
-      return <div className="nc-entryEditor-toolbar-statusPublished">Published</div>;
+      return [<div className="nc-entryEditor-toolbar-statusPublished">Published</div>];
     }
+
+    return [];
   };
-
-
 
   render() {
     const {
-      isPersisting,
-      onPersist,
-      onPersistAndNew,
-      enableSave,
-      showDelete,
-      onDelete,
       user,
       hasChanged,
       displayUrl,
       collection,
       hasWorkflow,
-      hasUnpublishedChanges,
       onLogoutClick,
     } = this.props;
-    const disabled = !enableSave || isPersisting;
     const avatarUrl = user.get('avatar_url');
 
     return (
       <div className="nc-entryEditor-toolbar">
-        <Link to={`/collections/${collection.get('name')}`} className="nc-entryEditor-toolbar-backSection">
+        <Link to={`/collections/${ collection.get('name') }`} className="nc-entryEditor-toolbar-backSection">
           <div className="nc-entryEditor-toolbar-backArrow">←</div>
           <div>
             <div className="nc-entryEditor-toolbar-backCollection">
@@ -209,9 +209,9 @@ export default class EditorToolbar extends React.Component {
         <div className="nc-entryEditor-toolbar-metaSection">
           {
             displayUrl
-              ? <a className="nc-appHeader-siteLink" href={displayUrl} target="_blank">
-                  {stripProtocol(displayUrl)}
-                </a>
+              ? <a className="nc-appHeader-siteLink" href={displayUrl} target="_blank" rel="noopener noreferrer">
+                {stripProtocol(displayUrl)}
+              </a>
               : null
           }
           <Dropdown
@@ -220,18 +220,17 @@ export default class EditorToolbar extends React.Component {
             dropdownPosition="right"
             button={
               <button className="nc-appHeader-avatar">
-                {
-                  avatarUrl
-                    ? <img className="nc-appHeader-avatar-image" src={user.get('avatar_url')}/>
-                    : <Icon className="nc-appHeader-avatar-placeholder" type="user" size="large"/>
+                {avatarUrl
+                  ? <img alt="" className="nc-appHeader-avatar-image" src={user.get('avatar_url')} />
+                  : <Icon className="nc-appHeader-avatar-placeholder" type="user" size="large" />
                 }
               </button>
             }
           >
-            <DropdownItem label="Log Out" onClick={onLogoutClick}/>
+            <DropdownItem label="Log Out" onClick={onLogoutClick} />
           </Dropdown>
         </div>
       </div>
     );
   }
-};
+}

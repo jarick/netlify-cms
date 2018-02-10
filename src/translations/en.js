@@ -1,0 +1,22 @@
+export default {
+  'error-page.title': 'Error loading the CMS configuration',
+  'error-page.body': '<p>The <code>config.yml</code> file could not be loaded or failed to parse properly.</p>'
+    + '<p><strong>Error message:</strong> {error}</p>',
+  'side-bar.search-all': 'Search all',
+  'side-bar.collections': 'Collections',
+  'app.waiting': 'Waiting for backend...',
+  'header.content': 'Content',
+  'header.workflow': 'Workflow',
+  'header.media': 'Media',
+  'header.quick-add': 'Quick add',
+  'header.log-out': 'Log Out',
+  'collection.new': 'New {name}',
+  'collection.view-as': 'View as',
+  'entry.delete': 'Delete entry',
+  'entry.published': 'Published',
+  'entry.publish': 'Publish',
+  'entry.publishing': 'Publishing...',
+  'entry.publish-now': 'Publish now',
+  'entry.publish-and-create-new': 'Publish and create new',
+  'entry.save': 'Save',
+};
