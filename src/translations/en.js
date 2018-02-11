@@ -19,4 +19,8 @@ export default {
   'entry.publish-now': 'Publish now',
   'entry.publish-and-create-new': 'Publish and create new',
   'entry.save': 'Save',
+  'entries.loading': 'Loading Entries',
+  'entries.caching': 'Caching Entries',
+  'entries.waiting': 'This might take several minutes',
+  'entries.no': 'No Entries',
 };

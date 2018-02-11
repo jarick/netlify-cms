@@ -3,8 +3,9 @@ import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import Waypoint from 'react-waypoint';
 import { Map } from 'immutable';
-import { selectFields, selectInferedField } from 'Reducers/collections';
+import { selectFields, selectInferedField } from '../../../reducers/collections';
 import EntryCard from './EntryCard';
+
 
 export default class EntryListing extends React.Component {
   static propTypes = {
@@ -23,13 +24,15 @@ export default class EntryListing extends React.Component {
     this.props.onPaginate(this.props.page + 1);
   };
 
-  inferFields = collection => {
+  inferFields = (collection) => {
     const titleField = selectInferedField(collection, 'title');
     const descriptionField = selectInferedField(collection, 'description');
     const imageField = selectInferedField(collection, 'image');
     const fields = selectFields(collection);
     const inferedFields = [titleField, descriptionField, imageField];
-    const remainingFields = fields && fields.filter(f => inferedFields.indexOf(f.get('name')) === -1);
+    const remainingFields = fields && fields.filter(f => (
+      inferedFields.indexOf(f.get('name')) === -1)
+    );
     return { titleField, descriptionField, imageField, remainingFields };
   };
 
@@ -47,21 +50,28 @@ export default class EntryListing extends React.Component {
       const collection = collections.find(coll => coll.get('name') === collectionName);
       const collectionLabel = collection.get('label');
       const inferedFields = this.inferFields(collection);
-      const entryCardProps = { collection, entry, inferedFields, publicFolder, key: idx, collectionLabel };
-      return <EntryCard {...entryCardProps}/>;
+      const entryCardProps = {
+        collection,
+        entry,
+        inferedFields,
+        publicFolder,
+        key: idx,
+        collectionLabel,
+      };
+
+      return <EntryCard {...entryCardProps} />;
     });
   };
 
   render() {
-    const { collections, entries, publicFolder } = this.props;
+    const { collections } = this.props;
 
     return (
       <div>
         <div className="nc-entryListing-cardsGrid">
-          {
-            Map.isMap(collections)
-              ? this.renderCardsForSingleCollection()
-              : this.renderCardsForMultipleCollections()
+          {Map.isMap(collections)
+            ? this.renderCardsForSingleCollection()
+            : this.renderCardsForMultipleCollections()
           }
           <Waypoint onEnter={this.handleLoadMore} />
         </div>

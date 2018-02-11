@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { localize } from 'redux-i18n';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Loader } from '../../UI';
@@ -12,12 +13,13 @@ const Entries = ({
   page,
   onPaginate,
   isFetching,
-  viewStyle
+  viewStyle,
+  t,
 }) => {
   const loadingMessages = [
-    'Loading Entries',
-    'Caching Entries',
-    'This might take several minutes',
+    t('entries.loading'),
+    t('entries.caching'),
+    t('entries.waiting'),
   ];
 
   if (entries) {
@@ -37,8 +39,8 @@ const Entries = ({
     return <Loader active>{loadingMessages}</Loader>;
   }
 
-  return <div className="nc-collectionPage-noEntries">No Entries</div>;
-}
+  return <div className="nc-collectionPage-noEntries">{t('entries.no')}</div>;
+};
 
 Entries.propTypes = {
   collections: ImmutablePropTypes.map.isRequired,
@@ -47,6 +49,8 @@ Entries.propTypes = {
   page: PropTypes.number,
   isFetching: PropTypes.bool,
   viewStyle: PropTypes.string,
+  onPaginate: PropTypes.func,
+  t: PropTypes.func.isRequired,
 };
 
-export default Entries;
+export default localize()(Entries);

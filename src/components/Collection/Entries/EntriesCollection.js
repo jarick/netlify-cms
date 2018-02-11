@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
-import { loadEntries as actionLoadEntries } from 'Actions/entries';
-import { selectEntries } from 'Reducers';
+import { loadEntries as actionLoadEntries } from '../../../actions/entries';
+import { selectEntries } from '../../../reducers';
 import Entries from './Entries';
+
 
 class EntriesCollection extends React.Component {
   static propTypes = {
@@ -14,6 +15,7 @@ class EntriesCollection extends React.Component {
     entries: ImmutablePropTypes.list,
     isFetching: PropTypes.bool.isRequired,
     viewStyle: PropTypes.string,
+    loadEntries: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -30,10 +32,10 @@ class EntriesCollection extends React.Component {
     }
   }
 
-  handleLoadMore = page => {
+  handleLoadMore = (page) => {
     const { collection, loadEntries } = this.props;
     loadEntries(collection, page);
-  }
+  };
 
   render () {
     const { collection, entries, publicFolder, page, isFetching, viewStyle } = this.props;
@@ -54,7 +56,7 @@ class EntriesCollection extends React.Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  const { name, collection, viewStyle } = ownProps;
+  const { collection, viewStyle } = ownProps;
   const { config } = state;
   const publicFolder = config.get('public_folder');
   const page = state.entries.getIn(['pages', collection.get('name'), 'page']);

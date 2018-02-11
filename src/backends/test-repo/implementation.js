@@ -1,6 +1,6 @@
-import { remove, attempt, isError } from 'lodash';
+import { attempt, isError } from 'lodash';
 import uuid from 'uuid/v4';
-import { fileExtension } from 'Lib/pathHelper'
+import { fileExtension } from '../../lib/pathHelper';
 import AuthenticationPage from './AuthenticationPage';
 
 window.repoFiles = window.repoFiles || {};
@@ -44,19 +44,17 @@ export default class TestRepo {
     const entries = [];
     const folder = collection.get('folder');
     if (folder) {
-      for (const path in window.repoFiles[folder]) {
-        if (fileExtension(path) !== extension) {
-          continue;
+      window.repoFiles[folder].forEach((path) => {
+        if (fileExtension(path) === extension) {
+          const file = { path: `${ folder }/${ path }` };
+          entries.push(
+            {
+              file,
+              data: window.repoFiles[folder][path].content,
+            }
+          );
         }
-
-        const file = { path: `${ folder }/${ path }` };
-        entries.push(
-          {
-            file,
-            data: window.repoFiles[folder][path].content,
-          }
-        );
-      }
+      });
     }
     return Promise.resolve(entries);
   }
@@ -111,9 +109,7 @@ export default class TestRepo {
     const assetIndex = this.assets.findIndex(asset => asset.path === path);
     if (assetIndex > -1) {
       this.assets.splice(assetIndex, 1);
-    }
-
-    else {
+    } else {
       const folder = path.substring(0, path.lastIndexOf('/'));
       const fileName = path.substring(path.lastIndexOf('/') + 1);
       delete window.repoFiles[folder][fileName];
@@ -121,4 +117,5 @@ export default class TestRepo {
 
     return Promise.resolve();
   }
+
 }

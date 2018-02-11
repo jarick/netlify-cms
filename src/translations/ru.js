@@ -6,7 +6,7 @@ export default {
   'side-bar.collections': 'Категории',
   'app.waiting': 'Загрузка данных...',
   'header.content': 'Разделы',
-  'header.workflow': 'Статус',
+  'header.workflow': 'Доска',
   'header.media': 'Медиа',
   'header.quick-add': 'Добавить',
   'header.log-out': 'Выход',
@@ -19,4 +19,8 @@ export default {
   'entry.publish-now': 'Опубликовать',
   'entry.publish-and-create-new': 'Опубликовать и создать новую запись',
   'entry.save': 'Сохранить',
+  'entries.loading': 'Загрузка раздела',
+  'entries.caching': 'Кеширование раздела',
+  'entries.waiting': 'Это может занять пару минут',
+  'entries.no': 'Нет данных',
 };
