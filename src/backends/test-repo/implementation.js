@@ -1,4 +1,4 @@
-import { attempt, isError } from 'lodash';
+import { attempt, isError, keys } from 'lodash';
 import uuid from 'uuid/v4';
 import { fileExtension } from '../../lib/pathHelper';
 import AuthenticationPage from './AuthenticationPage';
@@ -44,7 +44,7 @@ export default class TestRepo {
     const entries = [];
     const folder = collection.get('folder');
     if (folder) {
-      window.repoFiles[folder].forEach((path) => {
+      keys(window.repoFiles[folder]).forEach((path) => {
         if (fileExtension(path) === extension) {
           const file = { path: `${ folder }/${ path }` };
           entries.push(
