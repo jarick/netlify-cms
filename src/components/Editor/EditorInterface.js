@@ -1,14 +1,15 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import SplitPane from 'react-split-pane';
 import classnames from 'classnames';
 import { ScrollSync, ScrollSyncPane } from './EditorScrollSync';
-import { Icon } from 'UI'
+import { Icon } from '../UI';
 import EditorControlPane from './EditorControlPane/EditorControlPane';
 import EditorPreviewPane from './EditorPreviewPane/EditorPreviewPane';
 import EditorToolbar from './EditorToolbar';
 import EditorToggle from './EditorToggle';
+
 
 const PREVIEW_VISIBLE = 'cms.preview-visible';
 const SCROLL_SYNC_ENABLED = 'cms.scroll-sync-enabled';
@@ -88,7 +89,14 @@ class EditorInterface extends Component {
     const collectionPreviewEnabled = collection.getIn(['editor', 'preview'], true);
 
     const editor = (
-      <div className={classnames('nc-entryEditor-controlPane', { 'nc-entryEditor-blocker': showEventBlocker })}>
+      <div 
+        className={
+          classnames(
+            'nc-entryEditor-controlPane',
+            { 'nc-entryEditor-blocker': showEventBlocker },
+          )
+        }
+      >
         <EditorControlPane
           collection={collection}
           entry={entry}
@@ -117,7 +125,14 @@ class EditorInterface extends Component {
             onDragFinished={this.handleSplitPaneDragFinished}
           >
             <ScrollSyncPane>{editor}</ScrollSyncPane>
-            <div className={classnames('nc-entryEditor-previewPane', { 'nc-entryEditor-blocker': showEventBlocker })}>
+            <div
+              className={
+                classnames(
+                  'nc-entryEditor-previewPane',
+                  { 'nc-entryEditor-blocker': showEventBlocker },
+                )
+              }
+            >
               <EditorPreviewPane
                 collection={collection}
                 entry={entry}

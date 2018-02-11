@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { EDITORIAL_WORKFLOW } from 'Constants/publishModes';
-import { selectUnpublishedEntry, selectEntry } from 'Reducers';
-import { selectAllowDeletion } from 'Reducers/collections';
-import { loadUnpublishedEntry, persistUnpublishedEntry } from 'Actions/editorialWorkflow';
+import { EDITORIAL_WORKFLOW } from '../../constants/publishModes';
+import { selectUnpublishedEntry } from '../../reducers';
+import { selectAllowDeletion } from '../../reducers/collections';
+import { loadUnpublishedEntry, persistUnpublishedEntry } from '../../actions/editorialWorkflow';
 
-function mapStateToProps(state, ownProps) {
+
+const mapStateToProps = (state, ownProps) => {
   const { collections } = state;
   const isEditorialWorkflow = (state.config.get('publish_mode') === EDITORIAL_WORKFLOW);
   const collection = collections.get(ownProps.match.params.name);
@@ -13,30 +14,35 @@ function mapStateToProps(state, ownProps) {
     isEditorialWorkflow,
     showDelete: !ownProps.newEntry && selectAllowDeletion(collection),
   };
+
   if (isEditorialWorkflow) {
     const slug = ownProps.match.params.slug;
     const unpublishedEntry = selectUnpublishedEntry(state, collection.get('name'), slug);
+
     if (unpublishedEntry) {
       returnObj.unpublishedEntry = true;
       returnObj.entry = unpublishedEntry;
     }
   }
-  return returnObj;
-}
 
-function mergeProps(stateProps, dispatchProps, ownProps) {
+  return returnObj;
+};
+
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { isEditorialWorkflow, unpublishedEntry } = stateProps;
   const { dispatch } = dispatchProps;
   const returnObj = {};
 
   if (isEditorialWorkflow) {
     // Overwrite loadEntry to loadUnpublishedEntry
-    returnObj.loadEntry = (collection, slug) =>
-      dispatch(loadUnpublishedEntry(collection, slug));
+    returnObj.loadEntry = (collection, slug) => (
+      dispatch(loadUnpublishedEntry(collection, slug))
+    );
 
     // Overwrite persistEntry to persistUnpublishedEntry
-    returnObj.persistEntry = collection =>
-      dispatch(persistUnpublishedEntry(collection, unpublishedEntry));
+    returnObj.persistEntry = collection => (
+      dispatch(persistUnpublishedEntry(collection, unpublishedEntry))
+    );
   }
 
   return {
@@ -44,15 +50,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...stateProps,
     ...returnObj,
   };
-}
-
-export default function withWorkflow(Editor) {
-  return connect(mapStateToProps, null, mergeProps)(
-    class extends React.Component {
-      render() {
-        return <Editor {...this.props} />;
-      }
-    }
-  );
 };
 
+export default Editor => (
+  connect(mapStateToProps, null, mergeProps)(
+    props => <Editor {...props} />
+  )
+);
