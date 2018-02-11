@@ -57,7 +57,7 @@ export default class API extends GithubAPI {
 
       return response.text();
     })
-    .catch(error => {
+    .catch((error) => {
       throw new APIError(error.message, responseStatus, 'Git Gateway');
     });
   }

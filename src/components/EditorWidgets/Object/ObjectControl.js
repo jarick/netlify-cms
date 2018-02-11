@@ -90,7 +90,7 @@ export default class ObjectControl extends Component {
 
   handleCollapseToggle = () => {
     this.setState({ collapsed: !this.state.collapsed });
-  }
+  };
 
   render() {
     const { field, forID, classNameWrapper, forList } = this.props;

@@ -24,7 +24,7 @@ export default class DateTimeControl extends React.Component {
       value,
       classNameWrapper,
       setActiveStyle,
-      setInactiveStyle
+      setInactiveStyle,
     } = this.props;
 
     return (

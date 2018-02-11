@@ -46,7 +46,7 @@ export default class Widget extends Component {
       || this.props.hasActiveStyle !== nextProps.hasActiveStyle;
   }
 
-  processInnerControlRef = ref => {
+  processInnerControlRef = (ref) => {
     if (!ref) return;
 
     /**

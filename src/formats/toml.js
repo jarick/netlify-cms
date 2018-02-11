@@ -22,5 +22,5 @@ export default {
 
   toFile(data, sortedKeys = []) {
     return tomlify.toToml(data, { replace: outputReplacer, sort: sortKeys(sortedKeys) });
-  }
-}
+  },
+};

@@ -98,7 +98,7 @@ class RelationControl extends Component {
       queryHits,
       classNameWrapper,
       setActiveStyle,
-      setInactiveStyle
+      setInactiveStyle,
     } = this.props;
 
     const inputProps = {

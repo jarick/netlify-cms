@@ -223,9 +223,7 @@ export function loadEntry(collection, slug) {
     const backend = currentBackend(state.config);
     dispatch(entryLoading(collection, slug));
     return backend.getEntry(collection, slug)
-      .then(loadedEntry => {
-        return dispatch(entryLoaded(collection, loadedEntry))
-      })
+      .then(loadedEntry => dispatch(entryLoaded(collection, loadedEntry)))
       .catch((error) => {
         console.error(error);
         dispatch(notifSend({
@@ -303,13 +301,13 @@ export function persistEntry(collection) {
     dispatch(entryPersisting(collection, serializedEntry));
     return backend
       .persistEntry(state.config, collection, serializedEntryDraft, assetProxies.toJS())
-      .then(slug => {
+      .then((slug) => {
         dispatch(notifSend({
           message: 'Entry saved',
           kind: 'success',
           dismissAfter: 4000,
         }));
-        dispatch(entryPersisted(collection, serializedEntry, slug))
+        dispatch(entryPersisted(collection, serializedEntry, slug));
       })
       .catch((error) => {
         console.error(error);
@@ -330,9 +328,7 @@ export function deleteEntry(collection, slug) {
 
     dispatch(entryDeleting(collection, slug));
     return backend.deleteEntry(state.config, collection, slug)
-    .then(() => {
-      return dispatch(entryDeleted(collection, slug));
-    })
+    .then(() => dispatch(entryDeleted(collection, slug)))
     .catch((error) => {
       dispatch(notifSend({
         message: `Failed to delete entry: ${ error }`,

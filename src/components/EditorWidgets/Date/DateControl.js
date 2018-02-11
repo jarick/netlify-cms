@@ -30,7 +30,7 @@ export default class DateControl extends React.Component {
     }
   }
 
-  handleChange = datetime => {
+  handleChange = (datetime) => {
     const { onChange } = this.props;
     if (!this.format || datetime === '') {
       onChange(datetime);

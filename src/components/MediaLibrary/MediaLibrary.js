@@ -21,8 +21,8 @@ import { Icon } from 'UI';
  * Extensions used to determine which files to show when the media library is
  * accessed from an image insertion field.
  */
-const IMAGE_EXTENSIONS_VIEWABLE = [ 'jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp', 'tiff', 'svg' ];
-const IMAGE_EXTENSIONS = [ ...IMAGE_EXTENSIONS_VIEWABLE ];
+const IMAGE_EXTENSIONS_VIEWABLE = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp', 'tiff', 'svg'];
+const IMAGE_EXTENSIONS = [...IMAGE_EXTENSIONS_VIEWABLE];
 
 class MediaLibrary extends React.Component {
 
@@ -58,17 +58,15 @@ class MediaLibrary extends React.Component {
   /**
    * Filter an array of file data to include only images.
    */
-  filterImages = (files = []) => {
-    return files.filter(file => {
-      const ext = fileExtension(file.name).toLowerCase();
-      return IMAGE_EXTENSIONS.includes(ext);
-    });
-  };
+  filterImages = (files = []) => files.filter((file) => {
+    const ext = fileExtension(file.name).toLowerCase();
+    return IMAGE_EXTENSIONS.includes(ext);
+  });
 
   /**
    * Transform file data for table display.
    */
-  toTableData = files => {
+  toTableData = (files) => {
     const tableData = files && files.map(({ key, name, size, queryOrder, url, urlIsPublicPath }) => {
       const ext = fileExtension(name).toLowerCase();
       return {
@@ -101,7 +99,7 @@ class MediaLibrary extends React.Component {
   /**
    * Toggle asset selection on click.
    */
-  handleAssetClick = asset => {
+  handleAssetClick = (asset) => {
     const selectedFile = this.state.selectedFile.key === asset.key ? {} : asset;
     this.setState({ selectedFile });
   };
@@ -109,7 +107,7 @@ class MediaLibrary extends React.Component {
   /**
    * Upload a file.
    */
-  handlePersist = async event => {
+  handlePersist = async (event) => {
     /**
      * Stop the browser from automatically handling the file input click, and
      * get the file for upload, and retain the synthetic event for access after
@@ -174,19 +172,19 @@ class MediaLibrary extends React.Component {
   handleSearchKeyDown = async (event) => {
     const { dynamicSearch, loadMedia, privateUpload } = this.props;
     if (event.key === 'Enter' && dynamicSearch) {
-      await loadMedia({ query: this.state.query, privateUpload })
+      await loadMedia({ query: this.state.query, privateUpload });
       this.scrollToTop();
     }
   };
 
   scrollToTop = () => {
     this.scrollContainerRef.scrollTop = 0;
-  }
+  };
 
   /**
    * Updates query state as the user types in the search field.
    */
-  handleSearchChange = event => {
+  handleSearchChange = (event) => {
     this.setState({ query: event.target.value });
   };
 
@@ -251,7 +249,7 @@ class MediaLibrary extends React.Component {
           <div>
             <div className="nc-mediaLibrary-header">
               <button className="nc-mediaLibrary-close" onClick={this.handleClose}>
-                <Icon type="close"/>
+                <Icon type="close" />
               </button>
               <h1 className="nc-mediaLibrary-title">
                 {privateUpload ? 'Private ' : null}
@@ -259,7 +257,7 @@ class MediaLibrary extends React.Component {
               </h1>
             </div>
             <div className="nc-mediaLibrary-search">
-              <Icon type="search" size="small"/>
+              <Icon type="search" size="small" />
               <input
                 className=""
                 value={query}
@@ -272,7 +270,7 @@ class MediaLibrary extends React.Component {
           </div>
           <div className="nc-mediaLibrary-actionContainer">
             <FileUploadButton
-              className={`nc-mediaLibrary-uploadButton ${shouldShowButtonLoader ? 'nc-mediaLibrary-uploadButton-disabled' : ''}`}
+              className={`nc-mediaLibrary-uploadButton ${ shouldShowButtonLoader ? 'nc-mediaLibrary-uploadButton-disabled' : '' }`}
               label={isPersisting ? 'Uploading...' : 'Upload new'}
               imagesOnly={forImage}
               onChange={this.handlePersist}
@@ -287,11 +285,11 @@ class MediaLibrary extends React.Component {
                 {isDeleting ? 'Deleting...' : 'Delete selected'}
               </button>
               { !canInsert ? null :
-                <button
-                  onClick={this.handleInsert}
-                  disabled={!hasSelection}
-                  className="nc-mediaLibrary-insertButton"
-                >
+              <button
+                onClick={this.handleInsert}
+                disabled={!hasSelection}
+                className="nc-mediaLibrary-insertButton"
+              >
                   Choose selected
                 </button>
               }
@@ -316,8 +314,8 @@ class MediaLibrary extends React.Component {
                   <div className="nc-mediaLibrary-cardImage-container">
                     {
                       file.isViewableImage
-                        ? <img src={file.url} className="nc-mediaLibrary-cardImage"/>
-                        : <div className="nc-mediaLibrary-cardImage"/>
+                        ? <img src={file.url} className="nc-mediaLibrary-cardImage" />
+                        : <div className="nc-mediaLibrary-cardImage" />
                     }
                   </div>
                   <p className="nc-mediaLibrary-cardText">{file.name}</p>
@@ -326,7 +324,7 @@ class MediaLibrary extends React.Component {
             }
             {
               hasNextPage
-                ? <Waypoint onEnter={() => this.handleLoadMore()}/>
+                ? <Waypoint onEnter={() => this.handleLoadMore()} />
                 : null
             }
           </div>
@@ -337,7 +335,7 @@ class MediaLibrary extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { config, mediaLibrary } = state;
   const configProps = {
     publicFolder: config.get('public_folder'),

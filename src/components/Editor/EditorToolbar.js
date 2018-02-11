@@ -214,12 +214,14 @@ export default class EditorToolbar extends React.Component {
         >
           <div className="nc-entryEditor-toolbar-backArrow">←</div>
           <div>
+            {/* eslint-disable react/no-danger */}
             <div 
               className="nc-entryEditor-toolbar-backCollection"
               dangerouslySetInnerHTML={{
                 __html: t('entry.header', { label: collection.get('label') }),
               }}
             />
+            {/* eslint-enable */}
             {hasChanged
               ? <div className="nc-entryEditor-toolbar-backStatus-hasChanged">
                 {t('entry.unsaved-changes')}

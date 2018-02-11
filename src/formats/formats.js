@@ -3,7 +3,7 @@ import tomlFormatter from './toml';
 import jsonFormatter from './json';
 import { FrontmatterInfer, frontmatterJSON, frontmatterTOML, frontmatterYAML } from './frontmatter';
 
-export const frontmatterFormats = ['yaml-frontmatter','toml-frontmatter','json-frontmatter']
+export const frontmatterFormats = ['yaml-frontmatter', 'toml-frontmatter', 'json-frontmatter'];
 
 export const supportedFormats = [
   'yml',
@@ -17,11 +17,11 @@ export const supportedFormats = [
 ];
 
 export const formatToExtension = format => ({
-  yml: 'yml',
-  yaml: 'yml',
-  toml: 'toml',
-  json: 'json',
-  frontmatter: 'md',
+  "yml": 'yml',
+  "yaml": 'yml',
+  "toml": 'toml',
+  "json": 'json',
+  "frontmatter": 'md',
   'json-frontmatter': 'md',
   'toml-frontmatter': 'md',
   'yaml-frontmatter': 'md',
@@ -41,11 +41,11 @@ export function formatByExtension(extension) {
 
 function formatByName(name, customDelimiter) {
   return {
-    yml: yamlFormatter,
-    yaml: yamlFormatter,
-    toml: tomlFormatter,
-    json: jsonFormatter,
-    frontmatter: FrontmatterInfer,
+    "yml": yamlFormatter,
+    "yaml": yamlFormatter,
+    "toml": tomlFormatter,
+    "json": jsonFormatter,
+    "frontmatter": FrontmatterInfer,
     'json-frontmatter': frontmatterJSON(customDelimiter),
     'toml-frontmatter': frontmatterTOML(customDelimiter),
     'yaml-frontmatter': frontmatterYAML(customDelimiter),

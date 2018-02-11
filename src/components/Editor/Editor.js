@@ -20,7 +20,7 @@ import {
 import {
   updateUnpublishedEntryStatus,
   publishUnpublishedEntry,
-  deleteUnpublishedEntry
+  deleteUnpublishedEntry,
 } from 'Actions/editorialWorkflow';
 import { deserializeValues } from 'Lib/serializeEntryValues';
 import { addAsset } from 'Actions/media';
@@ -33,10 +33,10 @@ import { EDITORIAL_WORKFLOW } from 'Constants/publishModes';
 import EditorInterface from './EditorInterface';
 import withWorkflow from './withWorkflow';
 
-const navigateCollection = (collectionPath) => history.push(`/collections/${collectionPath}`);
+const navigateCollection = collectionPath => history.push(`/collections/${ collectionPath }`);
 const navigateToCollection = collectionName => navigateCollection(collectionName);
-const navigateToNewEntry = collectionName => navigateCollection(`${collectionName}/new`);
-const navigateToEntry = (collectionName, slug) => navigateCollection(`${collectionName}/entries/${slug}`);
+const navigateToNewEntry = collectionName => navigateCollection(`${ collectionName }/new`);
+const navigateToEntry = (collectionName, slug) => navigateCollection(`${ collectionName }/entries/${ slug }`);
 
 class Editor extends React.Component {
   static propTypes = {
@@ -109,7 +109,7 @@ class Editor extends React.Component {
        */
       const isPersisting = this.props.entryDraft.getIn(['entry', 'isPersisting']);
       const newRecord = this.props.entryDraft.getIn(['entry', 'newRecord']);
-      const newEntryPath = `/collections/${collection.get('name')}/new`;
+      const newEntryPath = `/collections/${ collection.get('name') }/new`;
       if (isPersisting && newRecord && this.props.location.pathname === newEntryPath && action === 'PUSH') {
         return;
       }
@@ -117,7 +117,6 @@ class Editor extends React.Component {
       if (this.props.hasChanged) {
         return leaveMessage;
       }
-
     };
     const unblock = history.block(navigationBlocker);
 
@@ -126,8 +125,8 @@ class Editor extends React.Component {
      * a new post. The confirmation above will run first.
      */
     this.unlisten = history.listen((location, action) => {
-      const newEntryPath = `/collections/${collection.get('name')}/new`;
-      const entriesPath = `/collections/${collection.get('name')}/entries/`;
+      const newEntryPath = `/collections/${ collection.get('name') }/new`;
+      const entriesPath = `/collections/${ collection.get('name') }/entries/`;
       const { pathname } = location;
       if (pathname.startsWith(newEntryPath) || pathname.startsWith(entriesPath) && action === 'PUSH') {
         return;
@@ -157,7 +156,6 @@ class Editor extends React.Component {
     const { entry, newEntry, fields, collection } = nextProps;
 
     if (entry && !entry.get('isFetching') && !entry.get('error')) {
-
       /**
        * Deserialize entry values for widgets with registered serializers before
        * creating the entry draft.
@@ -184,19 +182,18 @@ class Editor extends React.Component {
     const { updateUnpublishedEntryStatus, collection, slug, currentStatus } = this.props;
     const newStatus = status.get(newStatusName);
     this.props.updateUnpublishedEntryStatus(collection.get('name'), slug, currentStatus, newStatus);
-  }
+  };
 
   handlePersistEntry = async (opts = {}) => {
     const { createNew = false } = opts;
     const { persistEntry, collection, entryDraft, newEntry, currentStatus, hasWorkflow, loadEntry, slug, createEmptyDraft } = this.props;
 
-    await persistEntry(collection)
+    await persistEntry(collection);
 
     if (createNew) {
       navigateToNewEntry(collection.get('name'));
       createEmptyDraft(collection);
-    }
-    else if (slug && hasWorkflow && !currentStatus) {
+    } else if (slug && hasWorkflow && !currentStatus) {
       loadEntry(collection, slug);
     }
   };
@@ -221,8 +218,7 @@ class Editor extends React.Component {
 
     if (createNew) {
       navigateToNewEntry(collection.get('name'));
-    }
-    else {
+    } else {
       loadEntry(collection, slug);
     }
   };
@@ -344,7 +340,7 @@ function mapStateToProps(state, ownProps) {
   const displayUrl = config.get('display_url');
   const hasWorkflow = config.get('publish_mode') === EDITORIAL_WORKFLOW;
   const isModification = entryDraft.getIn(['entry', 'isModification']);
-  const collectionEntriesLoaded = !!entries.getIn(['entities', collectionName])
+  const collectionEntriesLoaded = !!entries.getIn(['entities', collectionName]);
   const unpublishedEntry = selectUnpublishedEntry(state, collectionName, slug);
   const currentStatus = unpublishedEntry && unpublishedEntry.getIn(['metaData', 'status']);
   return {

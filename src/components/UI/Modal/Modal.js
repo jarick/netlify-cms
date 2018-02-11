@@ -8,7 +8,7 @@ export class Modal extends React.Component {
     isOpen: PropTypes.bool.isRequired,
     className: PropTypes.string,
     onClose: PropTypes.func.isRequired,
-  }
+  };
 
   componentDidMount() {
     ReactModal.setAppElement('#nc-root');
@@ -22,7 +22,7 @@ export class Modal extends React.Component {
         onRequestClose={onClose}
         closeTimeoutMS={300}
         className={{
-          base: `nc-modal-body ${className || ''}`,
+          base: `nc-modal-body ${ className || '' }`,
           afterOpen: 'nc-modal-body-opening',
           beforeClose: '',
         }}

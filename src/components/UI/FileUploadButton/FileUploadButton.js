@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const FileUploadButton = ({ label, imagesOnly, onChange, disabled, className }) => (
-  <label className={`nc-fileUploadButton ${className || ''}`}>
+  <label className={`nc-fileUploadButton ${ className || '' }`}>
     <span>{label}</span>
     <input
       type="file"

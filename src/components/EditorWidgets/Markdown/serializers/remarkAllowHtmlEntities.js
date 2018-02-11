@@ -6,17 +6,17 @@ export default function remarkAllowHtmlEntities() {
    * HTML entity decoding.
    */
   function text(eat, value, silent) {
-    var self = this;
-    var methods;
-    var tokenizers;
-    var index;
-    var length;
-    var subvalue;
-    var position;
-    var tokenizer;
-    var name;
-    var min;
-    var now;
+    const self = this;
+    let methods;
+    let tokenizers;
+    let index;
+    let length;
+    let subvalue;
+    let position;
+    let tokenizer;
+    let name;
+    let min;
+    let now;
 
     /* istanbul ignore if - never used (yet) */
     if (silent) {
@@ -39,7 +39,7 @@ export default function remarkAllowHtmlEntities() {
       tokenizer = tokenizers[name].locator;
 
       if (!tokenizer) {
-        eat.file.fail('Missing locator: `' + name + '`');
+        eat.file.fail(`Missing locator: \`${ name }\``);
       }
 
       position = tokenizer.call(self, value, 1);
@@ -56,4 +56,4 @@ export default function remarkAllowHtmlEntities() {
       value: subvalue,
     });
   }
-};
+}

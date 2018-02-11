@@ -328,7 +328,7 @@ function condenseNodesReducer(acc, node, idx, nodes) {
     const mdastChildren = denestedChildren.reduce(condenseNodesReducer, { nodes: [], parentType }).nodes;
     const mdastNode = u(parentType, mdastChildren);
 
-    return { ...acc, nodes: [ ...acc.nodes, mdastNode ], nextIndex: newNextIndex };
+    return { ...acc, nodes: [...acc.nodes, mdastNode], nextIndex: newNextIndex };
   }
 
   /**
@@ -343,7 +343,7 @@ function condenseNodesReducer(acc, node, idx, nodes) {
    * Recursively wrap the base text node in the individual mark nodes, if
    * any exist.
    */
-  return { ...acc, nodes: [ ...acc.nodes, baseNode ] };
+  return { ...acc, nodes: [...acc.nodes, baseNode] };
 }
 
 
@@ -353,7 +353,7 @@ function condenseNodesReducer(acc, node, idx, nodes) {
  */
 function getMarkLength(markType, nodes) {
   let length = 0;
-  while(nodes[length] && nodes[length].marks.includes(markType)) { ++length; }
+  while (nodes[length] && nodes[length].marks.includes(markType)) { ++length; }
   return { markType, length };
 }
 
@@ -403,7 +403,7 @@ function convertNode(node, children, shortcodePlugins) {
       const plugin = shortcodePlugins.get(data.shortcode);
       const text = plugin.toBlock(data.shortcodeData);
       const textNode = u('html', text);
-      return u('paragraph', { data }, [ textNode ]);
+      return u('paragraph', { data }, [textNode]);
     }
 
     /**
@@ -435,9 +435,7 @@ function convertNode(node, children, shortcodePlugins) {
      * value and the "lang" data property to the new MDAST node.
      */
     case 'code': {
-      const value = flatMap(node.nodes, child => {
-        return flatMap(child.leaves, 'text');
-      }).join('');
+      const value = flatMap(node.nodes, child => flatMap(child.leaves, 'text')).join('');
       const { lang, ...data } = get(node, 'data', {});
       return u(typeMap[node.type], { lang, data }, value);
     }

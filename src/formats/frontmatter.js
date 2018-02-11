@@ -9,14 +9,14 @@ const parsers = {
     stringify: (metadata, { sortedKeys }) => tomlFormatter.toFile(metadata, sortedKeys),
   },
   json: {
-    parse: input => {
+    parse: (input) => {
       let JSONinput = input.trim();
       // Fix JSON if leading and trailing brackets were trimmed.
       if (JSONinput.substr(0, 1) !== '{') {
-        JSONinput = '{' + JSONinput;
+        JSONinput = `{${ JSONinput }`;
       }
       if (JSONinput.substr(-1) !== '}') {
-        JSONinput = JSONinput + '}';
+        JSONinput += '}';
       }
       return jsonFormatter.fromFile(JSONinput);
     },
@@ -33,7 +33,7 @@ const parsers = {
     parse: input => yamlFormatter.fromFile(input),
     stringify: (metadata, { sortedKeys }) => yamlFormatter.toFile(metadata, sortedKeys),
   },
-}
+};
 
 function inferFrontmatterFormat(str) {
   const firstLine = str.substr(0, str.indexOf('\n')).trim();

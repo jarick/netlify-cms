@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import c from 'classnames';
-import { markdownToRemark, remarkToMarkdown } from 'EditorWidgets/Markdown/serializers'
+import { markdownToRemark, remarkToMarkdown } from 'EditorWidgets/Markdown/serializers';
 import RawEditor from './RawEditor';
 import VisualEditor from './VisualEditor';
 

@@ -2,30 +2,30 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import moment from 'moment';
-import { capitalize } from 'lodash'
+import { capitalize } from 'lodash';
 import c from 'classnames';
 import { status } from 'Constants/publishModes';
-import { DragSource, DropTarget, HTML5DragDrop } from 'UI'
+import { DragSource, DropTarget, HTML5DragDrop } from 'UI';
 import WorkflowCard from './WorkflowCard';
 
 // This is a namespace so that we can only drop these elements on a DropTarget with the same
 const DNDNamespace = 'cms-workflow';
 
-const getColumnClassName = columnName => {
+const getColumnClassName = (columnName) => {
   switch (columnName) {
     case 'draft': return 'nc-workflow-listDraft';
     case 'pending_review': return 'nc-workflow-listReview';
     case 'pending_publish': return 'nc-workflow-listReady';
   }
-}
+};
 
-const getColumnHeaderText = columnName => {
+const getColumnHeaderText = (columnName) => {
   switch (columnName) {
     case 'draft': return 'Drafts';
     case 'pending_review': return 'In Review';
     case 'pending_publish': return 'Ready';
   }
-}
+};
 
 class WorkflowList extends React.Component {
   static propTypes = {
@@ -73,9 +73,11 @@ Please drag the card to the "Ready" column to enable publishing.`
           onDrop={this.handleChangeStatus.bind(this, currColumn)}
         >
           {(connect, { isHovered }) => connect(
-            <div className={c('nc-workflow-list', getColumnClassName(currColumn), {
-              'nc-workflow-list-hovered': isHovered,
-            })}>
+            <div
+              className={c('nc-workflow-list', getColumnClassName(currColumn), {
+                'nc-workflow-list-hovered': isHovered,
+              })}
+            >
               <h2 className="nc-workflow-header">
                 {getColumnHeaderText(currColumn)}
               </h2>
@@ -109,22 +111,22 @@ Please drag the card to the "Ready" column to enable publishing.`
                 collection={collection}
                 ownStatus={ownStatus}
               >
-              {connect => connect(
-                <div>
-                  <WorkflowCard
-                    collectionName={collection}
-                    title={entry.getIn(['data', 'title'])}
-                    author={author}
-                    authorLastChange={entry.getIn(['metaData', 'user'])}
-                    body={entry.getIn(['data', 'body'])}
-                    isModification={isModification}
-                    editLink={editLink}
-                    timestamp={timestamp}
-                    onDelete={this.requestDelete.bind(this, collection, slug, ownStatus)}
-                    canPublish={canPublish}
-                    onPublish={this.requestPublish.bind(this, collection, slug, ownStatus)}
-                  />
-                </div>
+                {connect => connect(
+                  <div>
+                    <WorkflowCard
+                      collectionName={collection}
+                      title={entry.getIn(['data', 'title'])}
+                      author={author}
+                      authorLastChange={entry.getIn(['metaData', 'user'])}
+                      body={entry.getIn(['data', 'body'])}
+                      isModification={isModification}
+                      editLink={editLink}
+                      timestamp={timestamp}
+                      onDelete={this.requestDelete.bind(this, collection, slug, ownStatus)}
+                      canPublish={canPublish}
+                      onPublish={this.requestPublish.bind(this, collection, slug, ownStatus)}
+                    />
+                  </div>
               )}
               </DragSource>
             );

@@ -24,9 +24,8 @@ export const getIntegrationProvider = (function() {
   return (interationsConfig, getToken, provider) => {
     if (integrations) {
       return integrations.get(provider);
-    } else {
-      integrations = resolveIntegrations(interationsConfig, getToken);
-      return integrations.get(provider);
-    }
+    } 
+    integrations = resolveIntegrations(interationsConfig, getToken);
+    return integrations.get(provider);
   };
 }());

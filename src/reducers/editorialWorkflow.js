@@ -83,7 +83,7 @@ const unpublishedEntries = (state = null, action) => {
 
     case UNPUBLISHED_ENTRY_PUBLISH_SUCCESS:
     case UNPUBLISHED_ENTRY_PUBLISH_FAILURE:
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         map.deleteIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`]);
       });
 

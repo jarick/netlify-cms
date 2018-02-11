@@ -27,21 +27,21 @@ const testPlugins = fromJS([
   {
     id: "youtube",
     label: "Youtube",
-    fields: [{name: 'id', label: 'Youtube Video ID'}],
+    fields: [{ name: 'id', label: 'Youtube Video ID' }],
     pattern: /^{{<\s?youtube (\S+)\s?>}}/,
-    fromBlock: function(match) {
+    fromBlock(match) {
       return {
-        id: match[1]
+        id: match[1],
       };
     },
-    toBlock: function(obj) {
-      return '{{< youtube ' + obj.id + ' >}}';
+    toBlock(obj) {
+      return `{{< youtube ${ obj.id } >}}`;
     },
-    toPreview: function(obj) {
+    toPreview(obj) {
       return (
-        '<img src="http://img.youtube.com/vi/' + obj.id + '/maxresdefault.jpg" alt="Youtube Video"/>'
+        `<img src="http://img.youtube.com/vi/${ obj.id }/maxresdefault.jpg" alt="Youtube Video"/>`
       );
-    }
+    },
   },
 ]);
 

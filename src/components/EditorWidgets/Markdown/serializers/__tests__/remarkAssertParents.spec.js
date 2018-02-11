@@ -7,23 +7,23 @@ describe('remarkAssertParents', () => {
   it('should unnest invalidly nested blocks', () => {
     const input = u('root', [
       u('paragraph', [
-        u('paragraph', [ u('text', 'Paragraph text.') ]),
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('paragraph', [u('text', 'Paragraph text.')]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
         u('code', 'someCode()'),
-        u('blockquote', [ u('text', 'Quote text.') ]),
-        u('list', [ u('listItem', [ u('text', 'A list item.') ]) ]),
-        u('table', [ u('tableRow', [ u('tableCell', [ u('text', 'Text in a table cell.') ]) ]) ]),
+        u('blockquote', [u('text', 'Quote text.')]),
+        u('list', [u('listItem', [u('text', 'A list item.')])]),
+        u('table', [u('tableRow', [u('tableCell', [u('text', 'Text in a table cell.')])])]),
         u('thematicBreak'),
       ]),
     ]);
 
     const output = u('root', [
-      u('paragraph', [ u('text', 'Paragraph text.') ]),
-      u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+      u('paragraph', [u('text', 'Paragraph text.')]),
+      u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       u('code', 'someCode()'),
-      u('blockquote', [ u('text', 'Quote text.') ]),
-      u('list', [ u('listItem', [ u('text', 'A list item.') ]) ]),
-      u('table', [ u('tableRow', [ u('tableCell', [ u('text', 'Text in a table cell.') ]) ]) ]),
+      u('blockquote', [u('text', 'Quote text.')]),
+      u('list', [u('listItem', [u('text', 'A list item.')])]),
+      u('table', [u('tableRow', [u('tableCell', [u('text', 'Text in a table cell.')])])]),
       u('thematicBreak'),
     ]);
 
@@ -35,8 +35,8 @@ describe('remarkAssertParents', () => {
       u('paragraph', [
         u('paragraph', [
           u('paragraph', [
-            u('paragraph', [ u('text', 'Paragraph text.') ]),
-            u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+            u('paragraph', [u('text', 'Paragraph text.')]),
+            u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
             u('code', 'someCode()'),
             u('blockquote', [
               u('paragraph', [
@@ -47,8 +47,8 @@ describe('remarkAssertParents', () => {
                 ]),
               ]),
             ]),
-            u('list', [ u('listItem', [ u('text', 'A list item.') ]) ]),
-            u('table', [ u('tableRow', [ u('tableCell', [ u('text', 'Text in a table cell.') ]) ]) ]),
+            u('list', [u('listItem', [u('text', 'A list item.')])]),
+            u('table', [u('tableRow', [u('tableCell', [u('text', 'Text in a table cell.')])])]),
             u('thematicBreak'),
           ]),
         ]),
@@ -56,16 +56,16 @@ describe('remarkAssertParents', () => {
     ]);
 
     const output = u('root', [
-      u('paragraph', [ u('text', 'Paragraph text.') ]),
-      u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+      u('paragraph', [u('text', 'Paragraph text.')]),
+      u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       u('code', 'someCode()'),
       u('blockquote', [
         u('heading', [
           u('text', 'Quote text.'),
         ]),
       ]),
-      u('list', [ u('listItem', [ u('text', 'A list item.') ]) ]),
-      u('table', [ u('tableRow', [ u('tableCell', [ u('text', 'Text in a table cell.') ]) ]) ]),
+      u('list', [u('listItem', [u('text', 'A list item.')])]),
+      u('table', [u('tableRow', [u('tableCell', [u('text', 'Text in a table cell.')])])]),
       u('thematicBreak'),
     ]);
 
@@ -75,12 +75,12 @@ describe('remarkAssertParents', () => {
   it('should remove blocks that are emptied as a result of denesting', () => {
     const input = u('root', [
       u('paragraph', [
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       ]),
     ]);
 
     const output = u('root', [
-      u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+      u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
     ]);
 
     expect(transform(input)).toEqual(output);
@@ -89,12 +89,12 @@ describe('remarkAssertParents', () => {
   it('should remove blocks that are emptied as a result of denesting', () => {
     const input = u('root', [
       u('paragraph', [
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       ]),
     ]);
 
     const output = u('root', [
-      u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+      u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
     ]);
 
     expect(transform(input)).toEqual(output);
@@ -103,12 +103,12 @@ describe('remarkAssertParents', () => {
   it('should handle assymetrical splits', () => {
     const input = u('root', [
       u('paragraph', [
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       ]),
     ]);
 
     const output = u('root', [
-      u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+      u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
     ]);
 
     expect(transform(input)).toEqual(output);
@@ -119,7 +119,7 @@ describe('remarkAssertParents', () => {
       u('paragraph', [
         u('blockquote', [
           u('strong', [
-            u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+            u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
           ]),
         ]),
       ]),
@@ -127,7 +127,7 @@ describe('remarkAssertParents', () => {
 
     const output = u('root', [
       u('blockquote', [
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
       ]),
     ]);
 
@@ -140,7 +140,7 @@ describe('remarkAssertParents', () => {
         u('blockquote', [
           u('strong', [
             u('text', 'Deep validly nested text a.'),
-            u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+            u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
             u('text', 'Deep validly nested text b.'),
           ]),
         ]),
@@ -153,7 +153,7 @@ describe('remarkAssertParents', () => {
         u('strong', [
           u('text', 'Deep validly nested text a.'),
         ]),
-        u('heading', { depth: 1 }, [ u('text', 'Heading text.') ]),
+        u('heading', { depth: 1 }, [u('text', 'Heading text.')]),
         u('strong', [
           u('text', 'Deep validly nested text b.'),
         ]),
@@ -174,7 +174,7 @@ describe('remarkAssertParents', () => {
             u('table', [
               u('tableRow', [
                 u('tableCell', [
-                  u('heading', { depth: 1 }, [ u('text', 'Validly nested heading text.') ]),
+                  u('heading', { depth: 1 }, [u('text', 'Validly nested heading text.')]),
                 ]),
               ]),
             ]),
@@ -190,7 +190,7 @@ describe('remarkAssertParents', () => {
             u('table', [
               u('tableRow', [
                 u('tableCell', [
-                  u('heading', { depth: 1 }, [ u('text', 'Validly nested heading text.') ]),
+                  u('heading', { depth: 1 }, [u('text', 'Validly nested heading text.')]),
                 ]),
               ]),
             ]),

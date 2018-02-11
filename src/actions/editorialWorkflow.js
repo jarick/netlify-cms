@@ -291,8 +291,7 @@ export function persistUnpublishedEntry(collection, existingUnpublishedEntry) {
         dismissAfter: 4000,
       }));
       dispatch(unpublishedEntryPersisted(collection, serializedEntry, transactionID, newSlug));
-    }
-    catch(error) {
+    } catch (error) {
       dispatch(notifSend({
         message: `Failed to persist entry: ${ error }`,
         kind: 'danger',

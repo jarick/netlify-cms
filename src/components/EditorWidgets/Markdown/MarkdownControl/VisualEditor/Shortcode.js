@@ -32,18 +32,18 @@ class Shortcode extends React.Component {
 
   handleCollapseToggle = () => {
     this.setState({ collapsed: !this.state.collapsed });
-  }
+  };
 
   handleRemove = () => {
     const { editor, node } = this.props;
-    editor.change(change => {
+    editor.change((change) => {
       change
         .removeNodeByKey(node.key)
         .focus();
     });
-  }
+  };
 
-  handleClick = event => {
+  handleClick = (event) => {
     /**
      * Stop click from propagating to editor, otherwise focus will be passed
      * to the editor.
@@ -56,7 +56,7 @@ class Shortcode extends React.Component {
     if (this.state.collapsed) {
       this.handleCollapseToggle();
     }
-  }
+  };
 
   renderControl = (shortcodeData, field, index) => {
     const {
@@ -82,7 +82,7 @@ class Shortcode extends React.Component {
 
     return (
       <div key={key}>
-        <Control {...controlProps}/>
+        <Control {...controlProps} />
       </div>
     );
   };

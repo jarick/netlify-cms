@@ -42,7 +42,6 @@ function validateCollection(configCollection) {
     // Cannot set custom delimiter without explicit and proper frontmatter format declaration
     throw new Error(`Please set a proper frontmatter format for collection "${ collectionName }" to use a custom delimiter. Supported frontmatter formats are yaml-frontmatter, toml-frontmatter, and json-frontmatter.`);
   }
-
 }
 
 const selectors = {
@@ -105,7 +104,7 @@ const selectors = {
 };
 
 export const selectFields = (collection, slug) => selectors[collection.get('type')].fields(collection, slug);
-export const selectFolderEntryExtension = (collection) => selectors[FOLDER].entryExtension(collection);
+export const selectFolderEntryExtension = collection => selectors[FOLDER].entryExtension(collection);
 export const selectEntryPath = (collection, slug) => selectors[collection.get('type')].entryPath(collection, slug);
 export const selectEntrySlug = (collection, path) => selectors[collection.get('type')].entrySlug(collection, path);
 export const selectListMethod = collection => selectors[collection.get('type')].listMethod();

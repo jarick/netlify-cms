@@ -12,7 +12,7 @@ const Dropdown = ({
   dropdownWidth = 'auto',
   dropdownPosition = 'left',
   dropdownTopOverlap = '0',
-  children
+  children,
 }) => {
   const style = {
     width: dropdownWidth,
@@ -42,8 +42,8 @@ const DropdownItem = ({ label, icon, iconDirection, onClick, className }) => (
     {
       icon
         ? <span className="nc-dropdownItemIcon">
-            <Icon type={icon} direction={iconDirection} size="small"/>
-          </span>
+          <Icon type={icon} direction={iconDirection} size="small" />
+        </span>
         : null
     }
   </MenuItem>

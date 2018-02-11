@@ -65,9 +65,9 @@ const entryDraftReducer = (state = Map(), action) => {
     case DRAFT_VALIDATION_ERRORS:
       if (action.payload.errors.length === 0) {
         return state.deleteIn(['fieldsErrors', action.payload.field]);
-      } else {
-        return state.setIn(['fieldsErrors', action.payload.field], action.payload.errors);
-      }
+      } 
+      return state.setIn(['fieldsErrors', action.payload.field], action.payload.errors);
+      
 
     case ENTRY_PERSIST_REQUEST:
     case UNPUBLISHED_ENTRY_PERSIST_REQUEST: {

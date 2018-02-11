@@ -74,14 +74,12 @@ export default class AssetStore {
       'Authorization': `Bearer ${ token }`,
     };
     const response = await this.request(url, { headers });
-    const files = response.map(({ id, name, size, url }) => {
-      return { id, name, size, url, urlIsPublicPath: true };
-    });
+    const files = response.map(({ id, name, size, url }) => ({ id, name, size, url, urlIsPublicPath: true }));
     return files;
   }
 
   delete(assetID) {
-    const url = `${ this.getSignedFormURL }/${ assetID }`
+    const url = `${ this.getSignedFormURL }/${ assetID }`;
     return this.getToken()
       .then(token => this.request(url, {
         method: 'DELETE',
@@ -95,7 +93,7 @@ export default class AssetStore {
   async upload(file, privateUpload = false) {
     const fileData = {
       name: file.name,
-      size: file.size
+      size: file.size,
     };
     if (file.type) {
       fileData.content_type = file.type;
@@ -131,8 +129,7 @@ export default class AssetStore {
 
       const asset = { id, name, size, url, urlIsPublicPath: true };
       return { success: true, url, asset };
-    }
-    catch(error) {
+    } catch (error) {
       console.error(error);
     }
   }

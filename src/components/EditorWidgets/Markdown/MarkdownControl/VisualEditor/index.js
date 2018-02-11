@@ -14,16 +14,16 @@ import onKeyDown from './keys';
 
 const createEmptyRawDoc = () => {
   const emptyText = Text.create('');
-  const emptyBlock = Block.create({ kind: 'block', type: 'paragraph', nodes: [ emptyText ] });
+  const emptyBlock = Block.create({ kind: 'block', type: 'paragraph', nodes: [emptyText] });
   return { nodes: [emptyBlock] };
 };
 
 const createSlateValue = (rawValue) => {
   const rawDoc = rawValue && markdownToSlate(rawValue);
-  const rawDocHasNodes = !isEmpty(get(rawDoc, 'nodes'))
+  const rawDocHasNodes = !isEmpty(get(rawDoc, 'nodes'));
   const document = Document.fromJSON(rawDocHasNodes ? rawDoc : createEmptyRawDoc());
   return Value.create({ document });
-}
+};
 
 export default class Editor extends Component {
   static propTypes = {
@@ -54,7 +54,7 @@ export default class Editor extends Component {
     const ast = htmlToSlate(data.html);
     const doc = Document.fromJSON(ast);
     return change.insertFragment(doc);
-  }
+  };
 
   selectionHasMark = type => this.state.value.activeMarks.some(mark => mark.type === type);
   selectionHasBlock = type => this.state.value.blocks.some(node => node.type === type);
@@ -68,7 +68,7 @@ export default class Editor extends Component {
 
   handleBlockClick = (event, type) => {
     event.preventDefault();
-    let { value } = this.state;
+    const { value } = this.state;
     const { document: doc, selection } = value;
     const { unwrapList, wrapInList } = EditListConfigured.changes;
     let change = value.change();
@@ -81,9 +81,7 @@ export default class Editor extends Component {
 
     // Handle the extra wrapping required for list buttons.
     else {
-      const isSameListType = value.blocks.some(block => {
-        return !!doc.getClosest(block.key, parent => parent.type === type);
-      });
+      const isSameListType = value.blocks.some(block => !!doc.getClosest(block.key, parent => parent.type === type));
       const isInList = EditListConfigured.utils.isSelectionInList(value);
 
       if (isInList && isSameListType) {
@@ -101,9 +99,7 @@ export default class Editor extends Component {
     this.setState({ value: resolvedChange.value });
   };
 
-  hasLinks = () => {
-    return this.state.value.inlines.some(inline => inline.type === 'link');
-  };
+  hasLinks = () => this.state.value.inlines.some(inline => inline.type === 'link');
 
   handleLink = () => {
     let change = this.state.value.change();
@@ -112,9 +108,7 @@ export default class Editor extends Component {
     // should simply unlink them.
     if (this.hasLinks()) {
       change = change.unwrapInline('link');
-    }
-
-    else {
+    } else {
       const url = window.prompt('Enter the URL of the link');
 
       // If nothing is entered in the URL prompt, do nothing.
@@ -136,7 +130,7 @@ export default class Editor extends Component {
     this.setState({ value: change.value });
   };
 
-  handlePluginAdd = pluginId => {
+  handlePluginAdd = (pluginId) => {
     const { value } = this.state;
     const nodes = [Text.create('')];
     const block = {
@@ -148,7 +142,7 @@ export default class Editor extends Component {
         shortcodeData: Map(),
       },
       isVoid: true,
-      nodes
+      nodes,
     };
     let change = value.change();
     const { focusBlock } = change.value;
@@ -170,23 +164,23 @@ export default class Editor extends Component {
   };
 
 
-  handleDocumentChange = debounce(change => {
+  handleDocumentChange = debounce((change) => {
     const raw = change.value.document.toJSON();
     const plugins = this.state.shortcodePlugins;
     const markdown = slateToMarkdown(raw, plugins);
     this.props.onChange(markdown);
   }, 150);
 
-  handleChange = change => {
+  handleChange = (change) => {
     if (!this.state.value.document.equals(change.value.document)) {
       this.handleDocumentChange(change);
     }
     this.setState({ value: change.value });
   };
 
-  processRef = ref => {
+  processRef = (ref) => {
     this.ref = ref;
-  }
+  };
 
   render() {
     const { onAddAsset, getAsset, className } = this.props;
@@ -209,7 +203,7 @@ export default class Editor extends Component {
           />
         </div>
         <Slate
-          className={`${className} nc-visualEditor-editor`}
+          className={`${ className } nc-visualEditor-editor`}
           value={this.state.value}
           renderNode={renderNode}
           renderMark={renderMark}

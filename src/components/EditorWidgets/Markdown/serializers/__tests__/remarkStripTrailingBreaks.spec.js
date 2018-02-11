@@ -2,7 +2,7 @@ import unified from 'unified';
 import u from 'unist-builder';
 import remarkStripTrailingBreaks from '../remarkStripTrailingBreaks';
 
-const process = children => {
+const process = (children) => {
   const tree = u('root', children);
   const strippedMdast = unified()
     .use(remarkStripTrailingBreaks)

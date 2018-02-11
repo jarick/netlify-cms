@@ -33,64 +33,60 @@ const HeadingSix = props => <h6 {...props.attributes}>{props.children}</h6>;
 const Table = props => <table><tbody {...props.attributes}>{props.children}</tbody></table>;
 const TableRow = props => <tr {...props.attributes}>{props.children}</tr>;
 const TableCell = props => <td {...props.attributes}>{props.children}</td>;
-const ThematicBreak = props => <hr {...props.attributes}/>;
+const ThematicBreak = props => <hr {...props.attributes} />;
 const BulletedList = props => <ul {...props.attributes}>{props.children}</ul>;
 const NumberedList = props => (
   <ol {...props.attributes} start={props.node.data.get('start') || 1}>{props.children}</ol>
 );
-const Link = props => {
+const Link = (props) => {
   const data = props.node.get('data');
   const marks = data.get('marks');
   const url = data.get('url');
   const title = data.get('title');
   const link = <a href={url} title={title} {...props.attributes}>{props.children}</a>;
-  const result = !marks ? link : marks.reduce((acc, mark) => {
-    return renderMark({ mark, children: acc });
-  }, link);
+  const result = !marks ? link : marks.reduce((acc, mark) => renderMark({ mark, children: acc }), link);
   return result;
 };
-const Image = props => {
+const Image = (props) => {
   const data = props.node.get('data');
   const marks = data.get('marks');
   const url = data.get('url');
   const title = data.get('title');
   const alt = data.get('alt');
-  const image = <img src={url} title={title} alt={alt} {...props.attributes}/>;
-  const result = !marks ? image : marks.reduce((acc, mark) => {
-    return renderMark({ mark, children: acc });
-  }, image);
+  const image = <img src={url} title={title} alt={alt} {...props.attributes} />;
+  const result = !marks ? image : marks.reduce((acc, mark) => renderMark({ mark, children: acc }), image);
   return result;
 };
 
-export const renderMark = props => {
+export const renderMark = (props) => {
   switch (props.mark.type) {
-    case 'bold': return <Bold {...props}/>;
-    case 'italic': return <Italic {...props}/>;
-    case 'strikethrough': return <Strikethrough {...props}/>;
-    case 'code': return <Code {...props}/>;
+    case 'bold': return <Bold {...props} />;
+    case 'italic': return <Italic {...props} />;
+    case 'strikethrough': return <Strikethrough {...props} />;
+    case 'code': return <Code {...props} />;
   }
 };
 
-export const renderNode = props => {
+export const renderNode = (props) => {
   switch (props.node.type) {
-    case 'paragraph': return <Paragraph {...props}/>;
-    case 'list-item': return <ListItem {...props}/>;
-    case 'quote': return <Quote {...props}/>;
-    case 'code': return <CodeBlock {...props}/>;
-    case 'heading-one': return <HeadingOne {...props}/>;
-    case 'heading-two': return <HeadingTwo {...props}/>;
-    case 'heading-three': return <HeadingThree {...props}/>;
-    case 'heading-four': return <HeadingFour {...props}/>;
-    case 'heading-five': return <HeadingFive {...props}/>;
-    case 'heading-six': return <HeadingSix {...props}/>;
-    case 'table': return <Table {...props}/>;
-    case 'table-row': return <TableRow {...props}/>;
-    case 'table-cell': return <TableCell {...props}/>;
-    case 'thematic-break': return <ThematicBreak {...props}/>;
-    case 'bulleted-list': return <BulletedList {...props}/>;
-    case 'numbered-list': return <NumberedList {...props}/>;
-    case 'link': return <Link {...props}/>;
-    case 'image': return <Image {...props}/>;
-    case 'shortcode': return <Shortcode {...props}/>;
+    case 'paragraph': return <Paragraph {...props} />;
+    case 'list-item': return <ListItem {...props} />;
+    case 'quote': return <Quote {...props} />;
+    case 'code': return <CodeBlock {...props} />;
+    case 'heading-one': return <HeadingOne {...props} />;
+    case 'heading-two': return <HeadingTwo {...props} />;
+    case 'heading-three': return <HeadingThree {...props} />;
+    case 'heading-four': return <HeadingFour {...props} />;
+    case 'heading-five': return <HeadingFive {...props} />;
+    case 'heading-six': return <HeadingSix {...props} />;
+    case 'table': return <Table {...props} />;
+    case 'table-row': return <TableRow {...props} />;
+    case 'table-cell': return <TableCell {...props} />;
+    case 'thematic-break': return <ThematicBreak {...props} />;
+    case 'bulleted-list': return <BulletedList {...props} />;
+    case 'numbered-list': return <NumberedList {...props} />;
+    case 'link': return <Link {...props} />;
+    case 'image': return <Image {...props} />;
+    case 'shortcode': return <Shortcode {...props} />;
   }
 };

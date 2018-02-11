@@ -56,17 +56,16 @@ export function loadMedia(opts = {}) {
           privateUpload,
         };
         return dispatch(mediaLoaded(files, mediaLoadedOpts));
-      }
-      catch(error) {
+      } catch (error) {
         return dispatch(mediaLoadFailed({ privateUpload }));
       }
     }
     dispatch(mediaLoading(page));
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(
         backend.getMedia()
           .then(files => dispatch(mediaLoaded(files)))
-          .catch((error) => dispatch(error.status === 404 ? mediaLoaded() : mediaLoadFailed()))
+          .catch(error => dispatch(error.status === 404 ? mediaLoaded() : mediaLoadFailed()))
       ));
     }, delay);
   };
@@ -88,11 +87,10 @@ export function persistMedia(file, opts = {}) {
      * may not be unique, so we forego this check.
      */
     if (!integration && existingFile) {
-      if (!window.confirm(`${existingFile.name} already exists. Do you want to replace it?`)) {
+      if (!window.confirm(`${ existingFile.name } already exists. Do you want to replace it?`)) {
         return;
-      } else {
-        await dispatch(deleteMedia(existingFile, { privateUpload }));
-      }
+      } 
+      await dispatch(deleteMedia(existingFile, { privateUpload }));
     }
 
     dispatch(mediaPersisting());
@@ -105,8 +103,7 @@ export function persistMedia(file, opts = {}) {
         return dispatch(mediaPersisted(asset));
       }
       return dispatch(mediaPersisted(assetProxy.asset, { privateUpload }));
-    }
-    catch(error) {
+    } catch (error) {
       console.error(error);
       dispatch(notifSend({
         message: `Failed to persist media: ${ error }`,
@@ -128,10 +125,8 @@ export function deleteMedia(file, opts = {}) {
       const provider = getIntegrationProvider(state.integrations, backend.getToken, integration);
       dispatch(mediaDeleting());
       return provider.delete(file.id)
-        .then(() => {
-          return dispatch(mediaDeleted(file, { privateUpload }));
-        })
-        .catch(error => {
+        .then(() => dispatch(mediaDeleted(file, { privateUpload })))
+        .catch((error) => {
           console.error(error);
           dispatch(notifSend({
             message: `Failed to delete media: ${ error.message }`,
@@ -143,10 +138,8 @@ export function deleteMedia(file, opts = {}) {
     }
     dispatch(mediaDeleting());
     return backend.deleteMedia(file.path)
-      .then(() => {
-        return dispatch(mediaDeleted(file));
-      })
-      .catch(error => {
+      .then(() => dispatch(mediaDeleted(file)))
+      .catch((error) => {
         console.error(error);
         dispatch(notifSend({
           message: `Failed to delete media: ${ error.message }`,
@@ -162,13 +155,13 @@ export function mediaLoading(page) {
   return {
     type: MEDIA_LOAD_REQUEST,
     payload: { page },
-  }
+  };
 }
 
 export function mediaLoaded(files, opts = {}) {
   return {
     type: MEDIA_LOAD_SUCCESS,
-    payload: { files, ...opts }
+    payload: { files, ...opts },
   };
 }
 

@@ -7,7 +7,7 @@ import {
   selectEntryPath,
   selectAllowNewEntries,
   selectAllowDeletion,
-  selectFolderEntryExtension
+  selectFolderEntryExtension,
 } from "Reducers/collections";
 import { createEntry } from "ValueObjects/Entry";
 import { sanitizeSlug } from "Lib/urlHelper";
@@ -46,7 +46,7 @@ const slugFormatter = (template = "{{slug}}", entryData) => {
 
   const getIdentifier = (entryData) => {
     const validIdentifierFields = ["title", "path"];
-    const identifiers = validIdentifierFields.map((field) =>
+    const identifiers = validIdentifierFields.map(field =>
       entryData.find((_, key) => key.toLowerCase().trim() === field)
     );
 
@@ -97,7 +97,7 @@ class Backend {
     const stored = this.authStore && this.authStore.retrieve();
     if (stored && stored.backendName === this.backendName) {
       return Promise.resolve(this.implementation.restoreUser(stored)).then((user) => {
-        const newUser = {...user, backendName: this.backendName};
+        const newUser = { ...user, backendName: this.backendName };
         // return confirmed/rehydrated user object instead of stored
         this.authStore.store(newUser);
         return newUser;
@@ -112,7 +112,7 @@ class Backend {
 
   authenticate(credentials) {
     return this.implementation.authenticate(credentials).then((user) => {
-      const newUser = {...user, backendName: this.backendName};
+      const newUser = { ...user, backendName: this.backendName };
       if (this.authStore) { this.authStore.store(newUser); }
       return newUser;
     });
@@ -149,7 +149,7 @@ class Backend {
       // If this collection has a "filter" property, filter entries accordingly
       .then(loadedCollection => (
         {
-          entries: collectionFilter ? this.filterEntries(loadedCollection, collectionFilter) : loadedCollection.entries
+          entries: collectionFilter ? this.filterEntries(loadedCollection, collectionFilter) : loadedCollection.entries,
         }
       ));
   }
@@ -201,7 +201,7 @@ class Backend {
     ))
     .then(entries => ({
       pagination: 0,
-      entries: entries.map(entry => {
+      entries: entries.map((entry) => {
         const collection = collections.get(entry.collection);
         return this.entryWithFormat(collection)(entry);
       }),
@@ -276,7 +276,7 @@ class Backend {
 
   persistMedia(file) {
     const options = {
-      commitMessage: `Upload ${file.path}`,
+      commitMessage: `Upload ${ file.path }`,
     };
     return this.implementation.persistMedia(file, options);
   }
@@ -293,7 +293,7 @@ class Backend {
   }
 
   deleteMedia(path) {
-    const commitMessage = `Delete ${path}`;
+    const commitMessage = `Delete ${ path }`;
     return this.implementation.deleteFile(path, commitMessage);
   }
 

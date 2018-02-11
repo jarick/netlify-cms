@@ -8,7 +8,7 @@ import {
   trimStart,
   trimEnd,
   concat,
-  flatMap
+  flatMap,
 } from 'lodash';
 import u from 'unist-builder';
 import toString from 'mdast-util-to-string';
@@ -23,9 +23,7 @@ import toString from 'mdast-util-to-string';
  * children one at a time.
  */
 export default function remarkPaddedLinks() {
-
   function transform(node) {
-
     /**
      * Because we're operating on link nodes and their children at once, we can
      * exit if the current node has no children.
@@ -51,7 +49,7 @@ export default function remarkPaddedLinks() {
     const children = processedChildren.map(transform);
 
     return { ...node, children };
-  };
+  }
 
   function transformChildren(node) {
     if (node.type !== 'link') return node;
@@ -86,7 +84,7 @@ export default function remarkPaddedLinks() {
     const nodes = [
       leadingWhitespaceNode && u('text', ' '),
       node,
-      trailingWhitespaceNode && u('text', ' ')
+      trailingWhitespaceNode && u('text', ' '),
     ];
 
     return nodes.filter(val => val);
@@ -104,8 +102,7 @@ export default function remarkPaddedLinks() {
      * when it is resolved then revert to ```const findFn = end ? findLast : find;```
      */
     let findFn;
-    if (end) { findFn = findLast } 
-    else { findFn = find }; 
+    if (end) { findFn = findLast; } else { findFn = find; } 
 
     let edgeChildWithValue;
     setEdgeChildWithValue(node);

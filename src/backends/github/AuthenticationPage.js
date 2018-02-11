@@ -15,7 +15,7 @@ export default class AuthenticationPage extends React.Component {
     e.preventDefault();
     const cfg = {
       base_url: this.props.base_url,
-      site_id: (document.location.host.split(':')[0] === 'localhost') ? 'cms.netlify.com' : this.props.siteId
+      site_id: (document.location.host.split(':')[0] === 'localhost') ? 'cms.netlify.com' : this.props.siteId,
     };
     const auth = new Authenticator(cfg);
 
@@ -34,7 +34,7 @@ export default class AuthenticationPage extends React.Component {
 
     return (
       <section className="nc-githubAuthenticationPage-root">
-        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms"/>
+        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms" />
         {loginError && <p>{loginError}</p>}
         <button
           className="nc-githubAuthenticationPage-button"

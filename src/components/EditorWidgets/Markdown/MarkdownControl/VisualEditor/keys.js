@@ -4,12 +4,10 @@ import isHotkey from 'is-hotkey';
 export default onKeyDown;
 
 function onKeyDown(event, change) {
-  const createDefaultBlock = () => {
-    return Block.create({
-      type: 'paragraph',
-      nodes: [Text.create('')],
-    });
-  };
+  const createDefaultBlock = () => Block.create({
+    type: 'paragraph',
+    nodes: [Text.create('')],
+  });
 
   if (isHotkey('Enter', event)) {
     /**
@@ -39,16 +37,16 @@ function onKeyDown(event, change) {
   }
 
   const marks = [
-    [ 'b', 'bold' ],
-    [ 'i', 'italic' ],
-    [ 's', 'strikethrough' ],
-    [ '`', 'code' ],
+    ['b', 'bold'],
+    ['i', 'italic'],
+    ['s', 'strikethrough'],
+    ['`', 'code'],
   ];
 
-  const [ markKey, markName ] = marks.find(([ key ]) => isHotkey(`mod+${key}`, event)) || [];
+  const [markKey, markName] = marks.find(([key]) => isHotkey(`mod+${ key }`, event)) || [];
 
   if (markName) {
     event.preventDefault();
     return change.toggleMark(markName);
   }
-};
+}

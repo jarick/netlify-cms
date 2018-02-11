@@ -32,7 +32,7 @@ const mediaLibrary = (state = Map({ isVisible: false, controlMedia: Map() }), ac
           controlMedia: Map(),
         });
       }
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         map.set('isVisible', true);
         map.set('forImage', forImage);
         map.set('controlID', controlID);
@@ -52,7 +52,7 @@ const mediaLibrary = (state = Map({ isVisible: false, controlMedia: Map() }), ac
       return state.setIn(['controlMedia', controlID], '');
     }
     case MEDIA_LOAD_REQUEST:
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         map.set('isLoading', true);
         map.set('isPaginating', action.payload.page > 1);
       });
@@ -64,7 +64,7 @@ const mediaLibrary = (state = Map({ isVisible: false, controlMedia: Map() }), ac
       }
 
       const filesWithKeys = files.map(file => ({ ...file, key: uuid() }));
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         map.set('isLoading', false);
         map.set('isPaginating', false);
         map.set('page', page);
@@ -92,7 +92,7 @@ const mediaLibrary = (state = Map({ isVisible: false, controlMedia: Map() }), ac
       if (privateUploadChanged) {
         return state;
       }
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         const fileWithKey = { ...file, key: uuid() };
         const updatedFiles = [fileWithKey, ...map.get('files')];
         map.set('files', updatedFiles);
@@ -111,7 +111,7 @@ const mediaLibrary = (state = Map({ isVisible: false, controlMedia: Map() }), ac
       if (privateUploadChanged) {
         return state;
       }
-      return state.withMutations(map => {
+      return state.withMutations((map) => {
         const updatedFiles = map.get('files').filter(file => file.key !== key);
         map.set('files', updatedFiles);
         map.set('isDeleting', false);

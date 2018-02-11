@@ -2,8 +2,8 @@ import unified from 'unified';
 import u from 'unist-builder';
 import remarkEscapeMarkdownEntities from '../remarkEscapeMarkdownEntities';
 
-const process = text => {
-  const tree = u('root', [ u('text', text) ]);
+const process = (text) => {
+  const tree = u('root', [u('text', text)]);
   const escapedMdast = unified()
     .use(remarkEscapeMarkdownEntities)
     .runSync(tree);

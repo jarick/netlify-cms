@@ -45,7 +45,7 @@ export default function remarkShortcodes({ plugins }) {
      * included. Otherwise, return the original node.
      */
     return matchIsValid ? createShortcodeNode(text, plugin, match) : node;
-  };
+  }
 
   /**
    * Ensure that the node and it's children are acceptable types to contain
@@ -57,9 +57,7 @@ export default function remarkShortcodes({ plugins }) {
     const validChildTypes = ['text', 'html'];
 
     if (validNodeTypes.includes(node.type)) {
-      return every(node.children, child => {
-        return validChildTypes.includes(child.type);
-      });
+      return every(node.children, child => validChildTypes.includes(child.type));
     }
   }
 
@@ -69,7 +67,7 @@ export default function remarkShortcodes({ plugins }) {
    */
   function matchTextToPlugin(text) {
     let match;
-    const plugin = plugins.find(p => {
+    const plugin = plugins.find((p) => {
       match = text.match(p.pattern);
       return !!match;
     });

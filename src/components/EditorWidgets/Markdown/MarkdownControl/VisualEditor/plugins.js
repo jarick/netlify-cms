@@ -22,12 +22,12 @@ const SoftBreak = (options = {}) => ({
     }
 
     const textNode = Text.create('\n');
-    const breakNode = Inline.create({ type: 'break', nodes: [ textNode ] });
+    const breakNode = Inline.create({ type: 'break', nodes: [textNode] });
     return change
       .insertInline(breakNode)
       .insertText('')
       .collapseToStartOfNextText();
-  }
+  },
 });
 
 const SoftBreakOpts = {
@@ -45,7 +45,7 @@ const BreakToDefaultBlock = ({ onlyIn = [], defaultBlock = 'paragraph' }) => ({
     if (onlyIn.includes(value.startBlock.type)) {
       return change.insertBlock(defaultBlock);
     }
-  }
+  },
 });
 
 const BreakToDefaultBlockOpts = {
@@ -68,7 +68,7 @@ const BackspaceCloseBlock = (options = {}) => ({
     if (startBlock.text === '') {
       return change.setBlock(defaultBlock).focus();
     }
-  }
+  },
 });
 
 const BackspaceCloseBlockOpts = {

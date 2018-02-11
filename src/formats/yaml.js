@@ -43,5 +43,5 @@ export default {
 
   toFile(data, sortedKeys = []) {
     return yaml.safeDump(data, { schema: OutputSchema, sortKeys: sortKeys(sortedKeys) });
-  }
-}
+  },
+};

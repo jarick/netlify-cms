@@ -15,7 +15,7 @@ export function joinPatternSegments(patterns) {
  * that each expression is executed separately.
  */
 export function combinePatterns(patterns, flags = '') {
-  return patterns.map(p => `(?:${p.source})`).join('|');
+  return patterns.map(p => `(?:${ p.source })`).join('|');
 }
 
 
@@ -133,7 +133,7 @@ export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
    * matched strings with the replacement function. Modifies non-matches if
    * `invertMatchPattern` is truthy.
    */
-  const replacedText = acc.map(entry => {
+  const replacedText = acc.map((entry) => {
     const isMatch = invertMatchPattern ? !entry.match : entry.match;
     return isMatch ? replaceFn(entry.text) : entry.text;
   });

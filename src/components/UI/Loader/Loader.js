@@ -29,7 +29,7 @@ export class Loader extends React.Component {
     const { currentItem } = this.state;
     if (!children) {
       return null;
-    } else if (typeof children == 'string') {
+    } else if (typeof children === 'string') {
       return <div className="nc-loader-text">{children}</div>;
     } else if (Array.isArray(children)) {
       this.setAnimation();

@@ -16,7 +16,7 @@ export function validateNode(node) {
      */
     const hasBlocks = !doc.getBlocks().isEmpty();
     if (!hasBlocks) {
-      return change => {
+      return (change) => {
         const block = Block.create({
           type: 'paragraph',
           nodes: [Text.create('')],
@@ -29,12 +29,12 @@ export function validateNode(node) {
     /**
      * Ensure that shortcodes are children of the root node.
      */
-    const nestedShortcode = doc.findDescendant(descendant => {
+    const nestedShortcode = doc.findDescendant((descendant) => {
       const { type, key } = descendant;
       return type === 'shortcode' && doc.getParent(key).key !== doc.key;
     });
     if (nestedShortcode) {
-      const unwrapShortcode = change => {
+      const unwrapShortcode = (change) => {
         const key = nestedShortcode.key;
         const newDoc = change.value.document;
         const newParent = newDoc.getParent(key);
@@ -59,14 +59,14 @@ export function validateNode(node) {
     /**
      * Ensure that trailing shortcodes are followed by an empty paragraph.
      */
-    const trailingShortcode = doc.findDescendant(descendant => {
+    const trailingShortcode = doc.findDescendant((descendant) => {
       const { type, key } = descendant;
       return type === 'shortcode' && doc.getBlocks().last().key === key;
     });
     if (trailingShortcode) {
-      return change => {
+      return (change) => {
         const text = Text.create('');
-        const block = Block.create({ type: 'paragraph', nodes: [ text ] });
+        const block = Block.create({ type: 'paragraph', nodes: [text] });
         return change.insertNodeByKey(doc.key, doc.get('nodes').size, block);
       };
     }
@@ -86,4 +86,4 @@ export function validateNode(node) {
       );
     }
   }
-};
+}

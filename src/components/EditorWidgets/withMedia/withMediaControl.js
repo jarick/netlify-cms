@@ -55,8 +55,8 @@ export default function withMediaControl(forImage) {
       }
     }
 
-    handleChange = e => {
-      const { field, onOpenMediaLibrary} = this.props;
+    handleChange = (e) => {
+      const { field, onOpenMediaLibrary } = this.props;
       e.preventDefault();
       return onOpenMediaLibrary({
         controlID: this.controlID,
@@ -65,7 +65,7 @@ export default function withMediaControl(forImage) {
       });
     };
 
-    handleRemove = e => {
+    handleRemove = (e) => {
       e.preventDefault();
       return this.props.onChange('');
     };
@@ -82,35 +82,35 @@ export default function withMediaControl(forImage) {
       const article = forImage ? 'an' : 'a';
 
       return (
-        <div className={`${classNameWrapper} nc-imageControl-imageUpload`}>
+        <div className={`${ classNameWrapper } nc-imageControl-imageUpload`}>
           <span className="nc-imageControl-message">
             {
               fileName
                 ? <div className="nc-imageControl-content">
-                    {
+                  {
                       forImage
                         ? <div className="nc-imageControl-imageWrapper">
-                            <img src={getAsset(value)}/>
-                          </div>
+                          <img src={getAsset(value)} />
+                        </div>
                         : null
                     }
-                    <div>
-                      <span className="nc-imageControl-filename">{fileName}</span>
-                      <button className="nc-imageControl-changeButton" onClick={this.handleChange}>
+                  <div>
+                    <span className="nc-imageControl-filename">{fileName}</span>
+                    <button className="nc-imageControl-changeButton" onClick={this.handleChange}>
                         Choose different {subject}
-                      </button>
-                      <button className="nc-imageControl-removeButton" onClick={this.handleRemove}>
+                    </button>
+                    <button className="nc-imageControl-removeButton" onClick={this.handleRemove}>
                         Remove {subject}
-                      </button>
-                    </div>
+                    </button>
                   </div>
+                </div>
                 : <button className="nc-imageControl-chooseButton" onClick={this.handleChange}>
                     Choose {article} {subject}
-                  </button>
+                </button>
             }
           </span>
         </div>
       );
     }
   };
-};
+}

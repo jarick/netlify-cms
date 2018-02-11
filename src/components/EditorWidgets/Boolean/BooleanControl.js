@@ -13,10 +13,10 @@ export default class BooleanControl extends React.Component {
       onChange,
       classNameWrapper,
       setActiveStyle,
-      setInactiveStyle
+      setInactiveStyle,
     } = this.props;
     return (
-      <div className={`${classNameWrapper} nc-booleanControl-switch`}>
+      <div className={`${ classNameWrapper } nc-booleanControl-switch`}>
         <Toggle
           id={forID}
           active={isBoolean(value) ? value : field.get('defaultValue', false)}

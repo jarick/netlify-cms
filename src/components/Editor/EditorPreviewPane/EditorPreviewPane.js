@@ -58,7 +58,7 @@ export default class PreviewPane extends React.Component {
     // custom preview templates, where the field object can't be passed in.
     let field = fields && fields.find(f => f.get('name') === name);
     let value = values && values.get(field.get('name'));
-    let nestedFields = field.get('fields');
+    const nestedFields = field.get('fields');
 
     if (nestedFields) {
       field = field.set('fields', this.getNestedWidgets(nestedFields, value));
@@ -89,9 +89,7 @@ export default class PreviewPane extends React.Component {
   /**
    * Use widgetFor as a mapping function for recursive widget retrieval
    */
-  widgetsForNestedFields = (fields, values) => {
-    return fields.map(field => this.widgetFor(field.get('name'), fields, values));
-  };
+  widgetsForNestedFields = (fields, values) => fields.map(field => this.widgetFor(field.get('name'), fields, values));
 
   /**
    * This function exists entirely to expose nested widgets for object and list
@@ -110,7 +108,7 @@ export default class PreviewPane extends React.Component {
         const widgets = nestedFields && Map(nestedFields.map((f, i) => [f.get('name'), <div key={i}>{this.getWidget(f, val, this.props)}</div>]));
         return Map({ data: val, widgets });
       });
-    };
+    }
 
     return Map({
       data: value,
@@ -155,7 +153,7 @@ export default class PreviewPane extends React.Component {
     return (
       <ErrorBoundary>
         <Frame className="nc-previewPane-frame" head={styleEls} initialContent={initialContent}>
-          <EditorPreviewContent {...{ previewComponent, previewProps }}/>
+          <EditorPreviewContent {...{ previewComponent, previewProps }} />
         </Frame>
       </ErrorBoundary>
     );

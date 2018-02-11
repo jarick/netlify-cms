@@ -20,7 +20,7 @@ import { getWidgetValueSerializer } from './registry';
  * registered deserialization handlers run on entry load, and serialization
  * handlers run on persist.
  */
-const runSerializer = (values, fields, method) => {
+const runSerializer = (values, fields, method) => 
 
   /**
    * Reduce the list of fields to a map where keys are field names and values
@@ -28,40 +28,35 @@ const runSerializer = (values, fields, method) => {
    * registered serializers.  If the field is a list or object, call recursively
    * for nested fields.
    */
-  return fields.reduce((acc, field) => {
-    const fieldName = field.get('name');
-    const value = values.get(fieldName);
-    const serializer = getWidgetValueSerializer(field.get('widget'));
-    const nestedFields = field.get('fields');
+   fields.reduce((acc, field) => {
+     const fieldName = field.get('name');
+     const value = values.get(fieldName);
+     const serializer = getWidgetValueSerializer(field.get('widget'));
+     const nestedFields = field.get('fields');
 
     // Call recursively for fields within lists
-    if (nestedFields && List.isList(value)) {
-      return acc.set(fieldName, value.map(val => runSerializer(val, nestedFields, method)));
-    }
+     if (nestedFields && List.isList(value)) {
+       return acc.set(fieldName, value.map(val => runSerializer(val, nestedFields, method)));
+     }
 
     // Call recursively for fields within objects
-    if (nestedFields && Map.isMap(value)) {
-      return acc.set(fieldName, runSerializer(value, nestedFields, method));
-    }
+     if (nestedFields && Map.isMap(value)) {
+       return acc.set(fieldName, runSerializer(value, nestedFields, method));
+     }
 
     // Run serialization method on value if not null or undefined
-    if (serializer && !isNil(value)) {
-      return acc.set(fieldName, serializer[method](value));
-    }
+     if (serializer && !isNil(value)) {
+       return acc.set(fieldName, serializer[method](value));
+     }
 
     // If no serializer is registered for the field's widget, use the field as is
-    if (!isNil(value)) {
-      return acc.set(fieldName, value);
-    }
+     if (!isNil(value)) {
+       return acc.set(fieldName, value);
+     }
 
-    return acc;
-  }, Map());
-};
+     return acc;
+   }, Map());
 
-export const serializeValues = (values, fields) => {
-  return runSerializer(values, fields, 'serialize');
-};
+export const serializeValues = (values, fields) => runSerializer(values, fields, 'serialize');
 
-export const deserializeValues = (values, fields) => {
-  return runSerializer(values, fields, 'deserialize');
-};
+export const deserializeValues = (values, fields) => runSerializer(values, fields, 'deserialize');

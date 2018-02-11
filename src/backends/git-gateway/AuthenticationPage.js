@@ -34,11 +34,11 @@ export default class AuthenticationPage extends React.Component {
   handleIdentityLogin = (user) => {
     this.props.onLogin(user);
     window.netlifyIdentity.close();
-  }
+  };
 
   handleIdentityLogout = () => {
     window.netlifyIdentity.open();
-  }
+  };
 
   handleIdentity = () => {
     if (window.netlifyIdentity.currentUser()) {
@@ -46,7 +46,7 @@ export default class AuthenticationPage extends React.Component {
     } else {
       window.netlifyIdentity.open();
     }
-  }
+  };
 
   static propTypes = {
     onLogin: PropTypes.func.isRequired,
@@ -90,17 +90,17 @@ export default class AuthenticationPage extends React.Component {
     const { error, inProgress } = this.props;
 
     if (window.netlifyIdentity) {
-      return <section className="nc-gitGatewayAuthenticationPage-root">
-        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms"/>
+      return (<section className="nc-gitGatewayAuthenticationPage-root">
+        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms" />
         <button className="nc-githubAuthenticationPage-button" onClick={this.handleIdentity}>
           Login with Netlify Identity
         </button>
-      </section>
+      </section>);
     }
 
     return (
       <section className="nc-gitGatewayAuthenticationPage-root">
-        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms"/>
+        <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms" />
         <form className="nc-gitGatewayAuthenticationPage-form" onSubmit={this.handleLogin}>
           {!error && <p>
             <span className="nc-gitGatewayAuthenticationPage-errorMsg">{error}</span>

@@ -17,7 +17,7 @@ export default class RawEditor extends React.Component {
     return !this.state.value.equals(nextState.value);
   }
 
-  handleChange = change => {
+  handleChange = (change) => {
     if (!this.state.value.document.equals(change.value.document)) {
       this.handleDocumentChange(change);
     }
@@ -28,7 +28,7 @@ export default class RawEditor extends React.Component {
    * When the document value changes, serialize from Slate's AST back to plain
    * text (which is Markdown) and pass that up as the new value.
    */
-  handleDocumentChange = debounce(change => {
+  handleDocumentChange = debounce((change) => {
     const value = Plain.serialize(change.value);
     this.props.onChange(value);
   }, 150);
@@ -63,7 +63,7 @@ export default class RawEditor extends React.Component {
           />
         </div>
         <Slate
-          className={`${className} nc-rawEditor-rawEditor`}
+          className={`${ className } nc-rawEditor-rawEditor`}
           value={this.state.value}
           onChange={this.handleChange}
           onPaste={this.handlePaste}

@@ -60,7 +60,7 @@ import slateToRemark from './slateRemark';
 /**
  * Deserialize a Markdown string to an MDAST.
  */
-export const markdownToRemark = markdown => {
+export const markdownToRemark = (markdown) => {
   /**
    * Parse the Markdown string input to an MDAST.
    */
@@ -87,7 +87,7 @@ export const markdownToRemark = markdown => {
  * Remove named tokenizers from the parser, effectively deactivating them.
  */
 function markdownToRemarkRemoveTokenizers({ inlineTokenizers }) {
-  inlineTokenizers && inlineTokenizers.forEach(tokenizer => {
+  inlineTokenizers && inlineTokenizers.forEach((tokenizer) => {
     delete this.Parser.prototype.inlineTokenizers[tokenizer];
   });
 }
@@ -96,7 +96,7 @@ function markdownToRemarkRemoveTokenizers({ inlineTokenizers }) {
 /**
  * Serialize an MDAST to a Markdown string.
  */
-export const remarkToMarkdown = obj => {
+export const remarkToMarkdown = (obj) => {
   /**
    * Rewrite the remark-stringify text visitor to simply return the text value,
    * without encoding or escaping any characters. This means we're completely
@@ -106,7 +106,7 @@ export const remarkToMarkdown = obj => {
     const Compiler = this.Compiler;
     const visitors = Compiler.prototype.visitors;
     visitors.text = node => node.value;
-  };
+  }
 
   /**
    * Provide an empty MDAST if no value is provided.
@@ -163,14 +163,14 @@ export const markdownToHtml = (markdown, getAsset) => {
     .stringify(hast);
 
   return html;
-}
+};
 
 
 /**
  * Deserialize an HTML string to Slate's Raw AST. Currently used for HTML
  * pastes.
  */
-export const htmlToSlate = html => {
+export const htmlToSlate = (html) => {
   const hast = unified()
     .use(htmlToRehype, { fragment: true })
     .parse(html);
@@ -196,7 +196,7 @@ export const htmlToSlate = html => {
 /**
  * Convert Markdown to Slate's Raw AST.
  */
-export const markdownToSlate = markdown => {
+export const markdownToSlate = (markdown) => {
   const mdast = markdownToRemark(markdown);
 
   const slateRaw = unified()
@@ -217,7 +217,7 @@ export const markdownToSlate = markdown => {
  * MDAST. The conversion is manual because Unified can only operate on Unist
  * trees.
  */
-export const slateToMarkdown = raw => {
+export const slateToMarkdown = (raw) => {
   const mdast = slateToRemark(raw, { shortcodePlugins: getEditorComponents() });
   const markdown = remarkToMarkdown(mdast);
   return markdown;

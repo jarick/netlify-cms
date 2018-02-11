@@ -142,9 +142,7 @@ const escapePatterns = [
  * Generate new non-escape expression. The non-escape expression matches
  * substrings whose contents should not be processed for escaping.
  */
-const joinedNonEscapePatterns = map(nonEscapePatterns, pattern => {
-  return new RegExp(joinPatternSegments(pattern));
-});
+const joinedNonEscapePatterns = map(nonEscapePatterns, pattern => new RegExp(joinPatternSegments(pattern)));
 const nonEscapePattern = combinePatterns(joinedNonEscapePatterns);
 
 
@@ -212,7 +210,7 @@ function escapeDelimiters(pattern, text) {
     const hasEnd = typeof end === 'string';
     const matchSliceEnd = hasEnd ? match.length - end.length : match.length;
     const content = match.slice(start.length, matchSliceEnd);
-    return `${escape(start)}${content}${hasEnd ? escape(end) : ''}`;
+    return `${ escape(start) }${ content }${ hasEnd ? escape(end) : '' }`;
   });
 }
 
@@ -226,7 +224,7 @@ function escapeDelimiters(pattern, text) {
 function escape(delim) {
   let result = '';
   for (const char of delim) {
-    result += `\\${char}`;
+    result += `\\${ char }`;
   }
   return result;
 }
@@ -261,7 +259,6 @@ export default function remarkEscapeMarkdownEntities() {
      * text in html nodes to keep Remark from escaping html entities.
      */
     if (['text', 'html'].includes(node.type)) {
-
       /**
        * Escape all characters if this is the first child node, otherwise only
        * common characters.
@@ -273,7 +270,7 @@ export default function remarkEscapeMarkdownEntities() {
     /**
      * Always return nodes with recursively mapped children.
      */
-    return {...node, children };
+    return { ...node, children };
   };
 
   return transform;

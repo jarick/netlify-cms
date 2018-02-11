@@ -37,9 +37,7 @@ const TopBar = ({ onAdd, listLabel, onCollapseAllToggle, allItemsCollapsed, item
   </div>
 );
 
-const SortableList = SortableContainer(({ items, renderItem }) => {
-  return <div>{items.map(renderItem)}</div>;
-});
+const SortableList = SortableContainer(({ items, renderItem }) => <div>{items.map(renderItem)}</div>);
 
 const valueTypes = {
   SINGLE: 'SINGLE',
@@ -127,7 +125,7 @@ export default class ListControl extends Component {
 
   handleFocus = () => {
     this.props.setActiveStyle();
-  }
+  };
 
   handleBlur = (e) => {
     const listValue = e.target.value.split(',').map(el => el.trim()).filter(el => el);
@@ -171,14 +169,14 @@ export default class ListControl extends Component {
     this.setState({ itemsCollapsed: itemsCollapsed.delete(index) });
 
     onChange(value.remove(index), parsedMetadata);
-  }
+  };
 
   handleItemCollapseToggle = (index, event) => {
     event.preventDefault();
     const { itemsCollapsed } = this.state;
     const collapsed = itemsCollapsed.get(index);
     this.setState({ itemsCollapsed: itemsCollapsed.set(index, !collapsed) });
-  }
+  };
 
   handleCollapseAllToggle = (e) => {
     e.preventDefault();
@@ -186,7 +184,7 @@ export default class ListControl extends Component {
     const { itemsCollapsed } = this.state;
     const allItemsCollapsed = itemsCollapsed.every(val => val === true);
     this.setState({ itemsCollapsed: List(Array(value.size).fill(!allItemsCollapsed)) });
-  }
+  };
 
   objectLabel(item) {
     const { field } = this.props;
@@ -244,7 +242,7 @@ export default class ListControl extends Component {
         mediaPaths={mediaPaths}
         onAddAsset={onAddAsset}
         onRemoveInsertedMedia={onRemoveInsertedMedia}
-        classNameWrapper={`${classNameWrapper} nc-listControl-objectControl`}
+        classNameWrapper={`${ classNameWrapper } nc-listControl-objectControl`}
         forList
       />
     </SortableListItem>);
@@ -293,4 +291,4 @@ export default class ListControl extends Component {
       className={classNameWrapper}
     />);
   }
-};
+}

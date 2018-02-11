@@ -8,7 +8,7 @@ import {
   loadUnpublishedEntries,
   updateUnpublishedEntryStatus,
   publishUnpublishedEntry,
-  deleteUnpublishedEntry
+  deleteUnpublishedEntry,
 } from 'Actions/editorialWorkflow';
 import { selectUnpublishedEntriesByStatus } from 'Reducers';
 import { EDITORIAL_WORKFLOW, status } from 'Constants/publishModes';
@@ -102,7 +102,7 @@ function mapStateToProps(state) {
      */
     returnObj.unpublishedEntries = status.reduce((acc, currStatus) => {
       const entries = selectUnpublishedEntriesByStatus(state, currStatus);
-      return acc.set(currStatus, entries)
+      return acc.set(currStatus, entries);
     }, OrderedMap());
   }
   return returnObj;
