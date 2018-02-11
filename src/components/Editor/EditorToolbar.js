@@ -217,7 +217,7 @@ export default class EditorToolbar extends React.Component {
             <div 
               className="nc-entryEditor-toolbar-backCollection"
               dangerouslySetInnerHTML={{
-                __html: t('entry.header', { label: collection.get('label') })
+                __html: t('entry.header', { label: collection.get('label') }),
               }}
             />
             {hasChanged
@@ -226,7 +226,7 @@ export default class EditorToolbar extends React.Component {
               </div>
               : <div className="nc-entryEditor-toolbar-backStatus">
                 {t('entry.changes-saved')}
-            </div>
+              </div>
             }
           </div>
         </Link>
