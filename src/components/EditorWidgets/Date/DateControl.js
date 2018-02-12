@@ -18,7 +18,8 @@ export default class DateControl extends React.Component {
   };
 
   componentDidMount() {
-    const { value, field, onChange } = this.props;
+    const { value, field } = this.props;
+
     this.format = field.get('format');
 
     /**
@@ -32,6 +33,7 @@ export default class DateControl extends React.Component {
 
   handleChange = (datetime) => {
     const { onChange } = this.props;
+
     if (!this.format || datetime === '') {
       onChange(datetime);
     } else {
@@ -43,6 +45,7 @@ export default class DateControl extends React.Component {
   render() {
     const { includeTime, value, classNameWrapper, setActiveStyle, setInactiveStyle } = this.props;
     const format = this.format || moment.defaultFormat;
+
     return (
       <DateTime
         timeFormat={!!includeTime}

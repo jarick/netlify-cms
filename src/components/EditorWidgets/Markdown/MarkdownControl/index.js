@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import c from 'classnames';
-import { markdownToRemark, remarkToMarkdown } from 'EditorWidgets/Markdown/serializers';
 import RawEditor from './RawEditor';
 import VisualEditor from './VisualEditor';
 
@@ -32,7 +30,10 @@ export default class MarkdownControl extends React.Component {
     localStorage.setItem(MODE_STORAGE_KEY, mode);
   };
 
-  processRef = ref => this.ref = ref;
+  processRef = (ref) => {
+    this.ref = ref;
+    return;
+  };
 
   render() {
     const {

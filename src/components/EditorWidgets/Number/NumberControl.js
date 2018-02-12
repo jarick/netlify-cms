@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+
 
 export default class NumberControl extends React.Component {
   static propTypes = {
@@ -9,15 +11,13 @@ export default class NumberControl extends React.Component {
     setInactiveStyle: PropTypes.func.isRequired,
     value: PropTypes.node,
     forID: PropTypes.string,
-    valueType: PropTypes.string,
-    step: PropTypes.number,
-    min: PropTypes.number,
-    max: PropTypes.number,
+    field: ImmutablePropTypes.map,
   };
 
   handleChange = (e) => {
     const valueType = this.props.field.get('valueType');
     const { onChange } = this.props;
+
     if (valueType === 'int') {
       onChange(parseInt(e.target.value, 10));
     } else if (valueType === 'float') {
@@ -32,6 +32,7 @@ export default class NumberControl extends React.Component {
     const min = field.get('min', '');
     const max = field.get('max', '');
     const step = field.get('step', field.get('valueType') === 'int' ? 1 : '');
+
     return (<input
       type="number"
       id={forID}

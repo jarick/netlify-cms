@@ -1,10 +1,12 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default function DateTimePreview({ value }) {
-  return <div className="nc-widgetPreview">{value ? value.toString() : null}</div>;
-}
+const DateTimePreview = ({ value }) => (
+  <div className="nc-widgetPreview">{value && `${ value }`}</div>
+);
 
 DateTimePreview.propTypes = {
   value: PropTypes.object,
 };
+
+export default DateTimePreview;

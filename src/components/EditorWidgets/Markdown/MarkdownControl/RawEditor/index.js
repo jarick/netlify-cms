@@ -3,7 +3,7 @@ import React from 'react';
 import { Editor as Slate } from 'slate-react';
 import Plain from 'slate-plain-serializer';
 import { debounce } from 'lodash';
-import Toolbar from 'EditorWidgets/Markdown/MarkdownControl/Toolbar/Toolbar';
+import Toolbar from '../Toolbar/Toolbar';
 
 export default class RawEditor extends React.Component {
   constructor(props) {

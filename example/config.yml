@@ -8,7 +8,7 @@ media_folder: "assets/uploads"
 
 collections: # A list of collections the CMS should be able to edit
   - name: "posts" # Used in routes, ie.: /admin/collections/:slug/edit
-    label: "Статья" # Used in the UI, ie.: "New Post"
+    label: "Запись" # Used in the UI, ie.: "New Post"
     description: >
       Описание - это великолепное место для тоны настроек, высокозначимой информации, и редактирования
       правил специфичных разделов.

@@ -4,26 +4,32 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { List, Map } from 'immutable';
 import { partial } from 'lodash';
 import c from 'classnames';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { Icon, ListItemTopBar } from 'UI';
-import ObjectControl from 'EditorWidgets/Object/ObjectControl';
+import {
+  SortableContainer as sortableContainer,
+  SortableElement as sortableElement,
+  SortableHandle,
+} from 'react-sortable-hoc';
+import { Icon, ListItemTopBar } from '../../UI';
+import ObjectControl from '../Object/ObjectControl';
 
-function ListItem(props) {
-  return <div {...props} className={`list-item ${ props.className || '' }`}>{props.children}</div>;
-}
+
+const ListItem = props => (
+  <div {...props} className={`list-item ${ props.className || '' }`}>
+    {props.children}
+  </div>
+);
+
 ListItem.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
 };
 ListItem.displayName = 'list-item';
 
-function valueToString(value) {
-  return value ? value.join(',').replace(/,([^\s]|$)/g, ', $1') : '';
-}
+const valueToString = value => (value ? value.join(',').replace(/,([^\s]|$)/g, ', $1') : '');
 
-const SortableListItem = SortableElement(ListItem);
+const SortableListItem = sortableElement(ListItem);
 
-const TopBar = ({ onAdd, listLabel, onCollapseAllToggle, allItemsCollapsed, itemsCount }) => (
+const TopBar = ({ t, onAdd, listLabel, onCollapseAllToggle, allItemsCollapsed, itemsCount }) => (
   <div className="nc-listControl-topBar">
     <div className="nc-listControl-listCollapseToggle">
       <button className="nc-listControl-listCollapseToggleButton" onClick={onCollapseAllToggle}>
@@ -32,12 +38,23 @@ const TopBar = ({ onAdd, listLabel, onCollapseAllToggle, allItemsCollapsed, item
       {itemsCount} {listLabel}
     </div>
     <button className="nc-listControl-addButton" onClick={onAdd}>
-      Add {listLabel} <Icon type="add" size="xsmall" />
+      {t('list.add', { listLabel })} <Icon type="add" size="xsmall" />
     </button>
   </div>
 );
 
-const SortableList = SortableContainer(({ items, renderItem }) => <div>{items.map(renderItem)}</div>);
+TopBar.propTypes = {
+  t: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  listLabel: PropTypes.string.isRequired,
+  onCollapseAllToggle: PropTypes.func.isRequired, 
+  allItemsCollapsed: PropTypes.bool.isRequired,
+  itemsCount: PropTypes.number.isRequired,
+};
+
+const SortableList = sortableContainer(({ items, renderItem }) => (
+  <div>{items.map(renderItem)}</div>
+));
 
 const valueTypes = {
   SINGLE: 'SINGLE',
@@ -47,7 +64,6 @@ const valueTypes = {
 export default class ListControl extends Component {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
-    onChangeObject: PropTypes.func.isRequired,
     value: ImmutablePropTypes.list,
     field: PropTypes.object,
     forID: PropTypes.string,
@@ -59,6 +75,11 @@ export default class ListControl extends Component {
     classNameWrapper: PropTypes.string.isRequired,
     setActiveStyle: PropTypes.func.isRequired,
     setInactiveStyle: PropTypes.func.isRequired,
+    metadata: ImmutablePropTypes.map,
+  };
+
+  static contextTypes = {
+    t: PropTypes.func,
   };
 
   static defaultProps = {
@@ -79,16 +100,6 @@ export default class ListControl extends Component {
     this.valueType = null;
   }
 
-  /**
-   * Always update so that each nested widget has the option to update. This is
-   * required because ControlHOC provides a default `shouldComponentUpdate`
-   * which only updates if the value changes, but every widget must be allowed
-   * to override this.
-   */
-  shouldComponentUpdate() {
-    return true;
-  }
-
   componentDidMount() {
     const { field } = this.props;
 
@@ -97,6 +108,16 @@ export default class ListControl extends Component {
     } else if (field.get('field')) {
       this.valueType = valueTypes.SINGLE;
     }
+  }
+
+  /**
+   * Always update so that each nested widget has the option to update. This is
+   * required because ControlHOC provides a default `shouldComponentUpdate`
+   * which only updates if the value changes, but every widget must be allowed
+   * to override this.
+   */
+  shouldComponentUpdate() {
+    return true;
   }
 
   componentWillUpdate(nextProps) {
@@ -108,6 +129,28 @@ export default class ListControl extends Component {
       this.valueType = valueTypes.SINGLE;
     }
   }
+
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const { value } = this.props;
+    const { itemsCollapsed } = this.state;
+
+    // Update value
+    const item = value.get(oldIndex);
+    const newValue = value.delete(oldIndex).insert(newIndex, item);
+    this.props.onChange(newValue);
+
+    // Update collapsing
+    const collapsed = itemsCollapsed.get(oldIndex);
+    const updatedItemsCollapsed = itemsCollapsed.delete(oldIndex).insert(newIndex, collapsed);
+    this.setState({ itemsCollapsed: updatedItemsCollapsed });
+  };
+
+  /**
+   * In case the `onChangeObject` function is frozen by a child widget implementation,
+   * e.g. when debounced, always get the latest object value instead of using
+   * `this.props.value` directly.
+   */
+  getObjectValue = idx => this.props.value.get(idx) || Map();
 
   handleChange = (e) => {
     const { onChange } = this.props;
@@ -140,13 +183,6 @@ export default class ListControl extends Component {
     this.setState({ itemsCollapsed: this.state.itemsCollapsed.push(false) });
     onChange((value || List()).push(parsedValue));
   };
-
-  /**
-   * In case the `onChangeObject` function is frozen by a child widget implementation,
-   * e.g. when debounced, always get the latest object value instead of using
-   * `this.props.value` directly.
-   */
-  getObjectValue = idx => this.props.value.get(idx) || Map();
 
   handleChangeFor(index) {
     return (fieldName, newValue, newMetadata) => {
@@ -188,27 +224,16 @@ export default class ListControl extends Component {
 
   objectLabel(item) {
     const { field } = this.props;
+    const { t } = this.context;
     const multiFields = field.get('fields');
     const singleField = field.get('field');
     const labelField = (multiFields && multiFields.first()) || singleField;
-    const value = multiFields ? item.get(multiFields.first().get('name')) : singleField.get('label');
-    return value || `No ${ labelField.get('name') }`;
+    const value = multiFields
+      ? item.get(multiFields.first().get('name'))
+      : singleField.get('label');
+
+    return value || t('list.no', { name: labelField.get('name') });
   }
-
-  onSortEnd = ({ oldIndex, newIndex }) => {
-    const { value, onChange } = this.props;
-    const { itemsCollapsed } = this.state;
-
-    // Update value
-    const item = value.get(oldIndex);
-    const newValue = value.delete(oldIndex).insert(newIndex, item);
-    this.props.onChange(newValue);
-
-    // Update collapsing
-    const collapsed = itemsCollapsed.get(oldIndex);
-    const updatedItemsCollapsed = itemsCollapsed.delete(oldIndex).insert(newIndex, collapsed);
-    this.setState({ itemsCollapsed: updatedItemsCollapsed });
-  };
 
   renderItem = (item, index) => {
     const {
@@ -250,12 +275,14 @@ export default class ListControl extends Component {
 
   renderListControl() {
     const { value, forID, field, classNameWrapper } = this.props;
+    const { t } = this.context;
     const { itemsCollapsed } = this.state;
     const items = value || List();
 
     return (
       <div id={forID} className={c(classNameWrapper, 'nc-listControl')}>
         <TopBar
+          t={t}
           onAdd={this.handleAdd}
           listLabel={field.get('label').toLowerCase()}
           onCollapseAllToggle={this.handleCollapseAllToggle}

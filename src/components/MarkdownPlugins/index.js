@@ -1,4 +1,4 @@
-import { registerEditorComponent } from 'Lib/registry';
+import { registerEditorComponent } from '../../lib/registry';
 import image from './image';
 
 const plugins = [

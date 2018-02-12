@@ -37,4 +37,6 @@ export default {
   'entries.caching': 'Caching Entries',
   'entries.waiting': 'This might take several minutes',
   'entries.no': 'No Entries',
+  'list.add': 'Add {listLabel}',
+  'list.no': 'No {name}',
 };

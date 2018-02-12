@@ -37,4 +37,6 @@ export default {
   'entries.caching': 'Кеширование раздела',
   'entries.waiting': 'Это может занять пару минут',
   'entries.no': 'Нет данных',
+  'list.add': 'Добавить {listLabel}',
+  'list.no': 'Нет {name}',
 };
