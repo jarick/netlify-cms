@@ -36,7 +36,6 @@ class RelationControl extends Component {
     const { value, field } = this.props;
 
     if (value) {
-
       const collection = field.get('collection');
       const searchFields = field.get('searchFields').toJS();
       this.props.query(this.controlID, collection, searchFields, value);

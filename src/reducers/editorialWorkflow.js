@@ -1,5 +1,5 @@
 import { Map, List, fromJS } from 'immutable';
-import { EDITORIAL_WORKFLOW } from 'Constants/publishModes';
+import { EDITORIAL_WORKFLOW } from '../constants/publishModes';
 import {
   UNPUBLISHED_ENTRY_REQUEST,
   UNPUBLISHED_ENTRY_REDIRECT,
@@ -14,11 +14,11 @@ import {
   UNPUBLISHED_ENTRY_PUBLISH_REQUEST,
   UNPUBLISHED_ENTRY_PUBLISH_SUCCESS,
   UNPUBLISHED_ENTRY_PUBLISH_FAILURE,
-  UNPUBLISHED_ENTRY_DELETE_REQUEST,
+//  UNPUBLISHED_ENTRY_DELETE_REQUEST,
   UNPUBLISHED_ENTRY_DELETE_SUCCESS,
-  UNPUBLISHED_ENTRY_DELETE_FAILURE,
-} from 'Actions/editorialWorkflow';
-import { CONFIG_SUCCESS } from 'Actions/config';
+//  UNPUBLISHED_ENTRY_DELETE_FAILURE,
+} from '../actions/editorialWorkflow';
+import { CONFIG_SUCCESS } from '../actions/config';
 
 const unpublishedEntries = (state = null, action) => {
   const publishMode = action.payload && action.payload.publish_mode;
@@ -30,7 +30,10 @@ const unpublishedEntries = (state = null, action) => {
       }
       return state;
     case UNPUBLISHED_ENTRY_REQUEST:
-      return state.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'], true);
+      return state.setIn(
+        ['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'], 
+        true
+      );
     
     case UNPUBLISHED_ENTRY_REDIRECT:
       return state.deleteIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`]);
@@ -58,9 +61,19 @@ const unpublishedEntries = (state = null, action) => {
     case UNPUBLISHED_ENTRY_PERSIST_REQUEST:
       // Update Optimistically
       return state.withMutations((map) => {
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.entry.get('slug') }`], fromJS(action.payload.entry));
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.entry.get('slug') }`, 'isPersisting'], true);
-        map.updateIn(['pages', 'ids'], List(), list => list.push(action.payload.entry.get('slug')));
+        map.setIn(
+          ['entities', `${ action.payload.collection }.${ action.payload.entry.get('slug') }`],
+          fromJS(action.payload.entry)
+        );
+        map.setIn(
+          ['entities', `${ action.payload.collection }.${ action.payload.entry.get('slug') }`, 'isPersisting'],
+           true
+        );
+        map.updateIn(
+          ['pages', 'ids'],
+          List(),
+          list => list.push(action.payload.entry.get('slug'))
+        );
       });
 
     case UNPUBLISHED_ENTRY_PERSIST_SUCCESS:

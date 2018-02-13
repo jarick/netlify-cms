@@ -43,7 +43,10 @@ const Entries = ({
 };
 
 Entries.propTypes = {
-  collections: ImmutablePropTypes.map.isRequired,
+  collections: PropTypes.oneOfType([
+    ImmutablePropTypes.map,
+    ImmutablePropTypes.iterable,
+  ]).isRequired,
   entries: ImmutablePropTypes.list,
   publicFolder: PropTypes.string.isRequired,
   page: PropTypes.number,
