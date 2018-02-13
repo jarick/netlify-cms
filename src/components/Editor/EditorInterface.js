@@ -4,7 +4,6 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import SplitPane from 'react-split-pane';
 import classnames from 'classnames';
 import { ScrollSync, ScrollSyncPane } from './EditorScrollSync';
-import { Icon } from '../UI';
 import EditorControlPane from './EditorControlPane/EditorControlPane';
 import EditorPreviewPane from './EditorPreviewPane/EditorPreviewPane';
 import EditorToolbar from './EditorToolbar';

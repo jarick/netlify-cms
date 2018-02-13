@@ -9,16 +9,16 @@ import {
   ENTRY_PERSIST_SUCCESS,
   ENTRY_PERSIST_FAILURE,
   ENTRY_DELETE_SUCCESS,
-} from 'Actions/entries';
+} from '../actions/entries';
 import {
   UNPUBLISHED_ENTRY_PERSIST_REQUEST,
   UNPUBLISHED_ENTRY_PERSIST_SUCCESS,
   UNPUBLISHED_ENTRY_PERSIST_FAILURE,
-} from 'Actions/editorialWorkflow';
+} from '../actions/editorialWorkflow';
 import {
   ADD_ASSET,
   REMOVE_ASSET,
-} from 'Actions/media';
+} from '../actions/media';
 
 const initialState = Map({
   entry: Map(),
@@ -30,6 +30,8 @@ const initialState = Map({
 
 const entryDraftReducer = (state = Map(), action) => {
   switch (action.type) {
+    case 'DRAFT_RESTORE': 
+      return fromJS(action.payload);
     case DRAFT_CREATE_FROM_ENTRY:
       // Existing Entry
       return state.withMutations((state) => {

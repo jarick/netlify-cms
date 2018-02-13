@@ -26,7 +26,7 @@ export default {
   'entry.draft': 'Черновик',
   'entry.in-review': 'На проверке',
   'entry.ready': 'Готово',
-  'entry.header': 'Редактировать раздел <strong>{label}</string>',
+  'entry.header': 'Вернуться назад',
   'entry.log-out': 'Выход',
   'entry.unsaved-changes': 'Есть несохранённые изменения',
   'entry.changes-saved': 'Изменения сохранены',

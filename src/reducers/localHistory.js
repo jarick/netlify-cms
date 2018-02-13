@@ -31,7 +31,10 @@ const localHistoryReducer = (state = List(), action) => {
             const timeX = moment(last.get('startDate')).add(MAX_MINUTES_SAVE_LUG, 'm');
             if (moment().isSameOrBefore(timeX)) {
               result = state.update(-1, () => (
-                last.set('editDate', moment().toISOString()).set('data', data)
+                last.withMutations((s) => {
+                  s.set('editDate', moment().toISOString());
+                  s.set('data', data);
+                })
               ));
             }
           }
@@ -53,10 +56,11 @@ const localHistoryReducer = (state = List(), action) => {
     }
     case LOCAL_HISTORY_REVERT: {
       const { index } = action.payload;
-      const item = state.get(index)
-        .set('revert', true)
-        .set('startDate', moment().toISOString())
-        .set('editDate', moment().toISOString());
+      const item = state.get(index).withMutations((s) => {
+        s.set('revert', true);
+        s.set('startDate', moment().toISOString());
+        s.set('editDate', moment().toISOString());
+      });
 
       return state.push(item.set('revert', true)).slice(-MAX_HISTORE_ITEM);
     }

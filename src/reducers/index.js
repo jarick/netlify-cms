@@ -5,6 +5,7 @@ import integrations, * as fromIntegrations from './integrations';
 import entries, * as fromEntries from './entries';
 import editorialWorkflow, * as fromEditorialWorkflow from './editorialWorkflow';
 import entryDraft from './entryDraft';
+import localHistory from './localHistory';
 import collections from './collections';
 import search from './search';
 import mediaLibrary from './mediaLibrary';
@@ -21,6 +22,7 @@ const reducers = {
   entries,
   editorialWorkflow,
   entryDraft,
+  localHistory,
   mediaLibrary,
   medias,
   globalUI,
