@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { Map } from 'immutable';
-import { partial } from 'lodash';
 import c from 'classnames';
-import { resolveWidget } from 'Lib/registry';
-import { Icon } from 'UI';
-import EditorControl from 'Editor/EditorControlPane/EditorControl';
+import { resolveWidget } from '../../../lib/registry';
+import { Icon } from '../../UI';
+import EditorControl from '../../Editor/EditorControlPane/EditorControl';
 
 const TopBar = ({ collapsed, onCollapseToggle }) => (
   <div className="nc-objectControl-topBar">
@@ -17,6 +16,11 @@ const TopBar = ({ collapsed, onCollapseToggle }) => (
     </div>
   </div>
 );
+
+TopBar.propTypes = {
+  collapsed: PropTypes.bool.isRequired,
+  onCollapseToggle: PropTypes.func.isRequired,
+};
 
 export default class ObjectControl extends Component {
   static propTypes = {
@@ -69,7 +73,7 @@ export default class ObjectControl extends Component {
       return null;
     }
     const widgetName = field.get('widget') || 'string';
-    const widget = resolveWidget(widgetName);
+    resolveWidget(widgetName);
     const fieldName = field.get('name');
     const fieldValue = value && Map.isMap(value) ? value.get(fieldName) : value;
 
@@ -101,8 +105,13 @@ export default class ObjectControl extends Component {
     if (multiFields) {
       return (
         <div id={forID} className={c(classNameWrapper, 'nc-objectControl-root')}>
-          { forList ? null : <TopBar collapsed={collapsed} onCollapseToggle={this.handleCollapseToggle} /> }
-          { collapsed ? null : multiFields.map((f, idx) => this.controlFor(f, idx)) }
+          {!forList && (
+            <TopBar
+              collapsed={collapsed}
+              onCollapseToggle={this.handleCollapseToggle}
+            />
+          )}
+          {!collapsed && multiFields.map((f, idx) => this.controlFor(f, idx))}
         </div>
       );
     } else if (singleField) {

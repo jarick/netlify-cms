@@ -2,15 +2,11 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
 import uuid from 'uuid/v4';
-import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
-import { query, clearSearch } from 'Actions/search';
-import { Loader } from 'UI';
+import { query, clearSearch } from '../../../actions/search';
+import { Loader } from '../../UI';
 
-function escapeRegexCharacters(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 class RelationControl extends Component {
   static propTypes = {
@@ -38,7 +34,9 @@ class RelationControl extends Component {
 
   componentDidMount() {
     const { value, field } = this.props;
+
     if (value) {
+
       const collection = field.get('collection');
       const searchFields = field.get('searchFields').toJS();
       this.props.query(this.controlID, collection, searchFields, value);
@@ -47,12 +45,17 @@ class RelationControl extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.didInitialSearch) return;
-    if (nextProps.queryHits !== this.props.queryHits && nextProps.queryHits.get && nextProps.queryHits.get(this.controlID)) {
+    if (
+      nextProps.queryHits !== this.props.queryHits
+      && nextProps.queryHits.get && nextProps.queryHits.get(this.controlID)
+    ) {
       this.didInitialSearch = true;
       const suggestion = nextProps.queryHits.get(this.controlID);
       if (suggestion && suggestion.length === 1) {
         const val = this.getSuggestionValue(suggestion[0]);
-        this.props.onChange(val, { [nextProps.field.get('collection')]: { [val]: suggestion[0].data } });
+        this.props.onChange(val, {
+          [nextProps.field.get('collection')]: { [val]: suggestion[0].data },
+        });
       }
     }
   }
@@ -63,14 +66,19 @@ class RelationControl extends Component {
 
   onSuggestionSelected = (event, { suggestion }) => {
     const value = this.getSuggestionValue(suggestion);
-    this.props.onChange(value, { [this.props.field.get('collection')]: { [value]: suggestion.data } });
+
+    this.props.onChange(value, {
+      [this.props.field.get('collection')]: { [value]: suggestion.data },
+    });
   };
 
   onSuggestionsFetchRequested = debounce(({ value }) => {
     if (value.length < 2) return;
+
     const { field } = this.props;
     const collection = field.get('collection');
     const searchFields = field.get('searchFields').toJS();
+
     this.props.query(this.controlID, collection, searchFields, value);
   }, 500);
 
@@ -131,12 +139,13 @@ class RelationControl extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const { className } = ownProps;
   const isFetching = state.search.get('isFetching');
   const queryHits = state.search.get('queryHits');
+
   return { isFetching, queryHits, className };
-}
+};
 
 export default connect(
   mapStateToProps,

@@ -1,36 +1,32 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class StringControl extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func.isRequired,
-    forID: PropTypes.string,
-    value: PropTypes.node,
-    classNameWrapper: PropTypes.string.isRequired,
-    setActiveStyle: PropTypes.func.isRequired,
-    setInactiveStyle: PropTypes.func.isRequired,
-  };
+const StringControl = ({
+  forID,
+  value,
+  onChange,
+  classNameWrapper,
+  setActiveStyle,
+  setInactiveStyle,
+}) => (
+  <input
+    type="text"
+    id={forID}
+    className={classNameWrapper}
+    value={value || ''}
+    onChange={e => onChange(e.target.value)}
+    onFocus={setActiveStyle}
+    onBlur={setInactiveStyle}
+  />
+);
 
-  render() {
-    const {
-      forID,
-      value,
-      onChange,
-      classNameWrapper,
-      setActiveStyle,
-      setInactiveStyle,
-    } = this.props;
+StringControl.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  forID: PropTypes.string,
+  value: PropTypes.node,
+  classNameWrapper: PropTypes.string.isRequired,
+  setActiveStyle: PropTypes.func.isRequired,
+  setInactiveStyle: PropTypes.func.isRequired, 
+};
 
-    return (
-      <input
-        type="text"
-        id={forID}
-        className={classNameWrapper}
-        value={value || ''}
-        onChange={e => onChange(e.target.value)}
-        onFocus={setActiveStyle}
-        onBlur={setInactiveStyle}
-      />
-    );
-  }
-}
+export default StringControl;

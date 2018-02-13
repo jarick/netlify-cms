@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from "react-immutable-proptypes";
 import uuid from 'uuid/v4';
-import { truncateMiddle } from 'Lib/textHelper';
+import { truncateMiddle } from '../../../lib/textHelper';
 
 const MAX_DISPLAY_LENGTH = 50;
 
@@ -12,7 +12,6 @@ export default function withMediaControl(forImage) {
       field: PropTypes.object.isRequired,
       getAsset: PropTypes.func.isRequired,
       mediaPaths: ImmutablePropTypes.map.isRequired,
-      onAddAsset: PropTypes.func.isRequired,
       onChange: PropTypes.func.isRequired,
       onRemoveInsertedMedia: PropTypes.func.isRequired,
       onOpenMediaLibrary: PropTypes.func.isRequired,
@@ -71,12 +70,13 @@ export default function withMediaControl(forImage) {
     };
 
     renderFileName = () => {
-      const { value, classNameWrapper } = this.props;
+      const { value } = this.props;
+
       return value ? truncateMiddle(value, MAX_DISPLAY_LENGTH) : null;
     };
 
     render() {
-      const { value, getAsset, onRemoveAsset, classNameWrapper } = this.props;
+      const { value, getAsset, classNameWrapper } = this.props;
       const fileName = this.renderFileName();
       const subject = forImage ? 'image' : 'file';
       const article = forImage ? 'an' : 'a';
@@ -90,7 +90,7 @@ export default function withMediaControl(forImage) {
                   {
                       forImage
                         ? <div className="nc-imageControl-imageWrapper">
-                          <img src={getAsset(value)} />
+                          <img alt="" src={getAsset(value)} />
                         </div>
                         : null
                     }
