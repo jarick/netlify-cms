@@ -10,7 +10,7 @@ export default class WrapWidget extends Component {
   render() {
     const {
       controlComponent,
-      ...props,
+      ...props
     } = this.props;
 
     return React.createElement(controlComponent, props);
