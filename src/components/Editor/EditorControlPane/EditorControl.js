@@ -1,7 +1,7 @@
 import React from 'react';
 import { partial } from 'lodash';
 import c from 'classnames';
-import { resolveWidget } from 'Lib/registry';
+import { resolveWidget } from '../../../lib/registry';
 import Widget from './Widget';
 
 export default class EditorControl extends React.Component {
