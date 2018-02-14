@@ -34,34 +34,34 @@ const entryDraftReducer = (state = Map(), action) => {
       return fromJS(action.payload);
     case DRAFT_CREATE_FROM_ENTRY:
       // Existing Entry
-      return state.withMutations((state) => {
-        state.set('entry', action.payload.entry);
-        state.setIn(['entry', 'newRecord'], false);
-        state.set('mediaFiles', List());
+      return state.withMutations((s) => {
+        s.set('entry', action.payload.entry);
+        s.setIn(['entry', 'newRecord'], false);
+        s.set('mediaFiles', List());
         // An existing entry may already have metadata. If we surfed away and back to its
         // editor page, the metadata will have been fetched already, so we shouldn't
         // clear it as to not break relation lists.
-        state.set('fieldsMetaData', action.payload.metadata || Map());
-        state.set('fieldsErrors', Map());
-        state.set('hasChanged', false);
+        s.set('fieldsMetaData', action.payload.metadata || Map());
+        s.set('fieldsErrors', Map());
+        s.set('hasChanged', false);
       });
     case DRAFT_CREATE_EMPTY:
       // New Entry
-      return state.withMutations((state) => {
-        state.set('entry', fromJS(action.payload));
-        state.setIn(['entry', 'newRecord'], true);
-        state.set('mediaFiles', List());
-        state.set('fieldsMetaData', Map());
-        state.set('fieldsErrors', Map());
-        state.set('hasChanged', false);
+      return state.withMutations((s) => {
+        s.set('entry', fromJS(action.payload));
+        s.setIn(['entry', 'newRecord'], true);
+        s.set('mediaFiles', List());
+        s.set('fieldsMetaData', Map());
+        s.set('fieldsErrors', Map());
+        s.set('hasChanged', false);
       });
     case DRAFT_DISCARD:
       return initialState;
     case DRAFT_CHANGE_FIELD:
-      return state.withMutations((state) => {
-        state.setIn(['entry', 'data', action.payload.field], action.payload.value);
-        state.mergeDeepIn(['fieldsMetaData'], fromJS(action.payload.metadata));
-        state.set('hasChanged', true);
+      return state.withMutations((s) => {
+        s.setIn(['entry', 'data', action.payload.field], action.payload.value);
+        s.mergeDeepIn(['fieldsMetaData'], fromJS(action.payload.metadata));
+        s.set('hasChanged', true);
       });
 
     case DRAFT_VALIDATION_ERRORS:
@@ -83,18 +83,18 @@ const entryDraftReducer = (state = Map(), action) => {
 
     case ENTRY_PERSIST_SUCCESS:
     case UNPUBLISHED_ENTRY_PERSIST_SUCCESS:
-      return state.withMutations((state) => {
-        state.deleteIn(['entry', 'isPersisting']);
-        state.set('hasChanged', false);
-        if (!state.getIn(['entry', 'slug'])) {
-          state.setIn(['entry', 'slug'], action.payload.slug);
+      return state.withMutations((s) => {
+        s.deleteIn(['entry', 'isPersisting']);
+        s.set('hasChanged', false);
+        if (!s.getIn(['entry', 'slug'])) {
+          s.setIn(['entry', 'slug'], action.payload.slug);
         }
       });
 
     case ENTRY_DELETE_SUCCESS:
-      return state.withMutations((state) => {
-        state.deleteIn(['entry', 'isPersisting']);
-        state.set('hasChanged', false);
+      return state.withMutations((s) => {
+        s.deleteIn(['entry', 'isPersisting']);
+        s.set('hasChanged', false);
       });
 
     case ADD_ASSET:

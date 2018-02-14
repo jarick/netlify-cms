@@ -1,12 +1,12 @@
 import uuid from 'uuid/v4';
 import { actions as notifActions } from 'redux-notifications';
 import { BEGIN, COMMIT, REVERT } from 'redux-optimist';
-import { serializeValues } from 'Lib/serializeEntryValues';
-import { currentBackend } from 'Backends/backend';
-import { getAsset } from 'Reducers';
-import { selectFields } from 'Reducers/collections';
-import { status, EDITORIAL_WORKFLOW } from 'Constants/publishModes';
-import { EditorialWorkflowError } from "ValueObjects/errors";
+import { serializeValues } from '../lib/serializeEntryValues';
+import { currentBackend } from '../backends/backend';
+import { getAsset } from '../reducers';
+import { selectFields } from '../reducers/collections';
+import { EDITORIAL_WORKFLOW } from '../constants/publishModes';
+import { EditorialWorkflowError } from "../valueObjects/errors";
 import { loadEntry } from './entries';
 
 const { notifSend } = notifActions;
@@ -291,12 +291,15 @@ export function persistUnpublishedEntry(collection, existingUnpublishedEntry) {
         dismissAfter: 4000,
       }));
       dispatch(unpublishedEntryPersisted(collection, serializedEntry, transactionID, newSlug));
+
+      return null;
     } catch (error) {
       dispatch(notifSend({
         message: `Failed to persist entry: ${ error }`,
         kind: 'danger',
         dismissAfter: 8000,
       }));
+
       return Promise.reject(dispatch(unpublishedEntryPersistedFail(error, transactionID)));
     }
   };
@@ -319,7 +322,7 @@ export function updateUnpublishedEntryStatus(collection, slug, oldStatus, newSta
     })
     .catch(() => {
       dispatch(notifSend({
-        message: `Failed to update status: ${ error }`,
+        message: `Failed to update status`,
         kind: 'danger',
         dismissAfter: 8000,
       }));

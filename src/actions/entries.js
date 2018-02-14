@@ -1,12 +1,12 @@
 import { List } from 'immutable';
 import { actions as notifActions } from 'redux-notifications';
-import { serializeValues } from 'Lib/serializeEntryValues';
-import { currentBackend } from 'Backends/backend';
-import { getIntegrationProvider } from 'Integrations';
-import { getAsset, selectIntegration } from 'Reducers';
-import { selectFields } from 'Reducers/collections';
-import { createEntry } from 'ValueObjects/Entry';
-import ValidationErrorTypes from 'Constants/validationErrorTypes';
+import { serializeValues } from '../lib/serializeEntryValues';
+import { currentBackend } from '../backends/backend';
+import { getIntegrationProvider } from '../integrations';
+import { getAsset, selectIntegration } from '../reducers';
+import { selectFields } from '../reducers/collections';
+import { createEntry } from '../valueObjects/Entry';
+import ValidationErrorTypes from '../constants/validationErrorTypes';
 
 const { notifSend } = notifActions;
 
@@ -310,12 +310,14 @@ export function persistEntry(collection) {
         dispatch(entryPersisted(collection, serializedEntry, slug));
       })
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error(error);
         dispatch(notifSend({
           message: `Failed to persist entry: ${ error }`,
           kind: 'danger',
           dismissAfter: 8000,
         }));
+
         return Promise.reject(dispatch(entryPersistFail(collection, serializedEntry, error)));
       });
   };
@@ -335,7 +337,9 @@ export function deleteEntry(collection, slug) {
         kind: 'danger',
         dismissAfter: 8000,
       }));
+      // eslint-disable-next-line no-console
       console.error(error);
+
       return Promise.reject(dispatch(entryDeleteFail(collection, slug, error)));
     });
   };

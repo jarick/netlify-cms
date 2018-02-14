@@ -1,9 +1,9 @@
 import fuzzy from 'fuzzy';
-import { currentBackend } from 'Backends/backend';
-import { getIntegrationProvider } from 'Integrations';
-import { selectIntegration, selectEntries } from 'Reducers';
-import { selectInferedField } from 'Reducers/collections';
-import { WAIT_UNTIL_ACTION } from 'Redux/middleware/waitUntilAction';
+import { currentBackend } from '../backends/backend';
+import { getIntegrationProvider } from '../integrations';
+import { selectIntegration, selectEntries } from '../reducers';
+import { selectInferedField } from '../reducers/collections';
+import { WAIT_UNTIL_ACTION } from '../redux/middleware/waitUntilAction';
 import { loadEntries, ENTRIES_SUCCESS } from './entries';
 
 /*
@@ -97,50 +97,6 @@ export function clearSearch() {
   return { type: SEARCH_CLEAR };
 }
 
-
-/*
- * Exported Thunk Action Creators
- */
-
-// SearchEntries will search for complete entries in all collections.
-export function searchEntries(searchTerm, page = 0) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const allCollections = state.collections.keySeq().toArray();
-    const collections = allCollections.filter(collection => selectIntegration(state, collection, 'search'));
-    const integration = selectIntegration(state, collections[0], 'search');
-    if (!integration) {
-      localSearch(searchTerm, getState, dispatch);
-    } else {
-      const provider = getIntegrationProvider(state.integrations, currentBackend(state.config).getToken, integration);
-      dispatch(searchingEntries(searchTerm));
-      provider.search(collections, searchTerm, page).then(
-        response => dispatch(searchSuccess(searchTerm, response.entries, response.pagination)),
-        error => dispatch(searchFailure(searchTerm, error))
-      );
-    }
-  };
-}
-
-// Instead of searching for complete entries, query will search for specific fields
-// in specific collections and return raw data (no entries).
-export function query(namespace, collection, searchFields, searchTerm) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const integration = selectIntegration(state, collection, 'search');
-    dispatch(querying(namespace, collection, searchFields, searchTerm));
-    if (!integration) {
-      localQuery(namespace, collection, searchFields, searchTerm, state, dispatch);
-    } else {
-      const provider = getIntegrationProvider(state.integrations, currentBackend(state.config).getToken, integration);
-      provider.searchBy(searchFields.map(f => `data.${ f }`), collection, searchTerm).then(
-        response => dispatch(querySuccess(namespace, collection, searchFields, searchTerm, response)),
-        error => dispatch(queryFailure(namespace, collection, searchFields, searchTerm, error))
-      );
-    }
-  };
-}
-
 // Local Query & Search functions
 
 function localSearch(searchTerm, getState, dispatch) {
@@ -172,8 +128,10 @@ function localSearch(searchTerm, getState, dispatch) {
             return 0;
           }).map(f => f.original);
           if (allCollections.size > 3 || localResults.entries.length > 30) {
+            // eslint-disable-next-line no-console
             console.warn('The Netlify CMS is currently using a Built-in search.' +
-            '\nWhile this works great for small sites, bigger projects might benefit from a separate search integration.' + 
+            '\nWhile this works great for small sites, bigger projects might' +
+            ' benefit from a separate search integration.' + 
             '\nPlease refer to the documentation for more information');
           }
           dispatch(searchSuccess(searchTerm, sortedResults, 0));
@@ -218,8 +176,53 @@ function localQuery(namespace, collection, searchFields, searchTerm, state, disp
     dispatch({
       type: WAIT_UNTIL_ACTION,
       predicate: action => (action.type === ENTRIES_SUCCESS && action.payload.collection === collection),
+      // eslint-disable-next-line
       run: dispatch => dispatch(query(namespace, collection, searchFields, searchTerm)),
     });
     dispatch(loadEntries(state.collections.get(collection)));
   }
+}
+
+
+/*
+ * Exported Thunk Action Creators
+ */
+
+// SearchEntries will search for complete entries in all collections.
+export function searchEntries(searchTerm, page = 0) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const allCollections = state.collections.keySeq().toArray();
+    const collections = allCollections.filter(collection => selectIntegration(state, collection, 'search'));
+    const integration = selectIntegration(state, collections[0], 'search');
+    if (!integration) {
+      localSearch(searchTerm, getState, dispatch);
+    } else {
+      const provider = getIntegrationProvider(state.integrations, currentBackend(state.config).getToken, integration);
+      dispatch(searchingEntries(searchTerm));
+      provider.search(collections, searchTerm, page).then(
+        response => dispatch(searchSuccess(searchTerm, response.entries, response.pagination)),
+        error => dispatch(searchFailure(searchTerm, error))
+      );
+    }
+  };
+}
+
+// Instead of searching for complete entries, query will search for specific fields
+// in specific collections and return raw data (no entries).
+export function query(namespace, collection, searchFields, searchTerm) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const integration = selectIntegration(state, collection, 'search');
+    dispatch(querying(namespace, collection, searchFields, searchTerm));
+    if (!integration) {
+      localQuery(namespace, collection, searchFields, searchTerm, state, dispatch);
+    } else {
+      const provider = getIntegrationProvider(state.integrations, currentBackend(state.config).getToken, integration);
+      provider.searchBy(searchFields.map(f => `data.${ f }`), collection, searchTerm).then(
+        response => dispatch(querySuccess(namespace, collection, searchFields, searchTerm, response)),
+        error => dispatch(queryFailure(namespace, collection, searchFields, searchTerm, error))
+      );
+    }
+  };
 }
