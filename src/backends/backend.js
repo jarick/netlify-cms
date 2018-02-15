@@ -1,6 +1,6 @@
 import { attempt, isError } from 'lodash';
-import { resolveFormat } from "Formats/formats";
-import { selectIntegration } from 'Reducers/integrations';
+import { resolveFormat } from "../formats/formats";
+import { selectIntegration } from '../reducers/integrations';
 import {
   selectListMethod,
   selectEntrySlug,
@@ -8,13 +8,13 @@ import {
   selectAllowNewEntries,
   selectAllowDeletion,
   selectFolderEntryExtension,
-} from "Reducers/collections";
-import { createEntry } from "ValueObjects/Entry";
-import { sanitizeSlug } from "Lib/urlHelper";
+} from "../reducers/collections";
+import { createEntry } from "../valueObjects/Entry";
+import { sanitizeSlug } from "../lib/urlHelper";
 import TestRepoBackend from "./test-repo/implementation";
 import GitHubBackend from "./github/implementation";
 import GitGatewayBackend from "./git-gateway/implementation";
-import { registerBackend, getBackend } from 'Lib/registry';
+import { registerBackend, getBackend } from '../lib/registry';
 
 /**
  * Register internal backends
@@ -44,10 +44,10 @@ class LocalStorageAuthStore {
 const slugFormatter = (template = "{{slug}}", entryData) => {
   const date = new Date();
 
-  const getIdentifier = (entryData) => {
+  const getIdentifier = (data) => {
     const validIdentifierFields = ["title", "path"];
     const identifiers = validIdentifierFields.map(field =>
-      entryData.find((_, key) => key.toLowerCase().trim() === field)
+      data.find((_, key) => key.toLowerCase().trim() === field)
     );
 
     const identifier = identifiers.find(ident => ident !== undefined);
@@ -59,6 +59,7 @@ const slugFormatter = (template = "{{slug}}", entryData) => {
     return identifier;
   };
 
+  // eslint-disable-next-line
   const slug = template.replace(/\{\{([^\}]+)\}\}/g, (_, field) => {
     switch (field) {
       case "year":
@@ -149,7 +150,9 @@ class Backend {
       // If this collection has a "filter" property, filter entries accordingly
       .then(loadedCollection => (
         {
-          entries: collectionFilter ? this.filterEntries(loadedCollection, collectionFilter) : loadedCollection.entries,
+          entries: collectionFilter
+            ? this.filterEntries(loadedCollection, collectionFilter)
+            : loadedCollection.entries,
         }
       ));
   }
@@ -174,6 +177,7 @@ class Backend {
       const format = resolveFormat(collectionOrEntity, entry);
       if (entry && entry.raw !== undefined) {
         const data = (format && attempt(format.fromFile.bind(format, entry.raw))) || {};
+        // eslint-disable-next-line no-console
         if (isError(data)) console.error(data);
         return Object.assign(entry, { data: isError(data) ? {} : data });
       }
@@ -355,13 +359,15 @@ export function resolveBackend(config) {
   }
 }
 
+//eslint-disable-next-line
 export const currentBackend = (function () {
   let backend = null;
 
   return (config) => {
-    if (backend) { return backend; }
-    if (config.get("backend")) {
-      return backend = resolveBackend(config);
+    if (!backend && config.get("backend")) {
+      backend = resolveBackend(config);
     }
+
+    return backend;
   };
 }());

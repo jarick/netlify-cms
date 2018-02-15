@@ -1,6 +1,6 @@
 import trimStart from 'lodash/trimStart';
 import semaphore from "semaphore";
-import { fileExtension } from 'Lib/pathHelper';
+import { fileExtension } from '../../lib/pathHelper';
 import AuthenticationPage from "./AuthenticationPage";
 import API from "./API";
 
@@ -11,7 +11,7 @@ export default class GitHub {
     this.config = config;
 
     if (!proxied && config.getIn(["backend", "repo"]) == null) {
-      throw new Error("The GitHub backend needs a \"repo\" in the backend configuration.");
+      throw new Error('The GitHub backend needs a "repo" in the backend configuration.');
     }
 
     this.repo = config.getIn(["backend", "repo"], "");
@@ -30,11 +30,19 @@ export default class GitHub {
 
   authenticate(state) {
     this.token = state.token;
-    this.api = new API({ token: this.token, branch: this.branch, repo: this.repo, api_root: this.api_root });
+    this.api = new API({
+      token: this.token,
+      branch: this.branch,
+      repo: this.repo,
+      api_root: this.api_root
+    });
+
     return this.api.user().then(user =>
       this.api.hasWriteAccess().then((isCollab) => {
         // Unauthorized user
-        if (!isCollab) throw new Error("Your GitHub user account does not have access to this repo.");
+        if (!isCollab) {
+          throw new Error('Your GitHub user account does not have access to this repo.');
+        }
         // Authorized user
         user.token = state.token;
         return user;
@@ -135,10 +143,18 @@ export default class GitHub {
     try {
       const response = await this.api.persistFiles(null, [mediaFile], options);
       const repo = this.repo || this.getRepoFromResponseUrl(response.url);
-      const { value, size, path, fileObj } = mediaFile;
+      const { value, path, fileObj } = mediaFile;
       const url = `https://raw.githubusercontent.com/${ repo }/${ this.branch }${ path }`;
-      return { id: response.sha, name: value, size: fileObj.size, url, path: trimStart(path, '/') };
+
+      return {
+        id: response.sha,
+        name: value,
+        size: fileObj.size,
+        url,
+        path: trimStart(path, '/'),
+      };
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       throw error;
     }
@@ -152,7 +168,7 @@ export default class GitHub {
     return this.api.listUnpublishedBranches().then((branches) => {
       const sem = semaphore(MAX_CONCURRENT_DOWNLOADS);
       const promises = [];
-      branches.map((branch) => {
+      branches.forEach((branch) => {
         promises.push(new Promise((resolve, reject) => {
           const slug = branch.ref.split("refs/heads/cms/").pop();
           return sem.take(() => this.api.readUnpublishedBranchFile(slug).then((data) => {

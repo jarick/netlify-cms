@@ -37,6 +37,10 @@ export default {
   'entries.caching': 'Caching Entries',
   'entries.waiting': 'This might take several minutes',
   'entries.no': 'No Entries',
+  'auth.login': 'Login',
+  'auth.login-github': 'Login with GitHub',
+  'auth.login-netlify': 'Login with Netlify Identity',
+  'auth.logging': 'Logging in...',
   'list.add': 'Add {listLabel}',
   'list.no': 'No {name}',
 };

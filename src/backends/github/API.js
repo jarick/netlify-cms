@@ -1,14 +1,12 @@
-import LocalForage from "Lib/LocalForage";
-import { Base64 } from "js-base64";
-import { uniq, initial, last, get, find } from "lodash";
-import { filterPromises, resolvePromiseProperties } from "Lib/promiseHelper";
-import AssetProxy from "ValueObjects/AssetProxy";
-import { SIMPLE, EDITORIAL_WORKFLOW, status } from "Constants/publishModes";
-import { APIError, EditorialWorkflowError } from "ValueObjects/errors";
+import { Base64 } from 'js-base64';
+import { uniq, initial, last, get } from 'lodash';
+import LocalForage from '../../lib/LocalForage';
+import { filterPromises, resolvePromiseProperties } from '../../lib/promiseHelper';
+import { SIMPLE, EDITORIAL_WORKFLOW, status } from "../../constants/publishModes";
+import AssetProxy from "../../valueObjects/AssetProxy";
+import { APIError, EditorialWorkflowError } from "../../valueObjects/errors";
 
 const CMS_BRANCH_PREFIX = 'cms/';
-
-// 92989168e7153eda20a055ead6ef52cebab76ea4
 
 export default class API {
   constructor(config) {
@@ -27,6 +25,7 @@ export default class API {
     return this.request(this.repoURL)
       .then(repo => repo.permissions.push)
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error("Problem fetching repo data from GitHub");
         throw error;
       });
@@ -141,14 +140,23 @@ export default class API {
     const cache = LocalForage.getItem(`gh.meta.${ key }`);
     return cache.then((cached) => {
       if (cached && cached.expires > Date.now()) { return cached.data; }
-      console.log("%c Checking for MetaData files", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.log(
+        '%c Checking for MetaData files", "line-height: 30px;text-align: center;font-weight: bold'
+      );
       return this.request(`${ this.repoURL }/contents/${ key }.json`, {
         params: { ref: "refs/meta/_netlify_cms" },
         headers: { Accept: "application/vnd.github.VERSION.raw" },
         cache: "no-store",
       })
       .then(response => JSON.parse(response))
-      .catch(error => console.log("%c %s does not have metadata", "line-height: 30px;text-align: center;font-weight: bold", key)); // eslint-disable-line
+      .catch(error => (
+        // eslint-disable-next-line no-console
+        console.log(
+          '%c %s does not have metadata", "line-height: 30px;text-align: center;font-weight: bold',
+          key,
+        )
+      ));
     });
   }
 
@@ -176,7 +184,9 @@ export default class API {
     })
     .then((files) => {
       if (!Array.isArray(files)) {
-        throw new Error(`Cannot list files, path ${ path } is not a directory but a ${ files.type }`);
+        throw new Error(
+          `Cannot list files, path ${ path } is not a directory but a ${ files.type }`
+        );
       }
       return files;
     })
@@ -210,26 +220,34 @@ export default class API {
   }
 
   listUnpublishedBranches() {
-    console.log("%c Checking for Unpublished entries", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
+    // eslint-disable-next-line no-console
+    console.log(
+      '%c Checking for Unpublished entries',
+      'line-height: 30px;text-align: center;font-weight: bold',
+    );
     return this.request(`${ this.repoURL }/git/refs/heads/cms`)
-    .then(branches => filterPromises(branches, (branch) => {
-      const branchName = branch.ref.substring("/refs/heads/".length - 1);
+      .then(branches => filterPromises(branches, (branch) => {
+        const branchName = branch.ref.substring("/refs/heads/".length - 1);
 
-      // Get PRs with a `head` of `branchName`. Note that this is a
-      // substring match, so we need to check that the `head.ref` of
-      // at least one of the returned objects matches `branchName`.
-      return this.request(`${ this.repoURL }/pulls`, {
-        params: {
-          head: branchName,
-          state: 'open',
-        },
-      })
-        .then(prs => prs.some(pr => pr.head.ref === branchName));
-    }))
-    .catch((error) => {
-      console.log("%c No Unpublished entries", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
-      throw error;
-    });
+        // Get PRs with a `head` of `branchName`. Note that this is a
+        // substring match, so we need to check that the `head.ref` of
+        // at least one of the returned objects matches `branchName`.
+        return this.request(`${ this.repoURL }/pulls`, {
+          params: {
+            head: branchName,
+            state: 'open',
+          },
+        })
+          .then(prs => prs.some(pr => pr.head.ref === branchName));
+      }))
+      .catch((error) => {
+         // eslint-disable-next-line no-console
+        console.log(
+          '%c No Unpublished entries',
+          'line-height: 30px;text-align: center;font-weight: bold'
+        );
+        throw error;
+      });
   }
 
   composeFileTree(files) {
@@ -241,9 +259,10 @@ export default class API {
 
     files.forEach((file) => {
       if (file.uploaded) { return; }
-      parts = file.path.split("/").filter(part => part);
+      parts = file.path.split("/").filter(p => p);
       filename = parts.pop();
       subtree = fileTree;
+      // eslint-disable-next-line
       while (part = parts.shift()) {
         subtree[part] = subtree[part] || {};
         subtree = subtree[part];
@@ -269,13 +288,16 @@ export default class API {
     return Promise.all(uploadPromises).then(() => {
       if (!options.mode || (options.mode && options.mode === SIMPLE)) {
         return this.getBranch()
-        .then(branchData => this.updateTree(branchData.commit.sha, "/", fileTree))
-        .then(changeTree => this.commit(options.commitMessage, changeTree))
-        .then(response => this.patchBranch(this.branch, response.sha));
+          .then(branchData => this.updateTree(branchData.commit.sha, "/", fileTree))
+          .then(changeTree => this.commit(options.commitMessage, changeTree))
+          .then(response => this.patchBranch(this.branch, response.sha));
       } else if (options.mode && options.mode === EDITORIAL_WORKFLOW) {
         const mediaFilesList = mediaFiles.map(file => ({ path: file.path, sha: file.sha }));
+
         return this.editorialWorkflowGit(fileTree, entry, mediaFilesList, options);
       }
+
+      return null;
     });
   }
 
@@ -306,7 +328,6 @@ export default class API {
     const branchName = this.generateBranchName(contentKey);
     const unpublished = options.unpublished || false;
     if (!unpublished) {
-      // Open new editorial review workflow for this entry - Create new metadata and commit to new branch`
       let prResponse;
 
       return this.getBranch()
@@ -340,7 +361,7 @@ export default class API {
         timeStamp: new Date().toISOString(),
       }));
     } 
-      // Entry is already on editorial review workflow - just update metadata and commit to existing branch
+    
     let newHead;
     return this.getBranch(branchName)
         .then(branchData => this.updateTree(branchData.commit.sha, "/", fileTree))
@@ -413,6 +434,7 @@ export default class API {
       await this.storeMetadata(contentKey, updatedMetadata);
       return this.patchBranch(branchName, rebasedHead.sha, { force: true });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       throw error;
     }
@@ -437,15 +459,19 @@ export default class API {
      * changing only the parent SHA and tree for each, but retaining all other
      * info, such as the author/committer data.
      */
-    const newHeadPromise = commits.reduce((lastCommitPromise, commit, idx) => lastCommitPromise.then((newParent) => {
-        /**
-         * Normalize commit data to ensure it's not nested in `commit.commit`.
-         */
-      const parent = this.normalizeCommit(newParent);
-      const commitToRebase = this.normalizeCommit(commit);
+    const newHeadPromise = commits.reduce((lastCommitPromise, commit, idx) => (
+        lastCommitPromise.then((newParent) => {
+          /**
+           * Normalize commit data to ensure it's not nested in `commit.commit`.
+           */
+          const parent = this.normalizeCommit(newParent);
+          const commitToRebase = this.normalizeCommit(commit);
 
-      return this.rebaseSingleBlobCommit(parent, commitToRebase, pathToBlob);
-    }), Promise.resolve(baseCommit));
+          return this.rebaseSingleBlobCommit(parent, commitToRebase, pathToBlob);
+        })
+      ),
+      Promise.resolve(baseCommit)
+    );
 
     /**
      * Return a promise that resolves when all commits have been created.
@@ -609,9 +635,9 @@ export default class API {
   }
 
   closePR(pullrequest, objects) {
-    const headSha = pullrequest.head;
     const prNumber = pullrequest.number;
-    console.log("%c Deleting PR", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
+    // eslint-disable-next-line no-console
+    console.log("%c Deleting PR", "line-height: 30px;text-align: center;font-weight: bold");
     return this.request(`${ this.repoURL }/pulls/${ prNumber }`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -623,7 +649,8 @@ export default class API {
   mergePR(pullrequest, objects) {
     const headSha = pullrequest.head;
     const prNumber = pullrequest.number;
-    console.log("%c Merging PR", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
+    // eslint-disable-next-line no-console
+    console.log("%c Merging PR", "line-height: 30px;text-align: center;font-weight: bold");
     return this.request(`${ this.repoURL }/pulls/${ prNumber }/merge`, {
       method: "PUT",
       body: JSON.stringify({
@@ -646,17 +673,22 @@ export default class API {
     files.forEach((file) => {
       commitMessage += `\n* "${ file.path }"`;
     });
-    console.log("%c Automatic merge not possible - Forcing merge.", "line-height: 30px;text-align: center;font-weight: bold"); // eslint-disable-line
+    // eslint-disable-next-line
+    console.log(
+      '%c Automatic merge not possible - Forcing merge.',
+      'line-height: 30px;text-align: center;font-weight: bold'
+    );
     return this.getBranch()
-    .then(branchData => this.updateTree(branchData.commit.sha, "/", fileTree))
-    .then(changeTree => this.commit(commitMessage, changeTree))
-    .then(response => this.patchBranch(this.branch, response.sha));
+      .then(branchData => this.updateTree(branchData.commit.sha, "/", fileTree))
+      .then(changeTree => this.commit(commitMessage, changeTree))
+      .then(response => this.patchBranch(this.branch, response.sha));
   }
 
   getTree(sha) {
     if (sha) {
       return this.request(`${ this.repoURL }/git/trees/${ sha }`);
     }
+
     return Promise.resolve({ tree: [] });
   }
 
@@ -709,7 +741,8 @@ export default class API {
 
         for (let i = 0, len = tree.tree.length; i < len; i++) {
           obj = tree.tree[i];
-          if (fileOrDir = fileTree[obj.path]) {
+          const t = fileTree[obj.path];
+          if (t) {
             added[obj.path] = true;
             if (fileOrDir.file) {
               updates.push({ path: obj.path, mode: obj.mode, type: obj.type, sha: fileOrDir.sha });
@@ -718,8 +751,10 @@ export default class API {
             }
           }
         }
+        // eslint-disable-next-line
         for (filename in fileTree) {
           fileOrDir = fileTree[filename];
+          // eslint-disable-next-line no-continue
           if (added[filename]) { continue; }
           updates.push(
             fileOrDir.file ?
@@ -728,8 +763,14 @@ export default class API {
           );
         }
         return Promise.all(updates)
-          .then(tree => this.createTree(sha, tree))
-          .then(response => ({ path, mode: "040000", type: "tree", sha: response.sha, parentSha: sha }));
+          .then(t => this.createTree(sha, t))
+          .then(response => ({
+            path,
+            mode: '040000',
+            type: 'tree',
+            sha: response.sha,
+            parentSha: sha,
+          }));
       });
   }
 

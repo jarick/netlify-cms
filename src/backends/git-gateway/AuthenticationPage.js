@@ -1,27 +1,48 @@
 import PropTypes from 'prop-types';
 import React from "react";
 import { partial } from 'lodash';
-import { Icon } from 'UI';
+import { Icon } from '../../components/UI';
 
 let component = null;
 
 if (window.netlifyIdentity) {
   window.netlifyIdentity.on('login', (user) => {
-    component && component.handleIdentityLogin(user);
+    if (component) {
+      component.handleIdentityLogin(user);
+    }
   });
   window.netlifyIdentity.on('logout', () => {
-    component && component.handleIdentityLogout();
+    if (component) {
+      component.handleIdentityLogout();
+    }
   });
 }
 
 export default class AuthenticationPage extends React.Component {
+
+  static propTypes = {
+    onLogin: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
+    error: PropTypes.string,
+  };
+
+  static contextTypes = {
+    t: PropTypes.func,
+  };
+
   constructor(props) {
     super(props);
     component = this;
   }
 
+  state = { email: "", password: "", errors: {} };
+
   componentDidMount() {
-    if (!this.loggedIn && window.netlifyIdentity && window.netlifyIdentity.currentUser()) {
+    if (
+      !this.loggedIn
+      && window.netlifyIdentity
+      && window.netlifyIdentity.currentUser()
+    ) {
       this.props.onLogin(window.netlifyIdentity.currentUser());
       window.netlifyIdentity.close();
     }
@@ -41,19 +62,13 @@ export default class AuthenticationPage extends React.Component {
   };
 
   handleIdentity = () => {
-    if (window.netlifyIdentity.currentUser()) {
+    const user = window.netlifyIdentity.currentUser();
+    if (user) {
       this.props.onLogin(user);
     } else {
       window.netlifyIdentity.open();
     }
   };
-
-  static propTypes = {
-    onLogin: PropTypes.func.isRequired,
-    inProgress: PropTypes.bool.isRequired,
-  };
-
-  state = { email: "", password: "", errors: {} };
 
   handleChange = (name, e) => {
     this.setState({ ...this.state, [name]: e.target.value });
@@ -81,19 +96,23 @@ export default class AuthenticationPage extends React.Component {
       this.props.onLogin(user);
     })
     .catch((error) => {
-      this.setState({ errors: { server: error.description || error.msg || error }, loggingIn: false });
+      this.setState({
+        errors: { server: error.description || error.msg || error },
+        loggingIn: false,
+      });
     });
   };
 
   render() {
     const { errors } = this.state;
     const { error, inProgress } = this.props;
+    const { t } = this.context;
 
     if (window.netlifyIdentity) {
       return (<section className="nc-gitGatewayAuthenticationPage-root">
         <Icon className="nc-githubAuthenticationPage-logo" size="500px" type="netlify-cms" />
         <button className="nc-githubAuthenticationPage-button" onClick={this.handleIdentity}>
-          Login with Netlify Identity
+          {t('auth.login-netlify')}
         </button>
       </section>);
     }
@@ -108,7 +127,9 @@ export default class AuthenticationPage extends React.Component {
           {!errors.server && <p>
             <span className="nc-gitGatewayAuthenticationPage-errorMsg">{errors.server}</span>
           </p>}
-          <div className="nc-gitGatewayAuthenticationPage-errorMsg">{ errors.email || null }</div>
+          <div className="nc-gitGatewayAuthenticationPage-errorMsg">
+            { errors.email || null }
+          </div>
           <input
             type="text"
             name="email"
@@ -116,7 +137,9 @@ export default class AuthenticationPage extends React.Component {
             value={this.state.email}
             onChange={partial(this.handleChange, 'email')}
           />
-          <div className="nc-gitGatewayAuthenticationPage-errorMsg">{ errors.password || null }</div>
+          <div className="nc-gitGatewayAuthenticationPage-errorMsg">
+            { errors.password || null }
+          </div>
           <input
             type="password"
             name="password"
@@ -125,7 +148,7 @@ export default class AuthenticationPage extends React.Component {
             onChange={partial(this.handleChange, 'password')}
           />
           <button className="nc-gitGatewayAuthenticationPage-button" disabled={inProgress}>
-            {inProgress ? "Logging in..." : "Login"}
+            {inProgress ? t('auth.logging') : t('auth.login')}
           </button>
         </form>
       </section>

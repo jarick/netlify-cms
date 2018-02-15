@@ -1,5 +1,5 @@
-import GithubAPI from "Backends/github/API";
-import { APIError } from "ValueObjects/errors";
+import GithubAPI from "../github/API";
+import { APIError } from "../../valueObjects/errors";
 
 export default class API extends GithubAPI {
   constructor(config) {
@@ -29,6 +29,7 @@ export default class API extends GithubAPI {
     const cacheBuster = new Date().getTime();
     const params = [`ts=${ cacheBuster }`];
     if (options.params) {
+      // eslint-disable-next-line
       for (const key in options.params) {
         params.push(`${ key }=${ encodeURIComponent(options.params[key]) }`);
       }

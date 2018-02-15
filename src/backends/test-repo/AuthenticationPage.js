@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Icon } from 'UI';
+import { Icon } from '../../components/UI';
 
 export default class AuthenticationPage extends React.Component {
   static propTypes = {
     onLogin: PropTypes.func.isRequired,
     inProgress: PropTypes.bool,
+  };
+
+  static contextTypes = {
+    t: PropTypes.func,
   };
 
   handleLogin = (e) => {
@@ -15,6 +19,7 @@ export default class AuthenticationPage extends React.Component {
 
   render() {
     const { inProgress } = this.props;
+    const { t } = this.context;
 
     return (
       <section className="nc-githubAuthenticationPage-root">
@@ -24,7 +29,7 @@ export default class AuthenticationPage extends React.Component {
           disabled={inProgress}
           onClick={this.handleLogin}
         >
-          {inProgress ? "Logging in..." : "Login"}
+          {inProgress ? t('auth.logging') : t('auth.login')}
         </button>
       </section>
     );

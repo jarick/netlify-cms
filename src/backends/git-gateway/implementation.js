@@ -1,10 +1,10 @@
 import GoTrue from "gotrue-js";
 import jwtDecode from 'jwt-decode';
 import { List } from 'immutable';
-import { get, pick, intersection } from "lodash";
-import GitHubBackend from "Backends/github/implementation";
-import API from "./API";
-import AuthenticationPage from "./AuthenticationPage";
+import { get, pick, intersection } from 'lodash';
+import GitHubBackend from '../../backends/github/implementation';
+import API from './API';
+import AuthenticationPage from './AuthenticationPage';
 
 const localHosts = {
   "localhost": true,
@@ -17,7 +17,11 @@ const defaults = {
 };
 
 function getEndpoint(endpoint, netlifySiteURL) {
-  if (localHosts[document.location.host.split(":").shift()] && netlifySiteURL && endpoint.match(/^\/\.netlify\//)) {
+  if (
+    localHosts[document.location.host.split(":").shift()]
+    && netlifySiteURL
+    && endpoint.match(/^\/\.netlify\//)
+  ) {
     const parts = [];
     if (netlifySiteURL) {
       parts.push(netlifySiteURL);
@@ -36,9 +40,13 @@ export default class GitGateway extends GitHubBackend {
     this.accept_roles = (config.getIn(["backend", "accept_roles"]) || List()).toArray();
 
     const netlifySiteURL = localStorage.getItem("netlifySiteURL");
-    const APIUrl = getEndpoint(config.getIn(["backend", "identity_url"], defaults.identity), netlifySiteURL);
-    this.github_proxy_url = getEndpoint(config.getIn(["backend", "gateway_url"], defaults.gateway), netlifySiteURL);
-    this.authClient = window.netlifyIdentity ? window.netlifyIdentity.gotrue : new GoTrue({ APIUrl });
+    const identityUrl = config.getIn(["backend", "identity_url"], defaults.identity);
+    const APIUrl = getEndpoint(identityUrl, netlifySiteURL);
+    const gatewayUrl = config.getIn(["backend", "gateway_url"], defaults.gateway);
+    this.github_proxy_url = getEndpoint(gatewayUrl, netlifySiteURL);
+    this.authClient = window.netlifyIdentity
+      ? window.netlifyIdentity.gotrue
+      : new GoTrue({ APIUrl });
 
     AuthenticationPage.authClient = this.authClient;
   }
@@ -69,7 +77,7 @@ export default class GitGateway extends GitHubBackend {
           api_root: this.github_proxy_url,
           branch: this.branch,
           tokenPromise: this.tokenPromise,
-          commitAuthor: pick(userData, ["name", "email"]),
+          commitAuthor: pick(userData, ['name', 'email']),
         });
         return userData;
       } 
