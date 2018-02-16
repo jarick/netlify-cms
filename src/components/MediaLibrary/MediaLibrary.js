@@ -1,21 +1,21 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { orderBy, get, isEmpty, map } from 'lodash';
+import { orderBy, isEmpty, map } from 'lodash';
 import c from 'classnames';
 import fuzzy from 'fuzzy';
 import Waypoint from 'react-waypoint';
-import { Modal, FileUploadButton } from 'UI';
-import { resolvePath, fileExtension } from 'Lib/pathHelper';
-import { changeDraftField } from 'Actions/entries';
+import { Modal, FileUploadButton, Icon } from '../UI';
+import { resolvePath, fileExtension } from '../../lib/pathHelper';
 import {
   loadMedia as loadMediaAction,
   persistMedia as persistMediaAction,
   deleteMedia as deleteMediaAction,
   insertMedia as insertMediaAction,
   closeMediaLibrary as closeMediaLibraryAction,
-} from 'Actions/mediaLibrary';
-import { Icon } from 'UI';
+} from '../../actions/mediaLibrary';
 
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 
 /**
  * Extensions used to determine which files to show when the media library is
@@ -25,6 +25,28 @@ const IMAGE_EXTENSIONS_VIEWABLE = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp', '
 const IMAGE_EXTENSIONS = [...IMAGE_EXTENSIONS_VIEWABLE];
 
 class MediaLibrary extends React.Component {
+
+  static propTypes = {
+    loadMedia: PropTypes.func.isRequired,
+    isVisible: PropTypes.bool.isRequired,
+    privateUpload: PropTypes.any,
+    closeMediaLibrary: PropTypes.func.isRequired,
+    insertMedia: PropTypes.func.isRequired,
+    publicFolder: PropTypes.string.isRequired,
+    files: PropTypes.array.isRequired,
+    deleteMedia: PropTypes.func.isRequired,
+    dynamicSearchQuery: PropTypes.string,
+    page: PropTypes.number,
+    canInsert: PropTypes.bool,
+    dynamicSearch: PropTypes.string,
+    dynamicSearchActive: PropTypes.bool,
+    forImage: PropTypes.bool,
+    isLoading: PropTypes.bool,
+    isPersisting: PropTypes.bool,
+    isDeleting: PropTypes.bool,
+    hasNextPage: PropTypes.bool,
+    isPaginating: PropTypes.bool,
+  };
 
   /**
    * The currently selected file and query are tracked in component state as
@@ -137,6 +159,7 @@ class MediaLibrary extends React.Component {
     const { name, url, urlIsPublicPath } = selectedFile;
     const { insertMedia, publicFolder } = this.props;
     const publicPath = urlIsPublicPath ? url : resolvePath(name, publicFolder);
+
     insertMedia(publicPath);
     this.handleClose();
   };
@@ -147,10 +170,11 @@ class MediaLibrary extends React.Component {
   handleDelete = () => {
     const { selectedFile } = this.state;
     const { files, deleteMedia, privateUpload } = this.props;
+    // eslint-disable-next-line no-alert
     if (!window.confirm('Are you sure you want to delete selected media?')) {
       return;
     }
-    const file = files.find(file => selectedFile.key === file.key);
+    const file = files.find(f => selectedFile.key === f.key);
     deleteMedia(file, { privateUpload })
       .then(() => {
         this.setState({ selectedFile: {} });
@@ -218,7 +242,6 @@ class MediaLibrary extends React.Component {
       isPersisting,
       isDeleting,
       hasNextPage,
-      page,
       isPaginating,
       privateUpload,
     } = this.props;
@@ -270,7 +293,11 @@ class MediaLibrary extends React.Component {
           </div>
           <div className="nc-mediaLibrary-actionContainer">
             <FileUploadButton
-              className={`nc-mediaLibrary-uploadButton ${ shouldShowButtonLoader ? 'nc-mediaLibrary-uploadButton-disabled' : '' }`}
+              className={
+                `nc-mediaLibrary-uploadButton ${
+                  shouldShowButtonLoader ? 'nc-mediaLibrary-uploadButton-disabled' : ''
+                }`
+              }
               label={isPersisting ? 'Uploading...' : 'Upload new'}
               imagesOnly={forImage}
               onChange={this.handlePersist}
@@ -307,14 +334,19 @@ class MediaLibrary extends React.Component {
               tableData.map((file, idx) =>
                 <div
                   key={file.key}
-                  className={c('nc-mediaLibrary-card', { 'nc-mediaLibrary-card-selected': selectedFile.key === file.key })}
+                  className={
+                    c(
+                      'nc-mediaLibrary-card',
+                      { 'nc-mediaLibrary-card-selected': selectedFile.key === file.key },
+                    )
+                  }
                   onClick={() => this.handleAssetClick(file)}
                   tabIndex="-1"
                 >
                   <div className="nc-mediaLibrary-cardImage-container">
                     {
                       file.isViewableImage
-                        ? <img src={file.url} className="nc-mediaLibrary-cardImage" />
+                        ? <img alt="" src={file.url} className="nc-mediaLibrary-cardImage" />
                         : <div className="nc-mediaLibrary-cardImage" />
                     }
                   </div>
