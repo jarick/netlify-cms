@@ -1,17 +1,19 @@
-import _ from 'lodash';
-import { createEntry } from 'ValueObjects/Entry';
-import { selectEntrySlug } from 'Reducers/collections';
+import { flatten, each } from 'lodash';
+import { createEntry } from '../../../valueObjects/Entry';
+import { selectEntrySlug } from '../../../reducers/collections';
 
-function getSlug(path) {
-  return path.split('/').pop().replace(/\.[^\.]+$/, '');
-}
+// eslint-disable-next-line
+const getSlug = (path)  => path.split('/').pop().replace(/\.[^\.]+$/, '');
 
 export default class Algolia {
   constructor(config) {
     this.config = config;
     if (config.get('applicationID') == null ||
         config.get('apiKey') == null) {
-      throw 'The Algolia search integration needs the credentials (applicationID and apiKey) in the integration configuration.';
+      throw new Error(
+        'The Algolia search integration needs the credentials ' + 
+        '(applicationID and apiKey) in the integration configuration.'
+      );
     }
 
     this.applicationID = config.get('applicationID');
@@ -51,9 +53,9 @@ export default class Algolia {
   urlFor(path, options) {
     const params = [];
     if (options.params) {
-      for (const key in options.params) {
-        params.push(`${ key }=${ encodeURIComponent(options.params[key]) }`);
-      }
+      each(options.params, (value, key) => {
+        params.push(`${ key }=${ encodeURIComponent(value) }`);
+      });
     }
     if (params.length) {
       path += `?${ params.join('&') }`;
@@ -88,7 +90,7 @@ export default class Algolia {
         return createEntry(collections[index], slug, hit.path, { data: hit.data, partial: true });
       }));
 
-      return { entries: _.flatten(entries), pagination: page };
+      return { entries: flatten(entries), pagination: page };
     });
   }
 

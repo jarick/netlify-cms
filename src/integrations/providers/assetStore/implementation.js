@@ -1,11 +1,14 @@
-import { pickBy, trimEnd } from 'lodash';
-import { addParams } from 'Lib/urlHelper';
+import { pickBy, trimEnd, each } from 'lodash';
+import { addParams } from '../../../lib/urlHelper';
 
 export default class AssetStore {
   constructor(config, getToken) {
     this.config = config;
     if (config.get('getSignedFormURL') == null) {
-      throw 'The AssetStore integration needs the getSignedFormURL in the integration configuration.';
+      throw new Error(
+        'The AssetStore integration needs the getSignedFormURL ' +
+        'in the integration configuration.'
+      );
     }
     this.getToken = getToken;
 
@@ -26,9 +29,9 @@ export default class AssetStore {
   urlFor(path, options) {
     const params = [];
     if (options.params) {
-      for (const key in options.params) {
-        params.push(`${ key }=${ encodeURIComponent(options.params[key]) }`);
-      }
+      each(options.params, (value, key) => {
+        params.push(`${ key }=${ encodeURIComponent(value) }`);
+      });
     }
     if (params.length) {
       path += `?${ params.join('&') }`;
@@ -130,7 +133,9 @@ export default class AssetStore {
       const asset = { id, name, size, url, urlIsPublicPath: true };
       return { success: true, url, asset };
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
+      return { success: false };
     }
   }
 }
