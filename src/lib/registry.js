@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import { newEditorPlugin } from 'EditorWidgets/Markdown/MarkdownControl/plugins';
+import { newEditorPlugin } from '../components/EditorWidgets/Markdown/MarkdownControl/plugins';
 
 /**
  * Global Registry Object
@@ -12,6 +12,75 @@ const registry = {
   editorComponents: Map(),
   widgetValueSerializers: {},
 };
+
+/**
+ * Preview Styles
+ */
+export const registerPreviewStyle = style => registry.previewStyles.push(style);
+export const getPreviewStyles = () => registry.previewStyles;
+
+
+/**
+ * Preview Templates
+ */
+export const registerPreviewTemplate = (name, component) => {
+  registry.templates[name] = component;
+};
+export const getPreviewTemplate = (name) => registry.templates[name];
+
+
+/**
+ * Editor Widgets
+ */
+export const registerWidget = (name, control, preview) => {
+  // A registered widget control can be reused by a new widget, allowing
+  // multiple copies with different previews.
+  const newControl = typeof control === 'string' ? registry.widgets[control].control : control;
+  registry.widgets[name] = { control: newControl, preview };
+};
+export const getWidget = name => registry.widgets[name];
+export const resolveWidget = name => getWidget(name || 'string') || getWidget('unknown');
+
+
+/**
+ * Markdown Editor Custom Components
+ */
+export const registerEditorComponent = (component) => {
+  const plugin = newEditorPlugin(component);
+  registry.editorComponents = registry.editorComponents.set(plugin.get('id'), plugin);
+};
+export const getEditorComponents = () => registry.editorComponents;
+
+
+/**
+ * Widget Serializers
+ */
+export const registerWidgetValueSerializer = (widgetName, serializer) => {
+  registry.widgetValueSerializers[widgetName] = serializer;
+};
+
+export const getWidgetValueSerializer = widgetName => (
+  registry.widgetValueSerializers[widgetName]
+);
+
+/**
+ * Backend API
+ */
+export const registerBackend = (name, BackendClass) => {
+  if (!name || !BackendClass) {
+    // eslint-disable-next-line no-console
+    console.error("Backend parameters invalid. example: CMS.registerBackend('myBackend', BackendClass)");
+  } else if (registry.backends[name]) {
+    // eslint-disable-next-line no-console
+    console.error(`Backend [${ name }] already registered. Please choose a different name.`);
+  } else {
+    registry.backends[name] = {
+      init: config => new BackendClass(config),
+    };
+  }
+};
+
+export const getBackend = name => registry.backends[name];
 
 export default {
   registerPreviewStyle,
@@ -28,85 +97,3 @@ export default {
   registerBackend,
   getBackend,
 };
-
-
-/**
- * Preview Styles
- */
-export function registerPreviewStyle(style) {
-  registry.previewStyles.push(style);
-}
-export function getPreviewStyles() {
-  return registry.previewStyles;
-}
-
-
-/**
- * Preview Templates
- */
-export function registerPreviewTemplate(name, component) {
-  registry.templates[name] = component;
-}
-export function getPreviewTemplate(name) {
-  return registry.templates[name];
-}
-
-
-/**
- * Editor Widgets
- */
-export function registerWidget(name, control, preview) {
-  // A registered widget control can be reused by a new widget, allowing
-  // multiple copies with different previews.
-  const newControl = typeof control === 'string' ? registry.widgets[control].control : control;
-  registry.widgets[name] = { control: newControl, preview };
-}
-export function getWidget(name) {
-  return registry.widgets[name];
-}
-export function resolveWidget(name) {
-  return getWidget(name || 'string') || getWidget('unknown');
-}
-
-
-/**
- * Markdown Editor Custom Components
- */
-export function registerEditorComponent(component) {
-  const plugin = newEditorPlugin(component);
-  registry.editorComponents = registry.editorComponents.set(plugin.get('id'), plugin);
-}
-export function getEditorComponents() {
-  return registry.editorComponents;
-}
-
-
-/**
- * Widget Serializers
- */
-export function registerWidgetValueSerializer(widgetName, serializer) {
-  registry.widgetValueSerializers[widgetName] = serializer;
-}
-export function getWidgetValueSerializer(widgetName) {
-  return registry.widgetValueSerializers[widgetName];
-}
-
-/**
- * Backend API
- */
-export function registerBackend(name, BackendClass) {
-  if (!name || !BackendClass) {
-    console.error("Backend parameters invalid. example: CMS.registerBackend('myBackend', BackendClass)");
-  } else if (registry.backends[name]) {
-    console.error(`Backend [${ name }] already registered. Please choose a different name.`);
-  } else {
-    registry.backends[name] = {
-      init: config => new BackendClass(config),
-    };
-  }
-}
-
-export function getBackend(name) {
-  return registry.backends[name];
-}
-

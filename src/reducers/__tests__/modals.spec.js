@@ -1,6 +1,6 @@
-import modalsReducer from "../modals";
-import { MODALS_SHOW, MODALS_HIDE } from '../../actions/modals';
 import { List } from 'immutable';
+import modalsReducer from '../modals';
+import { MODALS_SHOW, MODALS_HIDE } from '../../actions/modals';
 
 describe('Modals reducer', () => {
   it('should append modal id to list of open window\'s id ', () => {

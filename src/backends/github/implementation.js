@@ -1,8 +1,8 @@
 import trimStart from 'lodash/trimStart';
-import semaphore from "semaphore";
+import semaphore from 'semaphore';
 import { fileExtension } from '../../lib/pathHelper';
-import AuthenticationPage from "./AuthenticationPage";
-import API from "./API";
+import AuthenticationPage from './AuthenticationPage';
+// import API from './API';
 
 const MAX_CONCURRENT_DOWNLOADS = 10;
 
@@ -34,7 +34,7 @@ export default class GitHub {
       token: this.token,
       branch: this.branch,
       repo: this.repo,
-      api_root: this.api_root
+      api_root: this.api_root,
     });
 
     return this.api.user().then(user =>

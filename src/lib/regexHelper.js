@@ -4,9 +4,9 @@ import { last } from 'lodash';
  * Joins an array of regular expressions into a single expression, without
  * altering the received expressions.
  */
-export function joinPatternSegments(patterns) {
-  return patterns.map(p => p.source).join('');
-}
+export const joinPatternSegments = patterns => (
+  patterns.map(p => p.source).join('')
+);
 
 
 /**
@@ -14,9 +14,9 @@ export function joinPatternSegments(patterns) {
  * each in a non-capturing group and interposing alternation characters (|) so
  * that each expression is executed separately.
  */
-export function combinePatterns(patterns, flags = '') {
-  return patterns.map(p => `(?:${ p.source })`).join('|');
-}
+export const combinePatterns = (patterns, flags = '') => (
+  patterns.map(p => `(?:${ p.source })`).join('|')
+);
 
 
 /**
@@ -31,7 +31,14 @@ export function combinePatterns(patterns, flags = '') {
  * invertMatchPattern - boolean - if true, non-matching substrings are modified
  *   instead of matching substrings
  */
-export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
+export const replaceWhen = (matchPattern, replaceFn, text, invertMatchPattern) => {
+  /**
+   * Factory for converting substrings to data objects and adding to an output
+   * array.
+   */
+  // eslint-disable-next-line
+  const addSubstring = (arr, index, text, match = false) => arr.push({ index, text, match });
+
   /**
    * Splits the string into an array of objects with the following shape:
    *
@@ -44,12 +51,12 @@ export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
    * Loops through matches via recursion (`RegExp.exec` tracks the loop
    * internally).
    */
-  function split(exp, text, acc) {
+  const split = (exp, t, acc) => {
     /**
      * Get the next match starting from the end of the last match or start of
      * string.
      */
-    const match = exp.exec(text);
+    const match = exp.exec(t);
     const lastEntry = last(acc);
 
     /**
@@ -57,40 +64,35 @@ export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
      */
     if (!match) return acc;
 
-    /**
-     * If the match is at the beginning of the input string, normalize to a data
-     * object with the `match` flag set to `true`, and add to the accumulator.
-     */
     if (match.index === 0) {
+      /**
+       * If the match is at the beginning of the input string, normalize to a data
+       * object with the `match` flag set to `true`, and add to the accumulator.
+       */
       addSubstring(acc, 0, match[0], true);
-    }
-
-    /**
+    } else if (!lastEntry) {
+     /**
      * If there are no entries in the accumulator, convert the substring before
      * the match to a data object (without the `match` flag set to true) and
      * push to the accumulator, followed by a data object for the matching
      * substring.
      */
-    else if (!lastEntry) {
       addSubstring(acc, 0, match.input.slice(0, match.index));
       addSubstring(acc, match.index, match[0], true);
-    }
-
-    /**
-     * If the last entry in the accumulator immediately preceded the current
-     * matched substring in the original string, just add the data object for
-     * the matching substring to the accumulator.
-     */
-    else if (match.index === lastEntry.index + lastEntry.text.length) {
+    } else if (match.index === lastEntry.index + lastEntry.t.length) {
+      /**
+      * If the last entry in the accumulator immediately preceded the current
+      * matched substring in the original string, just add the data object for
+      * the matching substring to the accumulator.
+      */
       addSubstring(acc, match.index, match[0], true);
-    }
+    } else {
+      /**
+      * Convert the substring before the match to a data object (without the
+      * `match` flag set to true), followed by a data object for the matching
+      * substring.
+      */
 
-    /**
-     * Convert the substring before the match to a data object (without the
-     * `match` flag set to true), followed by a data object for the matching
-     * substring.
-     */
-    else {
       const nextIndex = lastEntry.index + lastEntry.text.length;
       const nextText = match.input.slice(nextIndex, match.index);
       addSubstring(acc, nextIndex, nextText);
@@ -100,16 +102,8 @@ export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
     /**
      * Continue executing the expression.
      */
-    return split(exp, text, acc);
-  }
-
-  /**
-   * Factory for converting substrings to data objects and adding to an output
-   * array.
-   */
-  function addSubstring(arr, index, text, match = false) {
-    arr.push({ index, text, match });
-  }
+    return split(exp, t, acc);
+  };
 
   /**
    * Split the input string to an array of data objects, each representing a
@@ -142,4 +136,4 @@ export function replaceWhen(matchPattern, replaceFn, text, invertMatchPattern) {
    * Return the joined string.
    */
   return replacedText.join('');
-}
+};

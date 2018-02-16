@@ -1,7 +1,7 @@
-import { resolvePath } from 'Lib/pathHelper';
-import { currentBackend } from "Backends/backend";
-import { getIntegrationProvider } from 'Integrations';
-import { selectIntegration } from 'Reducers';
+import { resolvePath } from '../lib/pathHelper';
+import { currentBackend } from '../backends/backend';
+import { getIntegrationProvider } from '../integrations';
+import { selectIntegration } from '../reducers';
 
 let store;
 export const setStore = (storeObj) => {
@@ -19,6 +19,7 @@ export default function AssetProxy(value, fileObj, uploaded = false, asset) {
   this.asset = asset;
 }
 
+// eslint-disable-next-line
 AssetProxy.prototype.toString = function () {
   // Use the deployed image path if we do not have a locally cached copy.
   if (this.uploaded && !this.fileObj) return this.public_path;
@@ -29,6 +30,7 @@ AssetProxy.prototype.toString = function () {
   }
 };
 
+// eslint-disable-next-line
 AssetProxy.prototype.toBase64 = function () {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -44,8 +46,14 @@ AssetProxy.prototype.toBase64 = function () {
 export function createAssetProxy(value, fileObj, uploaded = false, privateUpload = false) {
   const state = store.getState();
   const integration = selectIntegration(state, null, 'assetStore');
+
   if (integration && !uploaded) {
-    const provider = integration && getIntegrationProvider(state.integrations, currentBackend(state.config).getToken, integration);
+    const provider = getIntegrationProvider(
+      state.integrations,
+      currentBackend(state.config).getToken,
+      integration,
+    );
+
     return provider.upload(fileObj, privateUpload).then(
       response => (
         new AssetProxy(response.asset.url.replace(/^(https?):/, ''), null, true, response.asset)

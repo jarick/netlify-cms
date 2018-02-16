@@ -39,16 +39,21 @@ class Authenticator {
       if (e.data === (`authorizing:${ options.provider }`) && e.origin === this.base_url) {
         window.removeEventListener('message', fn, false);
         window.addEventListener('message', this.authorizeCallback(options, cb), false);
+
         return this.authWindow.postMessage(e.data, e.origin);
       }
+
+      return null;
     };
+
     return fn;
   }
 
   authorizeCallback(options, cb) {
     const fn = (e) => {
-      let data, 
-        err;
+      let data; 
+      let err;
+
       if (e.origin !== this.base_url) { return; }
       if (e.data.indexOf(`authorization:${ options.provider }:success:`) === 0) {
         data = JSON.parse(e.data.match(new RegExp(`^authorization:${ options.provider }:success:(.+)$`))[1]);
@@ -57,6 +62,7 @@ class Authenticator {
         cb(null, data);
       }
       if (e.data.indexOf(`authorization:${ options.provider }:error:`) === 0) {
+        // eslint-disable-next-line no-console
         console.log('Got authorization error');
         err = JSON.parse(e.data.match(new RegExp(`^authorization:${ options.provider }:error:(.+)$`))[1]);
         window.removeEventListener('message', fn, false);
@@ -76,11 +82,9 @@ class Authenticator {
   }
 
   authenticate(options, cb) {
-    let left, 
-      top, 
-      url,
-      siteID = this.getSiteID(),
-      provider = options.provider;
+    const siteID = this.getSiteID();
+    const provider = options.provider;
+
     if (!provider) {
       return cb(new NetlifyError({
         message: 'You must specify a provider when calling netlify.authenticate',
@@ -93,10 +97,13 @@ class Authenticator {
     }
 
     const conf = PROVIDERS[provider] || PROVIDERS.github;
-    left = (screen.width / 2) - (conf.width / 2);
-    top = (screen.height / 2) - (conf.height / 2);
+    const left = (screen.width / 2) - (conf.width / 2);
+    const htop = (screen.height / 2) - (conf.height / 2);
+
     window.addEventListener('message', this.handshakeCallback(options, cb), false);
-    url = `${ this.base_url }/auth?provider=${ options.provider }&site_id=${ siteID }`;
+
+    let url = `${ this.base_url }/auth?provider=${ options.provider }&site_id=${ siteID }`;
+
     if (options.scope) {
       url += `&scope=${ options.scope }`;
     }
@@ -113,7 +120,7 @@ class Authenticator {
       url,
       'Netlify Authorization',
       `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, ` +
-      `width=${ conf.width }, height=${ conf.height }, top=${ top }, left=${ left });`
+      `width=${ conf.width }, height=${ conf.height }, top=${ htop }, left=${ left });`
     );
     this.authWindow.focus();
   }

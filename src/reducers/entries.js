@@ -7,9 +7,8 @@ import {
   ENTRIES_SUCCESS,
   ENTRIES_FAILURE,
   ENTRY_DELETE_SUCCESS,
-} from 'Actions/entries';
-
-import { SEARCH_ENTRIES_SUCCESS } from 'Actions/search';
+} from '../actions/entries';
+import { SEARCH_ENTRIES_SUCCESS } from '../actions/search';
 
 let collection;
 let loadedEntries;
@@ -18,7 +17,10 @@ let page;
 const entries = (state = Map({ entities: Map(), pages: Map() }), action) => {
   switch (action.type) {
     case ENTRY_REQUEST:
-      return state.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'], true);
+      return state.setIn(
+        ['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'],
+        true,
+      );
 
     case ENTRY_SUCCESS:
       return state.setIn(
@@ -50,15 +52,24 @@ const entries = (state = Map({ entities: Map(), pages: Map() }), action) => {
 
     case ENTRY_FAILURE:
       return state.withMutations((map) => {
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'], false);
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'error'], action.payload.error.message);
+        map.setIn(
+          ['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isFetching'],
+          false,
+        );
+        map.setIn(
+          ['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'error'],
+          action.payload.error.message
+        );
       });
 
     case SEARCH_ENTRIES_SUCCESS:
       loadedEntries = action.payload.entries;
       return state.withMutations((map) => {
         loadedEntries.forEach(entry => (
-          map.setIn(['entities', `${ entry.collection }.${ entry.slug }`], fromJS(entry).set('isFetching', false))
+          map.setIn(
+            ['entities', `${ entry.collection }.${ entry.slug }`],
+            fromJS(entry).set('isFetching', false)
+          )
         ));
       });
 

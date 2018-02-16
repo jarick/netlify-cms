@@ -1,6 +1,6 @@
 import LocalForage from "localforage";
 
-function testLocalForage() {
+const testLocalForage = () => {
   const testKey = 'LocalForageTest';
   LocalForage.setItem(testKey, { expires: Date.now() + 300000 }).then(() => {
     LocalForage.removeItem(testKey);
@@ -14,7 +14,7 @@ function testLocalForage() {
     console.log(err);
     return null;
   });
-}
+};
 
 if (typeof process === 'undefined') {
   testLocalForage();

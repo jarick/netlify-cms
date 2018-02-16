@@ -1,9 +1,8 @@
 import GoTrue from "gotrue-js";
 import jwtDecode from 'jwt-decode';
 import { List } from 'immutable';
-import { get, pick, intersection } from 'lodash';
+import { get, intersection } from 'lodash';
 import GitHubBackend from '../../backends/github/implementation';
-import API from './API';
 import AuthenticationPage from './AuthenticationPage';
 
 const localHosts = {

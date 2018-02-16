@@ -1,11 +1,14 @@
-import API from "../API";
+import { isFunction } from 'lodash';
+import API from '../API';
+import '../../backend';
 
 describe('github API', () => {
   const mockAPI = (api, responses) => {
     api.request = (path, options = {}) => {
       const normalizedPath = path.indexOf('?') !== -1 ? path.substr(0, path.indexOf('?')) : path;
       const response = responses[normalizedPath];
-      return typeof response === 'function'
+
+      return isFunction(response)
         ? Promise.resolve(response(options))
         : Promise.reject(new Error(`No response for path '${ normalizedPath }'`));
     };

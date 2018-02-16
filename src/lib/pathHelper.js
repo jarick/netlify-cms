@@ -1,4 +1,5 @@
 const absolutePath = new RegExp('^(?:[a-z]+:)?//', 'i');
+// eslint-disable-next-line no-useless-escape
 const normalizePath = path => path.replace(/[\\\/]+/g, '/');
 
 export function resolvePath(path, basePath) { // eslint-disable-line

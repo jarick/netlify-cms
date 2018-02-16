@@ -1,7 +1,7 @@
 /*
  * Random number generator
  */
-
+// eslint-disable-next-line
 let rng;
 
 if (window.crypto && crypto.getRandomValues) {

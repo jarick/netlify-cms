@@ -1,6 +1,7 @@
 import { isBoolean } from "lodash";
 
-export function createEntry(collection, slug = '', path = '', options = {}) {
+// eslint-disable-next-line import/prefer-default-export
+export const createEntry = (collection, slug = '', path = '', options = {}) => {
   const returnObj = {};
   returnObj.collection = collection;
   returnObj.slug = slug;
@@ -14,4 +15,4 @@ export function createEntry(collection, slug = '', path = '', options = {}) {
     ? options.isModification
     : null;
   return returnObj;
-}
+};
