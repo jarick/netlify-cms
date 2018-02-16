@@ -9,7 +9,7 @@ const parsers = {
     stringify: (metadata, { sortedKeys }) => tomlFormatter.toFile(metadata, sortedKeys),
   },
   json: {
-    parse: (input) => {
+    parse(input) {
       let JSONinput = input.trim();
       // Fix JSON if leading and trailing brackets were trimmed.
       if (JSONinput.substr(0, 1) !== '{') {
@@ -18,14 +18,16 @@ const parsers = {
       if (JSONinput.substr(-1) !== '}') {
         JSONinput += '}';
       }
+
       return jsonFormatter.fromFile(JSONinput);
     },
-    stringify: (metadata, { sortedKeys }) => {
+    stringify(metadata, { sortedKeys }) {
       let JSONoutput = jsonFormatter.toFile(metadata, sortedKeys).trim();
       // Trim leading and trailing brackets.
       if (JSONoutput.substr(0, 1) === '{' && JSONoutput.substr(-1) === '}') {
         JSONoutput = JSONoutput.substring(1, JSONoutput.length - 1);
       }
+
       return JSONoutput;
     },
   },
@@ -35,12 +37,19 @@ const parsers = {
   },
 };
 
+export const getFormatOpts = format => ({
+  yaml: { language: "yaml", delimiters: "---" },
+  toml: { language: "toml", delimiters: "+++" },
+  json: { language: "json", delimiters: ["{", "}"] },
+}[format]);
+
 function inferFrontmatterFormat(str) {
   const firstLine = str.substr(0, str.indexOf('\n')).trim();
   if ((firstLine.length > 3) && (firstLine.substr(0, 3) === "---")) {
     // No need to infer, `gray-matter` will handle things like `---toml` for us.
-    return;
+    return null;
   }
+
   switch (firstLine) {
     case "---":
       return getFormatOpts('yaml');
@@ -49,15 +58,9 @@ function inferFrontmatterFormat(str) {
     case "{":
       return getFormatOpts('json');
     default:
-      throw "Unrecognized front-matter format.";
+      throw new Error('Unrecognized front-matter format.');
   }
 }
-
-export const getFormatOpts = format => ({
-  yaml: { language: "yaml", delimiters: "---" },
-  toml: { language: "toml", delimiters: "+++" },
-  json: { language: "json", delimiters: ["{", "}"] },
-}[format]);
 
 class FrontmatterFormatter {
   constructor(format, customDelimiter) {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 export const sortKeys = (sortedKeys = []) => (a, b) => {
   const idxA = sortedKeys.indexOf(a);
   const idxB = sortedKeys.indexOf(b);

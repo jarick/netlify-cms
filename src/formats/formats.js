@@ -17,42 +17,38 @@ export const supportedFormats = [
 ];
 
 export const formatToExtension = format => ({
-  "yml": 'yml',
-  "yaml": 'yml',
-  "toml": 'toml',
-  "json": 'json',
-  "frontmatter": 'md',
+  'yml': 'yml',
+  'yaml': 'yml',
+  'toml': 'toml',
+  'json': 'json',
+  'frontmatter': 'md',
   'json-frontmatter': 'md',
   'toml-frontmatter': 'md',
   'yaml-frontmatter': 'md',
 }[format]);
 
-export function formatByExtension(extension) {
-  return {
-    yml: yamlFormatter,
-    yaml: yamlFormatter,
-    toml: tomlFormatter,
-    json: jsonFormatter,
-    md: FrontmatterInfer,
-    markdown: FrontmatterInfer,
-    html: FrontmatterInfer,
-  }[extension];
-}
+export const formatByExtension = extension => ({
+  yml: yamlFormatter,
+  yaml: yamlFormatter,
+  toml: tomlFormatter,
+  json: jsonFormatter,
+  md: FrontmatterInfer,
+  markdown: FrontmatterInfer,
+  html: FrontmatterInfer,
+}[extension]);
 
-function formatByName(name, customDelimiter) {
-  return {
-    "yml": yamlFormatter,
-    "yaml": yamlFormatter,
-    "toml": tomlFormatter,
-    "json": jsonFormatter,
-    "frontmatter": FrontmatterInfer,
-    'json-frontmatter': frontmatterJSON(customDelimiter),
-    'toml-frontmatter': frontmatterTOML(customDelimiter),
-    'yaml-frontmatter': frontmatterYAML(customDelimiter),
-  }[name];
-}
+const formatByName = (name, customDelimiter) => ({
+  'yml': yamlFormatter,
+  'yaml': yamlFormatter,
+  'toml': tomlFormatter,
+  'json': jsonFormatter,
+  'frontmatter': FrontmatterInfer,
+  'json-frontmatter': frontmatterJSON(customDelimiter),
+  'toml-frontmatter': frontmatterTOML(customDelimiter),
+  'yaml-frontmatter': frontmatterYAML(customDelimiter),
+}[name]);
 
-export function resolveFormat(collectionOrEntity, entry) {
+export const resolveFormat = (collectionOrEntity, entry) => {
   // Check for custom delimiter
   const customDelimiter = collectionOrEntity.get('frontmatter_delimiter');
   // If the format is specified in the collection, use that format.
@@ -77,4 +73,4 @@ export function resolveFormat(collectionOrEntity, entry) {
 
   // If no format is specified and it cannot be inferred, return the default.
   return formatByName('frontmatter', customDelimiter);
-}
+};

@@ -1,5 +1,5 @@
 import { Base64 } from 'js-base64';
-import { uniq, initial, last, get } from 'lodash';
+import { uniq, initial, last, get, forEach } from 'lodash';
 import LocalForage from '../../lib/LocalForage';
 import { filterPromises, resolvePromiseProperties } from '../../lib/promiseHelper';
 import { SIMPLE, EDITORIAL_WORKFLOW, status } from '../../constants/publishModes';
@@ -59,9 +59,9 @@ export default class API {
     const cacheBuster = new Date().getTime();
     const params = [`ts=${ cacheBuster }`];
     if (options.params) {
-      for (const key in options.params) {
-        params.push(`${ key }=${ encodeURIComponent(options.params[key]) }`);
-      }
+      forEach(options.params, (value, key) => {
+        params.push(`${ key }=${ encodeURIComponent(value) }`);
+      });
     }
     if (params.length) {
       path += `?${ params.join("&") }`;
