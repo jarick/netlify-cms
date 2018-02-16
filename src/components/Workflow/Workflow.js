@@ -3,16 +3,16 @@ import React, { Component } from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { OrderedMap } from 'immutable';
 import { connect } from 'react-redux';
-import { createNewEntry } from 'Actions/collections';
+import { createNewEntry } from '../../actions/collections';
 import {
-  loadUnpublishedEntries,
-  updateUnpublishedEntryStatus,
-  publishUnpublishedEntry,
-  deleteUnpublishedEntry,
-} from 'Actions/editorialWorkflow';
-import { selectUnpublishedEntriesByStatus } from 'Reducers';
-import { EDITORIAL_WORKFLOW, status } from 'Constants/publishModes';
-import { Loader, Dropdown, DropdownItem } from 'UI';
+  loadUnpublishedEntries as loadUnpublishedEntriesAction,
+  updateUnpublishedEntryStatus as updateUnpublishedEntryStatusAction,
+  publishUnpublishedEntry as publishUnpublishedEntryAction,
+  deleteUnpublishedEntry as deleteUnpublishedEntryAction,
+} from '../../actions/editorialWorkflow';
+import { selectUnpublishedEntriesByStatus } from '../../reducers';
+import { EDITORIAL_WORKFLOW, status } from '../../constants/publishModes';
+import { Loader, Dropdown, DropdownItem } from '../UI';
 import WorkflowList from './WorkflowList';
 
 class Workflow extends Component {
@@ -62,18 +62,19 @@ class Workflow extends Component {
               dropdownTopOverlap="40px"
             >
               {
-                collections.filter(collection => collection.get('create')).toList().map(collection =>
+                collections.filter(collection => collection.get('create')).toList().map(collection => (
                   <DropdownItem
                     key={collection.get("name")}
                     label={collection.get("label")}
                     onClick={() => createNewEntry(collection.get('name'))}
                   />
-                )
+                ))
               }
             </Dropdown>
           </div>
           <p className="nc-workflow-top-description">
-            {reviewCount} {reviewCount === 1 ? 'entry' : 'entries'} waiting for review, {readyCount} ready to go live.
+            {reviewCount} {reviewCount === 1 ? 'entry' : 'entries'}
+            waiting for review, {readyCount} ready to go live.
           </p>
         </div>
         <WorkflowList
@@ -109,8 +110,8 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  loadUnpublishedEntries,
-  updateUnpublishedEntryStatus,
-  publishUnpublishedEntry,
-  deleteUnpublishedEntry,
+  loadUnpublishedEntries: loadUnpublishedEntriesAction,
+  updateUnpublishedEntryStatus: updateUnpublishedEntryStatusAction,
+  publishUnpublishedEntry: publishUnpublishedEntryAction,
+  deleteUnpublishedEntry: deleteUnpublishedEntryAction,
 })(Workflow);

@@ -37,5 +37,5 @@ ListItemTopBar.propTypes = {
   onCollapseToggle: PropTypes.func.isRequired,
   onRemove: PropTypes.func.isRequired,
   dragHandleHOC: PropTypes.node,
-  className: PropTypes.string
+  className: PropTypes.string,
 };

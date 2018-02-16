@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
 import c from 'classnames';
 import { Link } from 'react-router-dom';
 
 const WorkflowCard = ({
   collectionName,
   title,
-  author,
   authorLastChange,
   body,
   isModification,
@@ -39,5 +37,18 @@ const WorkflowCard = ({
     </div>
   </div>
 );
+
+WorkflowCard.propTypes = {
+  collectionName: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  authorLastChange: PropTypes.string,
+  body: PropTypes.string,
+  isModification: PropTypes.bool,
+  editLink: PropTypes.string,
+  timestamp: PropTypes.string,
+  onDelete: PropTypes.func.isRequired,
+  canPublish: PropTypes.bool,
+  onPublish: PropTypes.func.isRequired,
+};
 
 export default WorkflowCard;

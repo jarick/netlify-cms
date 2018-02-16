@@ -26,7 +26,7 @@ export const getPreviewStyles = () => registry.previewStyles;
 export const registerPreviewTemplate = (name, component) => {
   registry.templates[name] = component;
 };
-export const getPreviewTemplate = (name) => registry.templates[name];
+export const getPreviewTemplate = name => registry.templates[name];
 
 
 /**
