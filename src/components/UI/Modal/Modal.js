@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 
+// eslint-disable-next-line import/prefer-default-export
 export class Modal extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,

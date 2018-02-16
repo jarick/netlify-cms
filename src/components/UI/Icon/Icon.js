@@ -25,6 +25,7 @@ const sizes = {
   large: '32px',
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export const Icon = (props) => {
   const {
     type,
@@ -42,7 +43,9 @@ export const Icon = (props) => {
   const style = { width: sizeResolved, height: sizeResolved, transform };
   return (
     <span className={`nc-icon ${ className }`} {...remainingProps}>
+      {/* eslint-disable react/no-danger */}
       <span dangerouslySetInnerHTML={{ __html: icon.image }} style={style} />
+      {/* eslint-enable */}
     </span>
   );
 };

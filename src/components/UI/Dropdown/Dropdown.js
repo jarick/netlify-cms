@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import c from 'classnames';
 import { Wrapper, Button, Menu, MenuItem } from 'react-aria-menubutton';
-import { Icon } from 'UI';
+import { Icon } from '../';
 
 const Dropdown = ({
   label,
@@ -36,6 +36,17 @@ const Dropdown = ({
   );
 };
 
+Dropdown.propTypes = {
+  label: PropTypes.string,
+  button: PropTypes.node,
+  className: PropTypes.string,
+  classNameButton: PropTypes.string,
+  dropdownWidth: PropTypes.string,
+  dropdownPosition: PropTypes.string,
+  dropdownTopOverlap: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
+  children: PropTypes.node,
+};
+
 const DropdownItem = ({ label, icon, iconDirection, onClick, className }) => (
   <MenuItem className={c('nc-dropdownItem', className)} value={onClick}>
     <span>{label}</span>
@@ -49,5 +60,12 @@ const DropdownItem = ({ label, icon, iconDirection, onClick, className }) => (
   </MenuItem>
 );
 
+DropdownItem.propTypes = {
+  label: PropTypes.string,
+  icon: PropTypes.string,
+  iconDirection: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
 
 export { Dropdown, DropdownItem };

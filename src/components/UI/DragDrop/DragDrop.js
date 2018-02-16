@@ -1,14 +1,14 @@
 import ReactDNDHTML5Backend from 'react-dnd-html5-backend';
 import {
-  DragDropContext as ReactDNDDragDropContext,
-  DragSource as ReactDNDDragSource,
-  DropTarget as ReactDNDDropTarget,
+  DragDropContext as createReactDNDDragDropContext,
+  DragSource as createReactDNDDragSource,
+  DropTarget as createReactDNDDropTarget,
 } from 'react-dnd';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 export const DragSource = ({ namespace, ...props }) => {
-  const DragComponent = ReactDNDDragSource(
+  const DragComponent = createReactDNDDragSource(
     namespace,
     {
       beginDrag({ children, isDragging, connectDragComponent, ...ownProps }) {
@@ -27,10 +27,11 @@ export const DragSource = ({ namespace, ...props }) => {
 };
 DragSource.propTypes = {
   children: PropTypes.func.isRequired,
+  namespace: PropTypes.string.isRequired,
 };
 
 export const DropTarget = ({ onDrop, namespace, ...props }) => {
-  const DropComponent = ReactDNDDropTarget(
+  const DropComponent = createReactDNDDropTarget(
     namespace,
     {
       drop(ownProps, monitor) {
@@ -42,7 +43,9 @@ export const DropTarget = ({ onDrop, namespace, ...props }) => {
       isHovered: monitor.isOver(),
     }),
   )(
-    ({ children, connectDropTarget, isHovered }) => children(connectDropTarget, { isHovered })
+    ({ children, connectDropTarget, isHovered }) => (
+      children(connectDropTarget, { isHovered })
+    )
   );
 
   return React.createElement(DropComponent, props, props.children);
@@ -50,6 +53,9 @@ export const DropTarget = ({ onDrop, namespace, ...props }) => {
 DropTarget.propTypes = {
   onDrop: PropTypes.func.isRequired,
   children: PropTypes.func.isRequired,
+  namespace: PropTypes.string.isRequired,
 };
 
-export const HTML5DragDrop = component => ReactDNDDragDropContext(ReactDNDHTML5Backend)(component);
+export const HTML5DragDrop = component => (
+  createReactDNDDragDropContext(ReactDNDHTML5Backend)(component)
+);

@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactToggled from 'react-toggled';
 import c from 'classnames';
 
+// eslint-disable-next-line import/prefer-default-export
 export const Toggle = ({
   active,
   onChange,
@@ -10,7 +12,7 @@ export const Toggle = ({
   classNameSwitch,
   onFocus,
   onBlur,
-}) =>
+}) => (
   <ReactToggled on={active} onToggle={onChange}>
     {({ on, getElementTogglerProps }) => (
       <span
@@ -25,4 +27,15 @@ export const Toggle = ({
         <span className={`nc-toggle-switch ${ classNameSwitch }`} />
       </span>
     )}
-  </ReactToggled>;
+  </ReactToggled>
+);
+
+Toggle.propTypes = {
+  active: PropTypes.bool,
+  onChange: PropTypes.func,
+  className: PropTypes.string,
+  classNameBackground: PropTypes.string,
+  classNameSwitch: PropTypes.string,
+  onFocus: PropTypes.func.isRequired,
+  onBlur: PropTypes.func.isRequired,
+};
