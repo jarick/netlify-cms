@@ -1,5 +1,4 @@
-import { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -29,7 +28,7 @@ export default class ScrollSyncPane extends Component {
   };
 
   componentDidMount() {
-    this.node = this.props.attachTo || ReactDOM.findDOMNode(this);
+    this.node = this.props.attachTo || this.node;
     this.context.registerPane(this.node, this.props.group);
   }
 
@@ -45,6 +44,6 @@ export default class ScrollSyncPane extends Component {
   }
 
   render() {
-    return this.props.children;
+    return <div ref={(node) => { this.node = node; }}>{this.props.children}</div>;
   }
 }

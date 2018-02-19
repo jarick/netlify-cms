@@ -1,10 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
 import { partial } from 'lodash';
 import c from 'classnames';
 import { resolveWidget } from '../../../lib/registry';
 import Widget from './Widget';
 
 export default class EditorControl extends React.Component {
+  static propTypes = {
+    value: PropTypes.string.isRequired,
+    field: PropTypes.string.isRequired,
+    fieldsMetaData: ImmutablePropTypes.map,
+    fieldsErrors: ImmutablePropTypes.map,
+    mediaPaths: PropTypes.array,
+    getAsset: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onOpenMediaLibrary: PropTypes.func.isRequired,
+    onAddAsset: PropTypes.func.isRequired,
+    onRemoveInsertedMedia: PropTypes.func.isRequired,
+    onValidate: PropTypes.func.isRequired,
+    processControlRef: PropTypes.any,
+  };
+
   state = {
     activeLabel: false,
   };
@@ -36,7 +53,9 @@ export default class EditorControl extends React.Component {
             errors && errors.map(error =>
               error.message &&
               typeof error.message === 'string' &&
-              <li key={error.message.trim().replace(/[^a-z0-9]+/gi, '-')}>{error.message}</li>
+              <li key={error.message.trim().replace(/[^a-z0-9]+/gi, '-')}>
+                {error.message}
+              </li>
             )
           }
         </ul>

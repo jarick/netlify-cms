@@ -3,11 +3,11 @@ import React from 'react';
 import { List, Map } from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import Frame from 'react-frame-component';
-import { resolveWidget, getPreviewTemplate, getPreviewStyles } from 'Lib/registry';
-import { ErrorBoundary } from 'UI';
-import { selectTemplateName, selectInferedField } from 'Reducers/collections';
-import { INFERABLE_FIELDS } from 'Constants/fieldInference';
-import EditorPreviewContent from './EditorPreviewContent.js';
+import { resolveWidget, getPreviewTemplate, getPreviewStyles } from '../../../lib/registry';
+import { ErrorBoundary } from '../../UI';
+import { selectTemplateName, selectInferedField } from '../../../reducers/collections';
+import { INFERABLE_FIELDS } from '../../../constants/fieldInference';
+import EditorPreviewContent from './EditorPreviewContent';
 import PreviewHOC from './PreviewHOC';
 import EditorPreview from './EditorPreview';
 
@@ -34,18 +34,17 @@ export default class PreviewPane extends React.Component {
     );
   };
 
-  inferedFields = {};
-
-  inferFields() {
-    const titleField = selectInferedField(this.props.collection, 'title');
-    const shortTitleField = selectInferedField(this.props.collection, 'shortTitle');
-    const authorField = selectInferedField(this.props.collection, 'author');
-
-    this.inferedFields = {};
-    if (titleField) this.inferedFields[titleField] = INFERABLE_FIELDS.title;
-    if (shortTitleField) this.inferedFields[shortTitleField] = INFERABLE_FIELDS.shortTitle;
-    if (authorField) this.inferedFields[authorField] = INFERABLE_FIELDS.author;
-  }
+  /**
+   * Retrieves widgets for nested fields (children of object/list fields)
+   */
+  getNestedWidgets = (fields, values) => {
+    // Fields nested within a list field will be paired with a List of value Maps.
+    if (List.isList(values)) {
+      return values.map(value => this.widgetsForNestedFields(fields, value));
+    }
+    // Fields nested within an object field will be paired with a single Map of values.
+    return this.widgetsForNestedFields(fields, values);
+  };
 
   /**
    * Returns the widget component for a named field, and makes recursive calls
@@ -74,22 +73,25 @@ export default class PreviewPane extends React.Component {
     return value ? this.getWidget(field, value, this.props) : null;
   };
 
-  /**
-   * Retrieves widgets for nested fields (children of object/list fields)
-   */
-  getNestedWidgets = (fields, values) => {
-    // Fields nested within a list field will be paired with a List of value Maps.
-    if (List.isList(values)) {
-      return values.map(value => this.widgetsForNestedFields(fields, value));
-    }
-    // Fields nested within an object field will be paired with a single Map of values.
-    return this.widgetsForNestedFields(fields, values);
-  };
+  inferFields() {
+    const titleField = selectInferedField(this.props.collection, 'title');
+    const shortTitleField = selectInferedField(this.props.collection, 'shortTitle');
+    const authorField = selectInferedField(this.props.collection, 'author');
+
+    this.inferedFields = {};
+    if (titleField) this.inferedFields[titleField] = INFERABLE_FIELDS.title;
+    if (shortTitleField) this.inferedFields[shortTitleField] = INFERABLE_FIELDS.shortTitle;
+    if (authorField) this.inferedFields[authorField] = INFERABLE_FIELDS.author;
+  }
+
+  inferedFields = {};
 
   /**
    * Use widgetFor as a mapping function for recursive widget retrieval
    */
-  widgetsForNestedFields = (fields, values) => fields.map(field => this.widgetFor(field.get('name'), fields, values));
+  widgetsForNestedFields = (fields, values) => fields.map(field => (
+    this.widgetFor(field.get('name'), fields, values)
+  ));
 
   /**
    * This function exists entirely to expose nested widgets for object and list
@@ -105,14 +107,20 @@ export default class PreviewPane extends React.Component {
 
     if (List.isList(value)) {
       return value.map((val, index) => {
-        const widgets = nestedFields && Map(nestedFields.map((f, i) => [f.get('name'), <div key={i}>{this.getWidget(f, val, this.props)}</div>]));
+        const widgets = nestedFields && Map(nestedFields.map((f, i) => [
+          f.get('name'),
+          <div key={i}>{this.getWidget(f, val, this.props)}</div>,
+        ]));
         return Map({ data: val, widgets });
       });
     }
 
     return Map({
       data: value,
-      widgets: nestedFields && Map(nestedFields.map(f => [f.get('name'), this.getWidget(f, value, this.props)])),
+      widgets: nestedFields && Map(nestedFields.map(f => [
+        f.get('name'),
+        this.getWidget(f, value, this.props),
+      ])),
     });
   };
 

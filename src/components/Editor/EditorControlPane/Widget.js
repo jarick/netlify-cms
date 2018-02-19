@@ -33,6 +33,7 @@ export default class Widget extends Component {
     onAddAsset: PropTypes.func.isRequired,
     onRemoveInsertedMedia: PropTypes.func.isRequired,
     getAsset: PropTypes.func.isRequired,
+    editorControl: PropTypes.any,
   };
 
   shouldComponentUpdate(nextProps) {
@@ -46,6 +47,21 @@ export default class Widget extends Component {
       || this.props.classNameWrapper !== nextProps.classNameWrapper
       || this.props.hasActiveStyle !== nextProps.hasActiveStyle;
   }
+
+  /**
+   * Change handler for fields that are nested within another field.
+   */
+  onChangeObject = (fieldName, newValue, newMetadata) => {
+    const newObjectValue = this.getObjectValue().set(fieldName, newValue);
+    return this.props.onChange(newObjectValue, newMetadata);
+  };
+
+  /**
+   * In case the `onChangeObject` function is frozen by a child widget implementation,
+   * e.g. when debounced, always get the latest object value instead of using
+   * `this.props.value` directly.
+   */
+  getObjectValue = () => this.props.value || Map();
 
   processInnerControlRef = (ref) => {
     if (!ref) return;
@@ -90,7 +106,7 @@ export default class Widget extends Component {
     if (isRequired && (
       value === null ||
       value === undefined ||
-      (value.hasOwnProperty('length') && value.length === 0) ||
+      (Object.prototype.hasOwnProperty.call(value, 'length') && value.length === 0) ||
       (value.constructor === Object && Object.keys(value).length === 0)
     )) {
       const error = {
@@ -122,7 +138,7 @@ export default class Widget extends Component {
     if (typeof response === "boolean") {
       const isValid = response;
       return { error: (!isValid) };
-    } else if (response.hasOwnProperty('error')) {
+    } else if (Object.prototype.hasOwnProperty.call(response, 'error')) {
       return response;
     } else if (response instanceof Promise) {
       response.then(
@@ -145,21 +161,6 @@ export default class Widget extends Component {
       return { error };
     }
     return { error: false };
-  };
-
-  /**
-   * In case the `onChangeObject` function is frozen by a child widget implementation,
-   * e.g. when debounced, always get the latest object value instead of using
-   * `this.props.value` directly.
-   */
-  getObjectValue = () => this.props.value || Map();
-
-  /**
-   * Change handler for fields that are nested within another field.
-   */
-  onChangeObject = (fieldName, newValue, newMetadata) => {
-    const newObjectValue = this.getObjectValue().set(fieldName, newValue);
-    return this.props.onChange(newObjectValue, newMetadata);
   };
 
   render() {

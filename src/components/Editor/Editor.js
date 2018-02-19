@@ -1,35 +1,35 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ImmutablePropTypes from 'react-immutable-proptypes';
-import { Map } from 'immutable';
-import { get } from 'lodash';
 import { connect } from 'react-redux';
-import history from 'Routing/history';
-import { logoutUser } from 'Actions/auth';
+import history from '../../routing/history';
+import { logoutUser as logoutUserAction } from '../../actions/auth';
 import {
-  loadEntry,
-  loadEntries,
-  createDraftFromEntry,
-  createEmptyDraft,
-  discardDraft,
-  changeDraftField,
-  changeDraftFieldValidation,
-  persistEntry,
-  deleteEntry,
-} from 'Actions/entries';
+  loadEntry as loadEntryAction,
+  loadEntries as loadEntriesAction,
+  createDraftFromEntry as createDraftFromEntryAction,
+  createEmptyDraft as createEmptyDraftAction,
+  discardDraft as discardDraftAction,
+  changeDraftField as changeDraftFieldAction,
+  changeDraftFieldValidation as changeDraftFieldValidationAction,
+  persistEntry as persistEntryAction,
+  deleteEntry as deleteEntryAction,
+} from '../../actions/entries';
 import {
-  updateUnpublishedEntryStatus,
-  publishUnpublishedEntry,
-  deleteUnpublishedEntry,
-} from 'Actions/editorialWorkflow';
-import { deserializeValues } from 'Lib/serializeEntryValues';
-import { addAsset } from 'Actions/media';
-import { openMediaLibrary, removeInsertedMedia } from 'Actions/mediaLibrary';
-import { selectEntry, selectUnpublishedEntry, getAsset } from 'Reducers';
-import { selectFields } from 'Reducers/collections';
-import { Loader } from 'UI';
-import { status } from 'Constants/publishModes';
-import { EDITORIAL_WORKFLOW } from 'Constants/publishModes';
+  updateUnpublishedEntryStatus as updateUnpublishedEntryStatusAction,
+  publishUnpublishedEntry as publishUnpublishedEntryAction,
+  deleteUnpublishedEntry as deleteUnpublishedEntryAction,
+} from '../../actions/editorialWorkflow';
+import { addAsset as addAssetAction } from '../../actions/media';
+import {
+  openMediaLibrary as openMediaLibraryAction,
+  removeInsertedMedia as removeInsertedMediaAction,
+} from '../../actions/mediaLibrary';
+import { deserializeValues } from '../../lib/serializeEntryValues';
+import { selectEntry, selectUnpublishedEntry, getAsset } from '../../reducers';
+import { selectFields } from '../../reducers/collections';
+import { Loader } from '../UI';
+import { status, EDITORIAL_WORKFLOW } from '../../constants/publishModes';
 import EditorInterface from './EditorInterface';
 import withWorkflow from './withWorkflow';
 
@@ -40,6 +40,7 @@ const navigateToEntry = (collectionName, slug) => navigateCollection(`${ collect
 
 class Editor extends React.Component {
   static propTypes = {
+    location: PropTypes.any,
     addAsset: PropTypes.func.isRequired,
     boundGetAsset: PropTypes.func.isRequired,
     changeDraftField: PropTypes.func.isRequired,
@@ -49,6 +50,7 @@ class Editor extends React.Component {
     createEmptyDraft: PropTypes.func.isRequired,
     discardDraft: PropTypes.func.isRequired,
     entry: ImmutablePropTypes.map,
+    user: ImmutablePropTypes.map,
     mediaPaths: ImmutablePropTypes.map.isRequired,
     entryDraft: ImmutablePropTypes.map.isRequired,
     loadEntry: PropTypes.func.isRequired,
@@ -63,20 +65,20 @@ class Editor extends React.Component {
     displayUrl: PropTypes.string,
     hasWorkflow: PropTypes.bool,
     unpublishedEntry: PropTypes.bool,
+    hasChanged: PropTypes.bool.isRequired,
     isModification: PropTypes.bool,
     collectionEntriesLoaded: PropTypes.bool,
     updateUnpublishedEntryStatus: PropTypes.func.isRequired,
     publishUnpublishedEntry: PropTypes.func.isRequired,
     deleteUnpublishedEntry: PropTypes.func.isRequired,
+    loadEntries: PropTypes.func.isRequired,
     currentStatus: PropTypes.string,
     logoutUser: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
     const {
-      entry,
       newEntry,
-      entryDraft,
       collection,
       slug,
       loadEntry,
@@ -100,10 +102,12 @@ class Editor extends React.Component {
         event.returnValue = leaveMessage;
         return leaveMessage;
       }
+
+      return null;
     };
     window.addEventListener('beforeunload', this.exitBlocker);
 
-    const navigationBlocker = (location, action) => {
+    const navigationBlocker = (_, action) => {
       /**
        * New entry being saved and redirected to it's new slug based url.
        */
@@ -111,12 +115,14 @@ class Editor extends React.Component {
       const newRecord = this.props.entryDraft.getIn(['entry', 'newRecord']);
       const newEntryPath = `/collections/${ collection.get('name') }/new`;
       if (isPersisting && newRecord && this.props.location.pathname === newEntryPath && action === 'PUSH') {
-        return;
+        return null;
       }
 
       if (this.props.hasChanged) {
         return leaveMessage;
       }
+
+      return null;
     };
     const unblock = history.block(navigationBlocker);
 
@@ -124,11 +130,10 @@ class Editor extends React.Component {
      * This will run as soon as the location actually changes, unless creating
      * a new post. The confirmation above will run first.
      */
-    this.unlisten = history.listen((location, action) => {
+    this.unlisten = history.listen(({ pathname }, action) => {
       const newEntryPath = `/collections/${ collection.get('name') }/new`;
       const entriesPath = `/collections/${ collection.get('name') }/entries/`;
-      const { pathname } = location;
-      if (pathname.startsWith(newEntryPath) || pathname.startsWith(entriesPath) && action === 'PUSH') {
+      if ((pathname.startsWith(newEntryPath) || pathname.startsWith(entriesPath)) && action === 'PUSH') {
         return;
       }
       unblock();
@@ -181,12 +186,13 @@ class Editor extends React.Component {
   handleChangeStatus = (newStatusName) => {
     const { updateUnpublishedEntryStatus, collection, slug, currentStatus } = this.props;
     const newStatus = status.get(newStatusName);
-    this.props.updateUnpublishedEntryStatus(collection.get('name'), slug, currentStatus, newStatus);
+
+    updateUnpublishedEntryStatus(collection.get('name'), slug, currentStatus, newStatus);
   };
 
   handlePersistEntry = async (opts = {}) => {
     const { createNew = false } = opts;
-    const { persistEntry, collection, entryDraft, newEntry, currentStatus, hasWorkflow, loadEntry, slug, createEmptyDraft } = this.props;
+    const { persistEntry, collection, currentStatus, hasWorkflow, loadEntry, slug, createEmptyDraft } = this.props;
 
     await persistEntry(collection);
 
@@ -200,14 +206,22 @@ class Editor extends React.Component {
 
   handlePublishEntry = async (opts = {}) => {
     const { createNew = false } = opts;
-    const { publishUnpublishedEntry, entryDraft, collection, slug, currentStatus, loadEntry } = this.props;
+    const {
+      publishUnpublishedEntry, persistEntry, entryDraft, collection, slug, currentStatus, loadEntry,
+    } = this.props;
+    const hasChangedMsg = 'Your unsaved changes will be saved before publishing.' +
+      ' Are you sure you want to publish?';
+
     if (currentStatus !== status.last()) {
+      // eslint-disable-next-line no-alert
       window.alert('Please update status to "Ready" before publishing.');
       return;
+      // eslint-disable-next-line no-alert
     } else if (!window.confirm('Are you sure you want to publish this entry?')) {
       return;
     } else if (entryDraft.get('hasChanged')) {
-      if (window.confirm('Your unsaved changes will be saved before publishing. Are you sure you want to publish?')) {
+      // eslint-disable-next-line no-alert
+      if (window.confirm(hasChangedMsg)) {
         await persistEntry(collection);
       } else {
         return;
@@ -226,11 +240,15 @@ class Editor extends React.Component {
   handleDeleteEntry = () => {
     const { entryDraft, newEntry, collection, deleteEntry, slug } = this.props;
     if (entryDraft.get('hasChanged')) {
-      if (!window.confirm('Are you sure you want to delete this published entry, as well as your unsaved changes from the current session?')) {
-        return;
+      const msg = 'Are you sure you want to delete this published entry, ' +
+        'as well as your unsaved changes from the current session?';
+      // eslint-disable-next-line no-alert
+      if (!window.confirm(msg)) {
+        return null;
       }
+      // eslint-disable-next-line no-alert
     } else if (!window.confirm('Are you sure you want to delete this published entry?')) {
-      return;
+      return null;
     }
     if (newEntry) {
       return navigateToCollection(collection.get('name'));
@@ -240,13 +258,21 @@ class Editor extends React.Component {
       await deleteEntry(collection, slug);
       return navigateToCollection(collection.get('name'));
     }, 0);
+
+    return null;
   };
 
   handleDeleteUnpublishedChanges = async () => {
     const { entryDraft, collection, slug, deleteUnpublishedEntry, loadEntry, isModification } = this.props;
-    if (entryDraft.get('hasChanged') && !window.confirm('This will delete all unpublished changes to this entry, as well as your unsaved changes from the current session. Do you still want to delete?')) {
+    const hasChangedMsg = 'This will delete all unpublished changes to this entry, as well as your ' +
+      'unsaved changes from the current session. Do you still want to delete?';
+    const noHasChangedMsg = 'All unpublished changes to this entry will be deleted.' + 
+      'Do you still want to delete?';
+    // eslint-disable-next-line no-alert
+    if (entryDraft.get('hasChanged') && !window.confirm(hasChangedMsg)) {
       return;
-    } else if (!window.confirm('All unpublished changes to this entry will be deleted. Do you still want to delete?')) {
+      // eslint-disable-next-line no-alert
+    } else if (!window.confirm(noHasChangedMsg)) {
       return;
     }
     await deleteUnpublishedEntry(collection.get('name'), slug);
@@ -366,21 +392,21 @@ function mapStateToProps(state, ownProps) {
 export default connect(
   mapStateToProps,
   {
-    changeDraftField,
-    changeDraftFieldValidation,
-    openMediaLibrary,
-    removeInsertedMedia,
-    addAsset,
-    loadEntry,
-    loadEntries,
-    createDraftFromEntry,
-    createEmptyDraft,
-    discardDraft,
-    persistEntry,
-    deleteEntry,
-    updateUnpublishedEntryStatus,
-    publishUnpublishedEntry,
-    deleteUnpublishedEntry,
-    logoutUser,
+    changeDraftField: changeDraftFieldAction,
+    changeDraftFieldValidation: changeDraftFieldValidationAction,
+    openMediaLibrary: openMediaLibraryAction,
+    removeInsertedMedia: removeInsertedMediaAction,
+    addAsset: addAssetAction,
+    loadEntry: loadEntryAction,
+    loadEntries: loadEntriesAction,
+    createDraftFromEntry: createDraftFromEntryAction,
+    createEmptyDraft: createEmptyDraftAction,
+    discardDraft: discardDraftAction,
+    persistEntry: persistEntryAction,
+    deleteEntry: deleteEntryAction,
+    updateUnpublishedEntryStatus: updateUnpublishedEntryStatusAction,
+    publishUnpublishedEntry: publishUnpublishedEntryAction,
+    deleteUnpublishedEntry: deleteUnpublishedEntryAction,
+    logoutUser: logoutUserAction,
   }
 )(withWorkflow(Editor));

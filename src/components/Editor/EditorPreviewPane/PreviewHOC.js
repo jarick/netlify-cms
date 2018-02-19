@@ -1,4 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+
 
 class PreviewHOC extends React.Component {
 
@@ -17,5 +20,11 @@ class PreviewHOC extends React.Component {
     return React.createElement(previewComponent, props);
   }
 }
+
+PreviewHOC.propTypes = {
+  field: ImmutablePropTypes.map,
+  value: PropTypes.any,
+  previewComponent: PropTypes.element,
+};
 
 export default PreviewHOC;

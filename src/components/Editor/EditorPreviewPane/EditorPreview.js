@@ -30,8 +30,6 @@ export default class Preview extends React.Component {
 
 Preview.propTypes = {
   collection: ImmutablePropTypes.map.isRequired,
-  entry: ImmutablePropTypes.map.isRequired,
   fields: ImmutablePropTypes.list.isRequired,
-  getAsset: PropTypes.func.isRequired,
   widgetFor: PropTypes.func.isRequired,
 };

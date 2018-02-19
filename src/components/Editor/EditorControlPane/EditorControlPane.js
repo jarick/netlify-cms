@@ -44,23 +44,25 @@ export default class ControlPane extends React.Component {
 
     return (
       <div className="nc-controlPane-root">
-        {fields.map((field, i) => field.get('widget') === 'hidden' ? null :
-        <EditorControl
-          key={i}
-          field={field}
-          value={entry.getIn(['data', field.get('name')])}
-          fieldsMetaData={fieldsMetaData}
-          fieldsErrors={fieldsErrors}
-          mediaPaths={mediaPaths}
-          getAsset={getAsset}
-          onChange={onChange}
-          onOpenMediaLibrary={onOpenMediaLibrary}
-          onAddAsset={onAddAsset}
-          onRemoveInsertedMedia={onRemoveInsertedMedia}
-          onValidate={onValidate}
-          processControlRef={this.processControlRef}
-        />
-        )}
+        {fields.map((field, i) => (
+          field.get('widget') === 'hidden'
+            ? null
+            : <EditorControl
+              key={i}
+              field={field}
+              value={entry.getIn(['data', field.get('name')])}
+              fieldsMetaData={fieldsMetaData}
+              fieldsErrors={fieldsErrors}
+              mediaPaths={mediaPaths}
+              getAsset={getAsset}
+              onChange={onChange}
+              onOpenMediaLibrary={onOpenMediaLibrary}
+              onAddAsset={onAddAsset}
+              onRemoveInsertedMedia={onRemoveInsertedMedia}
+              onValidate={onValidate}
+              processControlRef={this.processControlRef}
+            />
+        ))}
       </div>
     );
   }
