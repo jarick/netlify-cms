@@ -70,13 +70,13 @@ export default class AssetStore {
 
   async retrieve(query, page, privateUpload) {
     const params = pickBy({ search: query, page, filter: privateUpload ? 'private' : 'public' }, val => !!val);
-    const url = addParams(this.getSignedFormURL, params);
+    const link = addParams(this.getSignedFormURL, params);
     const token = await this.getToken();
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${ token }`,
     };
-    const response = await this.request(url, { headers });
+    const response = await this.request(link, { headers });
     const files = response.map(({ id, name, size, url }) => ({ id, name, size, url, urlIsPublicPath: true }));
     return files;
   }

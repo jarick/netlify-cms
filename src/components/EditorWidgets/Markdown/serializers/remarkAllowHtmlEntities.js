@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export default function remarkAllowHtmlEntities() {
   this.Parser.prototype.inlineTokenizers.text = text;
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import icons from './icons';
 
 /**
@@ -32,8 +33,6 @@ export const Icon = (props) => {
     direction,
     size = 'medium',
     className = '',
-    width,
-    height,
     ...remainingProps
   } = props;
   const icon = icons[type];
@@ -48,4 +47,11 @@ export const Icon = (props) => {
       {/* eslint-enable */}
     </span>
   );
+};
+
+Icon.propTypes = {
+  type: PropTypes.string.isRequired,
+  direction: PropTypes.string.isRequired,
+  size: PropTypes.string,
+  className: PropTypes.string,
 };

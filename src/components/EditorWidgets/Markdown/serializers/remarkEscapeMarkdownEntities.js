@@ -1,6 +1,7 @@
-import { has, flow, partial, flatMap, flatten, map } from 'lodash';
-import { joinPatternSegments, combinePatterns, replaceWhen } from 'Lib/regexHelper';
+import { has, flow, partial, map } from 'lodash';
+import { joinPatternSegments, combinePatterns, replaceWhen } from '../../../../lib/regexHelper';
 
+/* eslint-disable */
 /**
  * Reusable regular expressions segments.
  */

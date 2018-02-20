@@ -6,8 +6,6 @@ import { padStart } from 'lodash';
 import MarkdownPreview from '../index';
 import { markdownToHtml } from '../../serializers';
 
-const parser = markdownToHtml;
-
 describe('Markdown Preview renderer', () => {
   describe('Markdown rendering', () => {
     describe('General', () => {

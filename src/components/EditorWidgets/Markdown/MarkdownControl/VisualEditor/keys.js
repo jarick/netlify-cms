@@ -1,9 +1,9 @@
+// eslint-disable-next-line
 import { Block, Text } from 'slate';
 import isHotkey from 'is-hotkey';
 
-export default onKeyDown;
 
-function onKeyDown(event, change) {
+const onKeyDown = (event, change) => {
   const createDefaultBlock = () => Block.create({
     type: 'paragraph',
     nodes: [Text.create('')],
@@ -18,7 +18,7 @@ function onKeyDown(event, change) {
      * If the selected block is the first block in the document, create the
      * new block above it. If not, create the new block below it.
      */
-    const { document: doc, range, anchorBlock, focusBlock } = change.value;
+    const { document: doc, anchorBlock, focusBlock } = change.value;
     const singleBlockSelected = anchorBlock === focusBlock;
     if (!singleBlockSelected || !focusBlock.isVoid) return;
 
@@ -31,9 +31,10 @@ function onKeyDown(event, change) {
     const newBlock = createDefaultBlock();
     const newBlockIndex = focusBlockIsFirstChild ? 0 : focusBlockIndex + 1;
 
-    return change
+    change
       .insertNodeByKey(focusBlockParent.key, newBlockIndex, newBlock)
       .collapseToStartOf(newBlock);
+    return;
   }
 
   const marks = [
@@ -43,10 +44,13 @@ function onKeyDown(event, change) {
     ['`', 'code'],
   ];
 
+  // eslint-disable-next-line no-unused-vars
   const [markKey, markName] = marks.find(([key]) => isHotkey(`mod+${ key }`, event)) || [];
 
   if (markName) {
     event.preventDefault();
-    return change.toggleMark(markName);
+    change.toggleMark(markName);
   }
-}
+};
+
+export default onKeyDown;

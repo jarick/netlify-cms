@@ -2,6 +2,8 @@ import { map, every } from 'lodash';
 import u from 'unist-builder';
 import mdastToString from 'mdast-util-to-string';
 
+/* eslint-disable */
+
 /**
  * Parse shortcodes from an MDAST.
  *

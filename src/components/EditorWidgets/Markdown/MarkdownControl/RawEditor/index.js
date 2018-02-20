@@ -43,6 +43,8 @@ export default class RawEditor extends React.Component {
       const fragment = Plain.deserialize(data.text).document;
       return change.insertFragment(fragment);
     }
+
+    return null;
   };
 
   handleToggleMode = () => {

@@ -78,37 +78,78 @@ const unpublishedEntries = (state = null, action) => {
 
     case UNPUBLISHED_ENTRY_PERSIST_SUCCESS:
       // Update Optimistically
-      return state.deleteIn(['entities', `${ action.payload.collection }.${ action.payload.entry.get('slug') }`, 'isPersisting']);
+      return state.deleteIn([
+        'entities',
+        `${ action.payload.collection }.${ action.payload.entry.get('slug') }`,
+        'isPersisting',
+      ]);
 
     case UNPUBLISHED_ENTRY_STATUS_CHANGE_REQUEST:
       // Update Optimistically
       return state.withMutations((map) => {
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'metaData', 'status'], action.payload.newStatus);
-        map.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isUpdatingStatus'], true);
+        map.setIn(
+          [
+            'entities',
+            `${ action.payload.collection }.${ action.payload.slug }`,
+            'metaData',
+            'status',
+          ],
+          action.payload.newStatus,
+        );
+        map.setIn(
+          [
+            'entities',
+            `${ action.payload.collection }.${ action.payload.slug }`,
+            'isUpdatingStatus',
+          ],
+          true,
+        );
       });
 
     case UNPUBLISHED_ENTRY_STATUS_CHANGE_SUCCESS:
     case UNPUBLISHED_ENTRY_STATUS_CHANGE_FAILURE:
-      return state.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isUpdatingStatus'], false);
+      return state.setIn(
+        [
+          'entities',
+          `${ action.payload.collection }.${ action.payload.slug }`,
+          'isUpdatingStatus',
+        ],
+        false,
+      );
 
     case UNPUBLISHED_ENTRY_PUBLISH_REQUEST:
-      return state.setIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`, 'isPublishing'], true);
+      return state.setIn(
+        [
+          'entities',
+          `${ action.payload.collection }.${ action.payload.slug }`,
+          'isPublishing',
+        ],
+        true,
+      );
 
     case UNPUBLISHED_ENTRY_PUBLISH_SUCCESS:
     case UNPUBLISHED_ENTRY_PUBLISH_FAILURE:
       return state.withMutations((map) => {
-        map.deleteIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`]);
+        map.deleteIn([
+          'entities',
+          `${ action.payload.collection }.${ action.payload.slug }`,
+        ]);
       });
 
     case UNPUBLISHED_ENTRY_DELETE_SUCCESS:
-      return state.deleteIn(['entities', `${ action.payload.collection }.${ action.payload.slug }`]);
+      return state.deleteIn([
+        'entities',
+        `${ action.payload.collection }.${ action.payload.slug }`,
+      ]);
 
     default:
       return state;
   }
 };
 
-export const selectUnpublishedEntry = (state, collection, slug) => state && state.getIn(['entities', `${ collection }.${ slug }`]);
+export const selectUnpublishedEntry = (state, collection, slug) => (
+  state && state.getIn(['entities', `${ collection }.${ slug }`])
+);
 
 export const selectUnpublishedEntriesByStatus = (state, status) => {
   if (!state) return null;

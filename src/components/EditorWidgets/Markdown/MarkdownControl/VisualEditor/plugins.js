@@ -1,18 +1,18 @@
+// eslint-disable-next-line
 import { Text, Inline } from 'slate';
 import isHotkey from 'is-hotkey';
-import SlateSoftBreak from 'slate-soft-break';
-import EditList from 'slate-edit-list';
-import EditTable from 'slate-edit-table';
+import createEditList from 'slate-edit-list';
+import createEditTable from 'slate-edit-table';
 
-const SoftBreak = (options = {}) => ({
+const createSoftBreak = (options = {}) => ({
   onKeyDown(event, change) {
-    if (options.shift && !isHotkey('shift+enter', event)) return;
-    if (!options.shift && !isHotkey('enter', event)) return;
+    if (options.shift && !isHotkey('shift+enter', event)) return null;
+    if (!options.shift && !isHotkey('enter', event)) return null;
 
     const { onlyIn, ignoreIn, defaultBlock = 'paragraph' } = options;
     const { type, text } = change.value.startBlock;
-    if (onlyIn && !onlyIn.includes(type)) return;
-    if (ignoreIn && ignoreIn.includes(type)) return;
+    if (onlyIn && !onlyIn.includes(type)) return null;
+    if (ignoreIn && ignoreIn.includes(type)) return null;
 
     const shouldClose = text.endsWith('\n');
     if (shouldClose) {
@@ -34,16 +34,16 @@ const SoftBreakOpts = {
   onlyIn: ['quote', 'code'],
 };
 
-export const SoftBreakConfigured = SoftBreak(SoftBreakOpts);
+export const SoftBreakConfigured = createSoftBreak(SoftBreakOpts);
 
-export const ParagraphSoftBreakConfigured = SoftBreak({ onlyIn: ['paragraph'], shift: true });
+export const ParagraphSoftBreakConfigured = createSoftBreak({ onlyIn: ['paragraph'], shift: true });
 
-const BreakToDefaultBlock = ({ onlyIn = [], defaultBlock = 'paragraph' }) => ({
+const createBreakToDefaultBlock = ({ onlyIn = [], defaultBlock = 'paragraph' }) => ({
   onKeyDown(event, change) {
     const { value } = change;
     if (!isHotkey('enter', event) || value.isExpanded) return;
     if (onlyIn.includes(value.startBlock.type)) {
-      return change.insertBlock(defaultBlock);
+      change.insertBlock(defaultBlock);
     }
   },
 });
@@ -52,9 +52,9 @@ const BreakToDefaultBlockOpts = {
   onlyIn: ['heading-one', 'heading-two', 'heading-three', 'heading-four', 'heading-five', 'heading-six'],
 };
 
-export const BreakToDefaultBlockConfigured = BreakToDefaultBlock(BreakToDefaultBlockOpts);
+export const BreakToDefaultBlockConfigured = createBreakToDefaultBlock(BreakToDefaultBlockOpts);
 
-const BackspaceCloseBlock = (options = {}) => ({
+const createBackspaceCloseBlock = (options = {}) => ({
   onKeyDown(event, change) {
     if (event.key !== 'Backspace') return;
 
@@ -66,7 +66,7 @@ const BackspaceCloseBlock = (options = {}) => ({
     if (ignoreIn && ignoreIn.includes(type)) return;
 
     if (startBlock.text === '') {
-      return change.setBlock(defaultBlock).focus();
+      change.setBlock(defaultBlock).focus();
     }
   },
 });
@@ -83,14 +83,14 @@ const BackspaceCloseBlockOpts = {
   ],
 };
 
-export const BackspaceCloseBlockConfigured = BackspaceCloseBlock(BackspaceCloseBlockOpts);
+export const BackspaceCloseBlockConfigured = createBackspaceCloseBlock(BackspaceCloseBlockOpts);
 
 const EditListOpts = {
   types: ['bulleted-list', 'numbered-list'],
   typeItem: 'list-item',
 };
 
-export const EditListConfigured = EditList(EditListOpts);
+export const EditListConfigured = createEditList(EditListOpts);
 
 const EditTableOpts = {
   typeTable: 'table',
@@ -98,7 +98,7 @@ const EditTableOpts = {
   typeCell: 'table-cell',
 };
 
-export const EditTableConfigured = EditTable(EditTableOpts);
+export const EditTableConfigured = createEditTable(EditTableOpts);
 
 const plugins = [
   SoftBreakConfigured,

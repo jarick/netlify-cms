@@ -111,9 +111,9 @@ function localSearch(searchTerm, getState, dispatch) {
         ];
         const collectionEntries = selectEntries(state, collectionKey).toJS();
         const filteredEntries = fuzzy.filter(searchTerm, collectionEntries, {
-          extract: entry => searchFields.reduce((acc, field) => {
+          extract: entry => searchFields.reduce((accField, field) => {
             const f = entry.data[field];
-            return f ? `${ acc } ${ f }` : acc;
+            return f ? `${ accField } ${ f }` : accField;
           }, ""),
         }).filter(entry => entry.score > 5);
         localResults[collectionKey] = true;

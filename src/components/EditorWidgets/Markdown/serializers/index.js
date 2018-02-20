@@ -1,4 +1,4 @@
-import { get, isEmpty, reduce, pull, trimEnd } from 'lodash';
+import { trimEnd } from 'lodash';
 import unified from 'unified';
 import u from 'unist-builder';
 import markdownToRemarkPlugin from 'remark-parse';
@@ -7,7 +7,7 @@ import remarkToRehype from 'remark-rehype';
 import rehypeToHtml from 'rehype-stringify';
 import htmlToRehype from 'rehype-parse';
 import rehypeToRemark from 'rehype-remark';
-import { getEditorComponents } from 'Lib/registry';
+import { getEditorComponents } from '../../../../lib/registry';
 import remarkToRehypeShortcodes from './remarkRehypeShortcodes';
 import rehypePaperEmoji from './rehypePaperEmoji';
 import remarkAssertParents from './remarkAssertParents';
@@ -56,6 +56,16 @@ import slateToRemark from './slateRemark';
  *   for serialization to/from Slate's Raw AST and MDAST.
  */
 
+/**
+ * Remove named tokenizers from the parser, effectively deactivating them.
+ */
+function markdownToRemarkRemoveTokenizers({ inlineTokenizers }) {
+  if (inlineTokenizers) {
+    inlineTokenizers.forEach((tokenizer) => {
+      delete this.Parser.prototype.inlineTokenizers[tokenizer];
+    });
+  }
+}
 
 /**
  * Deserialize a Markdown string to an MDAST.
@@ -81,17 +91,6 @@ export const markdownToRemark = (markdown) => {
 
   return result;
 };
-
-
-/**
- * Remove named tokenizers from the parser, effectively deactivating them.
- */
-function markdownToRemarkRemoveTokenizers({ inlineTokenizers }) {
-  inlineTokenizers && inlineTokenizers.forEach((tokenizer) => {
-    delete this.Parser.prototype.inlineTokenizers[tokenizer];
-  });
-}
-
 
 /**
  * Serialize an MDAST to a Markdown string.

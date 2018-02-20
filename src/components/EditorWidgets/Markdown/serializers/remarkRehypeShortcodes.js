@@ -2,6 +2,8 @@ import { map, has } from 'lodash';
 import { renderToString } from 'react-dom/server';
 import u from 'unist-builder';
 
+/* eslint-disable */
+
 /**
  * This plugin doesn't actually transform Remark (MDAST) nodes to Rehype
  * (HAST) nodes, but rather, it prepares an MDAST shortcode node for HAST

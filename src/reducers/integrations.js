@@ -1,11 +1,12 @@
 import { fromJS } from 'immutable';
+import { assign } from 'lodash';
 import { CONFIG_SUCCESS } from '../actions/config';
 
 const integrations = (state = null, action) => {
   switch (action.type) {
     case CONFIG_SUCCESS: {
-      const integrations = action.payload.integrations || [];
-      const newState = integrations.reduce((acc, integration) => {
+      const params = action.payload.integrations || [];
+      const newState = params.reduce((acc, integration) => {
         const { hooks, collections, provider, ...providerData } = integration;
         acc.providers[provider] = { ...providerData };
         if (!collections) {
@@ -19,10 +20,7 @@ const integrations = (state = null, action) => {
           : collections;
         integrationCollections.forEach((collection) => {
           hooks.forEach((hook) => {
-            acc.hooks[collection]
-              ? acc.hooks[collection][hook] = provider
-              : acc.hooks[collection] = { [hook]: provider };
-            return;
+            acc.hooks[collection] = assign({}, acc.hooks[collection], { [hook]: provider });
           });
         });
         return acc;

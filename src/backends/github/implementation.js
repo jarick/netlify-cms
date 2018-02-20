@@ -2,7 +2,7 @@ import trimStart from 'lodash/trimStart';
 import semaphore from 'semaphore';
 import { fileExtension } from '../../lib/pathHelper';
 import AuthenticationPage from './AuthenticationPage';
-// import API from './API';
+import API from './API';
 
 const MAX_CONCURRENT_DOWNLOADS = 10;
 

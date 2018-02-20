@@ -1,16 +1,7 @@
-import {
-  get,
-  set,
-  find,
-  findLast,
-  startsWith,
-  endsWith,
-  trimStart,
-  trimEnd,
-  concat,
-  flatMap,
-} from 'lodash';
+// eslint-disable-next-line
+import { find, findLast, startsWith, endsWith, trimStart, trimEnd, flatMap } from 'lodash';
 import u from 'unist-builder';
+// eslint-disable-next-line
 import toString from 'mdast-util-to-string';
 
 /**
@@ -23,32 +14,36 @@ import toString from 'mdast-util-to-string';
  * children one at a time.
  */
 export default function remarkPaddedLinks() {
-  function transform(node) {
     /**
-     * Because we're operating on link nodes and their children at once, we can
-     * exit if the current node has no children.
+   * Get the first or last non-blank text child of a node, regardless of
+   * nesting. If `end` is truthy, get the last node, otherwise first.
+   */
+  function getEdgeTextChild(node, end) {
+     /**
+     * This was changed from a ternary to a long form if due to issues with istanbul's instrumentation and babel's code 
+     * generation. 
+     * TODO: watch https://github.com/istanbuljs/babel-plugin-istanbul/issues/95
+     * when it is resolved then revert to ```const findFn = end ? findLast : find;```
      */
-    if (!node.children) return node;
-
+    let findFn;
+    if (end) { findFn = findLast; } else { findFn = find; } 
+    let edgeChildWithValue;
+    
     /**
-     * Process a node's children if any of them are links. If a node is a link
-     * with leading or trailing spaces, we'll get back an array of nodes instead
-     * of a single node, so we use `flatMap` to keep those nodes as siblings
-     * with the other children.
-     *
-     * If performance improvements are found desirable, we could change this to
-     * only pass in the link nodes instead of the entire array of children, but
-     * this seems unlikely to produce a noticeable perf gain.
+     * searchChildren checks a node and all of it's children deeply to find a
+     * non-blank text value. When the text node is found, we set it in an outside
+     * variable, as it may be deep in the tree and therefore wouldn't be returned
+     * by `find`/`findLast`.
      */
-    const hasLinkChild = node.children.some(child => child.type === 'link');
-    const processedChildren = hasLinkChild ? flatMap(node.children, transformChildren) : node.children;
+    function setEdgeChildWithValue(child) {
+      if (!edgeChildWithValue && child.value) {
+        edgeChildWithValue = child;
+      }
+      findFn(child.children, setEdgeChildWithValue);
+    }
 
-    /**
-     * Run all children through the transform recursively.
-     */
-    const children = processedChildren.map(transform);
-
-    return { ...node, children };
+    setEdgeChildWithValue(node);
+    return edgeChildWithValue;
   }
 
   function transformChildren(node) {
@@ -90,36 +85,33 @@ export default function remarkPaddedLinks() {
     return nodes.filter(val => val);
   }
 
-  /**
-   * Get the first or last non-blank text child of a node, regardless of
-   * nesting. If `end` is truthy, get the last node, otherwise first.
-   */
-  function getEdgeTextChild(node, end) {
+  function transform(node) {
     /**
-     * This was changed from a ternary to a long form if due to issues with istanbul's instrumentation and babel's code 
-     * generation. 
-     * TODO: watch https://github.com/istanbuljs/babel-plugin-istanbul/issues/95
-     * when it is resolved then revert to ```const findFn = end ? findLast : find;```
+     * Because we're operating on link nodes and their children at once, we can
+     * exit if the current node has no children.
      */
-    let findFn;
-    if (end) { findFn = findLast; } else { findFn = find; } 
-
-    let edgeChildWithValue;
-    setEdgeChildWithValue(node);
-    return edgeChildWithValue;
+    if (!node.children) return node;
 
     /**
-     * searchChildren checks a node and all of it's children deeply to find a
-     * non-blank text value. When the text node is found, we set it in an outside
-     * variable, as it may be deep in the tree and therefore wouldn't be returned
-     * by `find`/`findLast`.
+     * Process a node's children if any of them are links. If a node is a link
+     * with leading or trailing spaces, we'll get back an array of nodes instead
+     * of a single node, so we use `flatMap` to keep those nodes as siblings
+     * with the other children.
+     *
+     * If performance improvements are found desirable, we could change this to
+     * only pass in the link nodes instead of the entire array of children, but
+     * this seems unlikely to produce a noticeable perf gain.
      */
-    function setEdgeChildWithValue(child) {
-      if (!edgeChildWithValue && child.value) {
-        edgeChildWithValue = child;
-      }
-      findFn(child.children, setEdgeChildWithValue);
-    }
+    const hasLinkChild = node.children.some(child => child.type === 'link');
+    const processedChildren = hasLinkChild ? flatMap(node.children, transformChildren) : node.children;
+
+    /**
+     * Run all children through the transform recursively.
+     */
+    const children = processedChildren.map(transform);
+
+    return { ...node, children };
   }
+
   return transform;
 }

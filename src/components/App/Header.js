@@ -48,7 +48,7 @@ export default class Header extends React.Component {
             to="/"
             className="nc-appHeader-button"
             activeClassName="nc-appHeader-button-active"
-            isActive={(match, location) => location.pathname.startsWith('/collections/')}
+            isActive={(match, { pathname }) => pathname.startsWith('/collections/')}
           >
             <Icon type="page" />
             {t('header.content')}

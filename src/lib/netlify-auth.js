@@ -86,14 +86,19 @@ class Authenticator {
     const provider = options.provider;
 
     if (!provider) {
-      return cb(new NetlifyError({
+      cb(new NetlifyError({
         message: 'You must specify a provider when calling netlify.authenticate',
       }));
+
+      return;
     }
     if (!siteID) {
-      return cb(new NetlifyError({
-        message: 'You must set a site_id with netlify.configure({site_id: \'your-site-id\'}) to make authentication work from localhost',
+      cb(new NetlifyError({
+        message: 'You must set a site_id with netlify.configure({site_id: \'your-site-id\'}) ' +
+          'to make authentication work from localhost',
       }));
+
+      return;
     }
 
     const conf = PROVIDERS[provider] || PROVIDERS.github;
@@ -119,7 +124,8 @@ class Authenticator {
     this.authWindow = window.open(
       url,
       'Netlify Authorization',
-      `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, ` +
+      `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, ` +
+      `resizable=no, copyhistory=no, ` +
       `width=${ conf.width }, height=${ conf.height }, top=${ htop }, left=${ left });`
     );
     this.authWindow.focus();

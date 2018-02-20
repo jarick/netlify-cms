@@ -1,6 +1,6 @@
+import { Map } from 'immutable';
 import Algolia from './providers/algolia/implementation';
 import AssetStore from './providers/assetStore/implementation';
-import { Map } from 'immutable';
 
 export function resolveIntegrations(interationsConfig, getToken) {
   let integrationInstances = Map({});
@@ -12,13 +12,14 @@ export function resolveIntegrations(interationsConfig, getToken) {
       case 'assetStore':
         integrationInstances = integrationInstances.set('assetStore', new AssetStore(providerData, getToken));
         break;
+      default:
+        throw new Error('Provider is not found');
     }
   });
   return integrationInstances;
 }
 
-
-export const getIntegrationProvider = (function() {
+const getIntegrationProviderCallback = () => {
   let integrations = null;
 
   return (interationsConfig, getToken, provider) => {
@@ -28,4 +29,6 @@ export const getIntegrationProvider = (function() {
     integrations = resolveIntegrations(interationsConfig, getToken);
     return integrations.get(provider);
   };
-}());
+};
+
+export const getIntegrationProvider = getIntegrationProviderCallback();

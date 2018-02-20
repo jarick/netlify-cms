@@ -85,12 +85,12 @@ const entries = (state = Map({ entities: Map(), pages: Map() }), action) => {
   }
 };
 
-export const selectEntry = (state, collection, slug) => (
-  state.getIn(['entities', `${ collection }.${ slug }`])
+export const selectEntry = (state, collectionName, slug) => (
+  state.getIn(['entities', `${ collectionName }.${ slug }`])
 );
 
-export const selectEntries = (state, collection) => {
-  const slugs = state.getIn(['pages', collection, 'ids']);
+export const selectEntries = (state, collectionName) => {
+  const slugs = state.getIn(['pages', collectionName, 'ids']);
   return slugs && slugs.map(slug => selectEntry(state, collection, slug));
 };
 

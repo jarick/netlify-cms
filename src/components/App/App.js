@@ -50,7 +50,7 @@ class App extends React.Component {
   static configError(config, t) {
     return (<div>
       <h1>{t('error-page.title')}</h1>
-
+      {/* eslint-disable react/no-danger */}
       <div dangerouslySetInnerHTML={{ __html: t('error-page.body', { error: config.get('error') }) }} />
     </div>);
   }

@@ -1,30 +1,25 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { List } from 'immutable';
+import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import c from 'classnames';
-import { Dropdown, DropdownItem, Toggle, Icon } from 'UI';
+import { Dropdown, DropdownItem, Toggle } from '../../../../UI';
 import ToolbarButton from './ToolbarButton';
 
 export default class Toolbar extends React.Component {
   static propTypes = {
-    buttons: PropTypes.object,
     onToggleMode: PropTypes.func.isRequired,
     rawMode: PropTypes.bool,
     plugins: ImmutablePropTypes.map,
     onSubmit: PropTypes.func,
-    onAddAsset: PropTypes.func,
-    getAsset: PropTypes.func,
     disabled: PropTypes.bool,
     className: PropTypes.string,
+    onMarkClick: PropTypes.func.isRequired,
+    onBlockClick: PropTypes.func.isRequired,
+    onLinkClick: PropTypes.func.isRequired,
+    selectionHasMark: PropTypes.bool.isRequired,
+    selectionHasBlock: PropTypes.bool.isRequired,
+    selectionHasLink: PropTypes.bool.isRequired,
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      activePlugin: null,
-    };
-  }
 
   render() {
     const {
@@ -37,14 +32,10 @@ export default class Toolbar extends React.Component {
       onToggleMode,
       rawMode,
       plugins,
-      onAddAsset,
-      getAsset,
       disabled,
       onSubmit,
       className,
     } = this.props;
-
-    const { activePlugin } = this.state;
 
     /**
      * Because the toggle labels change font weight for active/inactive state,

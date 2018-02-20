@@ -1,6 +1,7 @@
 import { get, isEmpty, without, flatMap, last, sortBy } from 'lodash';
 import u from 'unist-builder';
 
+/* eslint-disable */
 /**
  * Map of Slate node types to MDAST/Remark node types.
  */

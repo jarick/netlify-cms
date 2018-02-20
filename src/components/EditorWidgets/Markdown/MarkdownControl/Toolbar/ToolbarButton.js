@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import c from 'classnames';
-import { Icon } from 'UI';
+import { Icon } from '../../../../UI';
 
 const ToolbarButton = ({ type, label, icon, onClick, isActive, disabled }) => {
   const active = isActive && type && isActive(type);

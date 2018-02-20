@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { get, isEmpty, debounce } from 'lodash';
 import { Map } from 'immutable';
+// eslint-disable-next-line
 import { Value, Document, Block, Text } from 'slate';
 import { Editor as Slate } from 'slate-react';
-import { slateToMarkdown, markdownToSlate, htmlToSlate } from 'EditorWidgets/Markdown/serializers';
-import { getEditorComponents } from 'Lib/registry';
-import Toolbar from 'EditorWidgets/Markdown/MarkdownControl/Toolbar/Toolbar';
+import { slateToMarkdown, markdownToSlate, htmlToSlate } from '../../../../EditorWidgets/Markdown/serializers';
+import { getEditorComponents } from '../../../../../lib/registry';
+import Toolbar from '../../../../EditorWidgets/Markdown/MarkdownControl/Toolbar/Toolbar';
 import { renderNode, renderMark } from './renderers';
 import { validateNode } from './validators';
 import plugins, { EditListConfigured } from './plugins';
@@ -21,8 +22,8 @@ const createEmptyRawDoc = () => {
 const createSlateValue = (rawValue) => {
   const rawDoc = rawValue && markdownToSlate(rawValue);
   const rawDocHasNodes = !isEmpty(get(rawDoc, 'nodes'));
-  const document = Document.fromJSON(rawDocHasNodes ? rawDoc : createEmptyRawDoc());
-  return Value.create({ document });
+  const d = Document.fromJSON(rawDocHasNodes ? rawDoc : createEmptyRawDoc());
+  return Value.create({ document: d });
 };
 
 export default class Editor extends Component {
@@ -49,7 +50,7 @@ export default class Editor extends Component {
 
   handlePaste = (e, data, change) => {
     if (data.type !== 'html' || data.isShift) {
-      return;
+      return null;
     }
     const ast = htmlToSlate(data.html);
     const doc = Document.fromJSON(ast);
@@ -69,19 +70,17 @@ export default class Editor extends Component {
   handleBlockClick = (event, type) => {
     event.preventDefault();
     const { value } = this.state;
-    const { document: doc, selection } = value;
+    const { document: doc } = value;
     const { unwrapList, wrapInList } = EditListConfigured.changes;
     let change = value.change();
 
-    // Handle everything except list buttons.
     if (!['bulleted-list', 'numbered-list'].includes(type)) {
+      // Handle everything except list buttons.
       const isActive = this.selectionHasBlock(type);
       change = change.setBlock(isActive ? 'paragraph' : type);
-    }
-
-    // Handle the extra wrapping required for list buttons.
-    else {
-      const isSameListType = value.blocks.some(block => !!doc.getClosest(block.key, parent => parent.type === type));
+    } else {
+      // Handle the extra wrapping required for list buttons.
+      const isSameListType = value.blocks.some(block => !!doc.getClosest(block.key, p => p.type === type));
       const isInList = EditListConfigured.utils.isSelectionInList(value);
 
       if (isInList && isSameListType) {
@@ -109,6 +108,7 @@ export default class Editor extends Component {
     if (this.hasLinks()) {
       change = change.unwrapInline('link');
     } else {
+      // eslint-disable-next-line no-alert
       const url = window.prompt('Enter the URL of the link');
 
       // If nothing is entered in the URL prompt, do nothing.
@@ -166,8 +166,8 @@ export default class Editor extends Component {
 
   handleDocumentChange = debounce((change) => {
     const raw = change.value.document.toJSON();
-    const plugins = this.state.shortcodePlugins;
-    const markdown = slateToMarkdown(raw, plugins);
+    const pl = this.state.shortcodePlugins;
+    const markdown = slateToMarkdown(raw, pl);
     this.props.onChange(markdown);
   }, 150);
 

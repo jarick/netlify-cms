@@ -2,6 +2,8 @@ import { without, flatten } from 'lodash';
 import u from 'unist-builder';
 import mdastDefinitions from 'mdast-util-definitions';
 
+/* eslint-disable */
+
 /**
  * Raw markdown may contain image references or link references. Because there
  * is no way to maintain these references within the Slate AST, we convert image

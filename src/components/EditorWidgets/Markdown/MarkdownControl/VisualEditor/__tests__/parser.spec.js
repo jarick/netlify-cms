@@ -1,9 +1,9 @@
 import { fromJS } from 'immutable';
-import { markdownToSlate } from 'EditorWidgets/Markdown/serializers';
+import { markdownToSlate } from '../../../../../EditorWidgets/Markdown/serializers';
 
 const parser = markdownToSlate;
 
-// Temporary plugins test
+// eslint-disable-next-line
 const testPlugins = fromJS([
   {
     label: 'Image',

@@ -7,6 +7,7 @@ const MarkdownPreview = ({ value, getAsset }) => {
     return null;
   }
   const html = markdownToHtml(value, getAsset);
+  // eslint-disable-next-line
   return <div className="nc-widgetPreview" dangerouslySetInnerHTML={{ __html: html }} />;
 };
 

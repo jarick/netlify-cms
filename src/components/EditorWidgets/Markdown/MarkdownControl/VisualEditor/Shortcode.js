@@ -1,16 +1,28 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import c from 'classnames';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { partial, capitalize } from 'lodash';
-import { resolveWidget, getEditorComponents } from 'Lib/registry';
-import { openMediaLibrary, removeInsertedMedia } from 'Actions/mediaLibrary';
-import { addAsset } from 'Actions/media';
-import { getAsset } from 'Reducers';
-import { ListItemTopBar } from 'UI';
+import { getEditorComponents } from '../../../../../lib/registry';
+import { openMediaLibrary, removeInsertedMedia } from '../../../../../actions/mediaLibrary';
+import { addAsset } from '../../../../../actions/media';
+import { getAsset } from '../../../../../reducers';
+import { ListItemTopBar } from '../../../../UI';
 import { getEditorControl } from '../index';
 
 class Shortcode extends React.Component {
+  static propTypes = {
+    node: PropTypes.object.isRequired,
+    editor: PropTypes.object.isRequired,
+    onAddAsset: PropTypes.func.isRequired,
+    boundGetAsset: PropTypes.func.isRequired,
+    mediaPaths: PropTypes.array.isRequired,
+    onOpenMediaLibrary: PropTypes.func.isRequired,
+    onRemoveInsertedMedia: PropTypes.func.isRequired,
+    attributes: PropTypes.array.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -27,7 +39,7 @@ class Shortcode extends React.Component {
     const { editor, node } = this.props;
     const shortcodeData = Map(node.data.get('shortcodeData')).set(fieldName, value);
     const data = node.data.set('shortcodeData', shortcodeData);
-    editor.change(c => c.setNodeByKey(node.key, { data }));
+    editor.change(change => change.setNodeByKey(node.key, { data }));
   };
 
   handleCollapseToggle = () => {
@@ -88,7 +100,7 @@ class Shortcode extends React.Component {
   };
 
   render() {
-    const { attributes, node, editor } = this.props;
+    const { attributes, node } = this.props;
     const { collapsed } = this.state;
     const pluginId = node.data.get('shortcode');
     const shortcodeData = Map(this.props.node.data.get('shortcodeData'));
@@ -99,7 +111,11 @@ class Shortcode extends React.Component {
       { 'nc-visualEditor-shortcode-collapsed': collapsed },
     );
     return (
-      <div {...attributes} className={className} onClick={this.handleClick}>
+      <div
+        {...attributes}
+        className={className}
+        onClick={this.handleClick}
+      >
         <ListItemTopBar
           className="nc-visualEditor-shortcode-topBar"
           collapsed={collapsed}

@@ -1,5 +1,6 @@
 import { get, isEmpty, isArray, last, flatMap } from 'lodash';
-import u from 'unist-builder';
+
+/* eslint-disable */
 
 /**
  * A Remark plugin for converting an MDAST to Slate Raw AST. Remark plugins

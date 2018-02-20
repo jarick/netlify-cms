@@ -225,6 +225,7 @@ export function loadEntry(collection, slug) {
     return backend.getEntry(collection, slug)
       .then(loadedEntry => dispatch(entryLoaded(collection, loadedEntry)))
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error(error);
         dispatch(notifSend({
           message: `Failed to load entry: ${ error.message }`,

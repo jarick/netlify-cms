@@ -8,7 +8,7 @@ import { ScrollSyncPane } from 'react-scroll-sync';
  * body.
  */
 const PreviewContent = ({ previewComponent, previewProps }) => (
-  <ScrollSyncPane attachTo={this.context.document.scrollingElement}>
+  <ScrollSyncPane> {/* attachTo={this.context.document.scrollingElement} */}
     {React.createElement(previewComponent, previewProps)}
   </ScrollSyncPane>
 );
@@ -18,7 +18,7 @@ PreviewContent.contextTypes = {
 };
 
 PreviewContent.propTypes = {
-  previewComponent: PropTypes.element.isRequired,
+  previewComponent: PropTypes.any,
   previewProps: PropTypes.object.isRequired,
 };
 

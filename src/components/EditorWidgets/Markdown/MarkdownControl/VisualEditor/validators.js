@@ -1,9 +1,11 @@
+// eslint-disable-next-line
 import { Block, Text } from 'slate';
 
 /**
  * Validation functions are used to validate the editor state each time it
  * changes, to ensure it is never rendered in an undesirable state.
  */
+// eslint-disable-next-line
 export function validateNode(node) {
   /**
    * Validation of the document itself.
@@ -42,7 +44,7 @@ export function validateNode(node) {
         const newParentParent = newDoc.getParent(newParent.key);
         const docIsParentParent = newParentParent && newParentParent.key === newDoc.key;
         if (docIsParent) {
-          return change;
+          return;
         }
         /**
          * Normalization happens by default, and causes all validation to

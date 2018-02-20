@@ -53,6 +53,6 @@ module.exports = merge.smart(require('./webpack.base.js'), {
     contentBase: 'example/',
     historyApiFallback: true,
     disableHostCheck: true,
-    headers: {"Access-Control-Allow-Origin": "*"},
+    headers: { 'Access-Control-Allow-Origin': '*' },
   },
 });

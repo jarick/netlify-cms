@@ -98,7 +98,8 @@ export default class API {
     .catch((error) => {
       // Meta ref doesn't exist
       const readme = {
-        raw: "# Netlify CMS\n\nThis tree is used by the Netlify CMS to store metadata information for specific files and branches.",
+        raw: '# Netlify CMS\n\nThis tree is used by the Netlify CMS to store metadata ' +
+          'information for specific files and branches.',
       };
 
       return this.uploadBlob(readme)
@@ -464,10 +465,10 @@ export default class API {
           /**
            * Normalize commit data to ensure it's not nested in `commit.commit`.
            */
-          const parent = this.normalizeCommit(newParent);
+          const parentCommit = this.normalizeCommit(newParent);
           const commitToRebase = this.normalizeCommit(commit);
 
-          return this.rebaseSingleBlobCommit(parent, commitToRebase, pathToBlob);
+          return this.rebaseSingleBlobCommit(parentCommit, commitToRebase, pathToBlob);
         })
       ),
       Promise.resolve(baseCommit)
@@ -491,7 +492,7 @@ export default class API {
     /**
      * Set the base commit as the parent.
      */
-    const parent = [baseCommit.sha];
+    const parentCommit = [baseCommit.sha];
 
     /**
      * Get the blob data by path.
@@ -508,7 +509,7 @@ export default class API {
       /**
        * Create a new commit with the updated tree and original commit metadata.
        */
-      .then(tree => this.createCommit(message, tree.sha, parent, author, committer));
+      .then(tree => this.createCommit(message, tree.sha, parentCommit, author, committer));
   }
 
 
@@ -574,10 +575,9 @@ export default class API {
   publishUnpublishedEntry(collection, slug) {
     const contentKey = slug;
     const branchName = this.generateBranchName(contentKey);
-    let prNumber;
     return this.retrieveMetadata(contentKey)
-    .then(metadata => this.mergePR(metadata.pr, metadata.objects))
-    .then(() => this.deleteBranch(branchName));
+      .then(metadata => this.mergePR(metadata.pr, metadata.objects))
+      .then(() => this.deleteBranch(branchName));
   }
 
 
